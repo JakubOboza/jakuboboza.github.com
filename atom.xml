@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-03-26T21:36:19+01:00</updated>
+  <updated>2012-03-26T22:03:49+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -14,7 +14,7 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Using eredis in erlang]]></title>
+    <title type="html"><![CDATA[Using eredis, redis with erlang]]></title>
     <link href="http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang/"/>
     <updated>2012-03-23T23:28:00+00:00</updated>
     <id>http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang</id>
