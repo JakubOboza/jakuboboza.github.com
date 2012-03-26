@@ -9,20 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Oh hai guys, is this working Good ? let me try some source code. my_module.rb1
-2
-3
-def foo 1
-end Lol mongo_map_reduce_example.js1
-2
-3
-4
-5
-6
-7
-8
-9
-10 &hellip;">
+  <meta name="description" content="Recently i decided to move my blog from tumblr to octopress becasue it is just easier for me to maintain it and it looks nicer. The old blog is under &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -106,55 +93,49 @@ end Lol mongo_map_reduce_example.js1
   </header>
 
 
-  <div class="entry-content"><p>Oh hai guys, is this working Good ?</p>
+  <div class="entry-content"><p>Recently i decided to move my blog from tumblr to octopress becasue it is just easier for me to maintain it and it looks nicer. The old blog is under <a href="http://no-fucking-idea.tumblr.com">http://no-fucking-idea.tumblr.com</a>. My first post on enw blog is dedicated to using redis with erlang.</p>
 
-<h1>let me try some source code.</h1>
+<h1>Eredis</h1>
 
-<figure class='code'><figcaption><span>my_module.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">foo</span>
-</span><span class='line'>  <span class="mi">1</span>
-</span><span class='line'><span class="k">end</span>
+<p>Wooga created a really nice (performance driven) redis driver for erlang. You can get it here <a href="https://github.com/wooga/eredis">https://github.com/wooga/eredis</a>. It is really easy and nice.</p>
+
+<h1>Initial sample</h1>
+
+<p>On project page you can find simple examples how to use eredis. Examples there are all you need (but i need something for front page of my new blog so i will rewrite them and explain them :) ).</p>
+
+<h2>First you need to start your eredis application</h2>
+
+<figure class='code'><figcaption><span>initialization</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Client</span><span class="p">}</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">start_link</span><span class="p">().</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Lol</p>
+<p>
+Client is the &#8220;connection / state&#8221; we will be using with rest of queries.</p>
 
-<figure class='code'><figcaption><span>mongo_map_reduce_example.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">emit</span><span class="p">(</span> <span class="k">this</span><span class="p">.</span><span class="nx">username</span><span class="p">,</span> <span class="p">{</span><span class="nx">count</span><span class="o">:</span> <span class="mi">1</span><span class="p">,</span> <span class="nx">likes</span><span class="o">:</span> <span class="k">this</span><span class="p">.</span><span class="nx">likes</span><span class="p">}</span> <span class="p">);</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">reduce</span> <span class="o">=</span>  <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">values</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="p">{</span><span class="nx">count</span><span class="o">:</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">likes</span><span class="o">:</span> <span class="mi">0</span><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">value</span><span class="p">)</span> <span class="p">{</span>
-</span><span class='line'>      <span class="nx">result</span><span class="p">.</span><span class="nx">count</span> <span class="o">+=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">count</span><span class="p">;</span>
-</span><span class='line'>      <span class="nx">result</span><span class="p">.</span><span class="nx">likes</span> <span class="o">+=</span> <span class="nx">value</span><span class="p">.</span><span class="nx">likes</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">return</span> <span class="nx">result</span><span class="p">;</span>
-</span><span class='line'><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="kd">var</span> <span class="nx">result</span> <span class="o">=</span> <span class="nx">db</span><span class="p">.</span><span class="nx">events</span><span class="p">.</span><span class="nx">mapReduce</span><span class="p">(</span><span class="nx">map</span><span class="p">,</span> <span class="nx">reduce</span><span class="p">,</span> <span class="p">{</span> <span class="nx">query</span> <span class="o">:</span> <span class="p">{</span><span class="nx">type</span><span class="o">:</span><span class="s1">&#39;sale&#39;</span><span class="p">}</span> <span class="p">});</span>
+<p>To query things with redis we will use <code>q</code> method from eredis module which takes &#8220;Connection / Client&#8221; state and list with params.
+This api is very simple here are two most basic examples of get and set.
+GET:</p>
+
+<figure class='code'><figcaption><span>get</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;OK&quot;</span><span class="o">&gt;&gt;</span><span class="p">}</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">q</span><span class="p">(</span><span class="nv">Client</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;SET&quot;</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;kuba&quot;</span><span class="p">]).</span>
 </span></code></pre></td></tr></table></div></figure>
 
+
+<p>and SET:</p>
+
+<figure class='code'><figcaption><span>set</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;kuba&quot;</span><span class="o">&gt;&gt;</span><span class="p">}</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">q</span><span class="p">(</span><span class="nv">Client</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">]).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass &#8220;Connection / Client&#8221; as state and also we will build some &#8220;key&#8221; serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
+
+<h1>Free Api wrapper</h1>
+
+<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server&#8217;s and applications.</p>
+
+<p>TODO: finish this post.</p>
 </div>
   
   
