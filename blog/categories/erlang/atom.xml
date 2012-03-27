@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: Erlang | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/erlang/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-03-27T23:16:32+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using eredis, redis with erlang]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang/"/>
+    <updated>2012-03-23T23:28:00+00:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang</id>
+    <content type="html"><![CDATA[<p>Recently i decided to move my blog from tumblr to octopress becasue it is just easier for me to maintain it and it looks nicer. The old blog is under <a href="http://no-fucking-idea.tumblr.com">http://no-fucking-idea.tumblr.com</a>. My first post on enw blog is dedicated to using redis with erlang.</p>
+
+<h1>Eredis</h1>
+
+<p>Wooga created a really nice (performance driven) redis driver for erlang. You can get it here <a href="https://github.com/wooga/eredis">https://github.com/wooga/eredis</a>. It is really easy and nice.</p>
+
+<h1>Initial sample</h1>
+
+<p>On project page you can find simple examples how to use eredis. Examples there are all you need (but i need something for front page of my new blog so i will rewrite them and explain them :) ).</p>
+
+<h2>First you need to start your eredis application</h2>
+
+<p><code>erlang initialization
+{ok, Client} = eredis:start_link().
+</code>
+Client is the "connection / state" we will be using with rest of queries.</p>
+
+<p>To query things with redis we will use <code>q</code> method from eredis module which takes "Connection / Client" state and list with params.
+This api is very simple here are two most basic examples of get and set.
+GET:
+<code>erlang get
+{ok, &lt;&lt;"OK"&gt;&gt;} = eredis:q(Client, ["SET", "name", "kuba"]).
+</code>
+and SET:
+<code>erlang set
+{ok, &lt;&lt;"kuba"&gt;&gt;} = eredis:q(Client, ["GET", "name"]).
+</code>
+From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass "Connection / Client" as state and also we will build some "key" serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
+
+<h1>Free Api wrapper</h1>
+
+<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server's and applications.</p>
+
+<p>``` erlang example_db.erl
+-module(example_db).
+-behaviour(gen_server).</p>
+
+<p>-author("jakub.oboza@gmail.com").
+-define(Prefix, "example").</p>
+
+<p>-export([start_link/0]).
+-export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1]).
+-export([get_script/2, save_script/3]).</p>
+
+<p>% public api</p>
+
+<p>start_link() ->
+  gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).</p>
+
+<p>init([]) ->
+  {ok, Redis} = eredis:start_link(),
+  {ok, Redis}.</p>
+
+<p>stop(_Pid) ->
+  stop().</p>
+
+<p>stop() -></p>
+
+<pre><code>gen_server:cast(?MODULE, stop).
+</code></pre>
+
+<p>%% public client api</p>
+
+<p>get_script(Api, Method) ->
+  gen_server:call(?MODULE, {get_script, Api, Method}).</p>
+
+<p>save_script(Api, Method, Script) ->
+  gen_server:call(?MODULE, {save_script, Api, Method, Script}).</p>
+
+<p>%% genserver handles</p>
+
+<p>handle_call({get_script, Api, Method}, _From, Redis) ->
+  Response = eredis:q(Redis, [ "GET", get_key(Api, Method) ]),
+  {reply, Response, Redis};</p>
+
+<p>handle_call({save_script, Api, Method, Script}, _From, Redis) ->
+  Response = eredis:q(Redis, ["SET", get_key(Api, Method), Script]),
+  {reply, Response, Redis};</p>
+
+<p>handle_call(<em>Message, </em>From, Redis) ->
+  {reply, error, Redis}.</p>
+
+<p>handle_cast(<em>Message, Redis) -> {noreply, Redis}.
+handle_info(</em>Message, Redis) -> {noreply, Redis}.
+terminate(<em>Reason, </em>Redis) -> ok.
+code_change(<em>OldVersion, Redis, </em>Extra) -> {ok, Redis}.</p>
+
+<p>%% helper methods</p>
+
+<p>get_key(Api, Method) ->
+  generate_key([Api, Method]).</p>
+
+<p>generate_key(KeysList) ->
+  lists:foldl(fun(Key, Acc) -> Acc ++ ":" ++ Key end, ?Prefix, KeysList).</p>
+
+<p>% tests</p>
+
+<p>-ifdef(TEST).
+-include_lib("eunit/include/eunit.hrl").
+-endif.</p>
+
+<p>-ifdef(TEST).</p>
+
+<p>generate_key_test() ->
+  Key = generate_key(["one", "two", "three"]),
+  ?assertEqual("example:one:two:three", Key).</p>
+
+<p>server_test<em>() ->
+  {setup, fun() -> example_db:start_link() end,
+   fun(</em>Pid) -> example_db:stop(_Pid) end,
+   fun generate_example_db_tests/1}.</p>
+
+<p>generate_example_db_tests(_Pid) ->
+  [</p>
+
+<pre><code>?_assertEqual({ok,&lt;&lt;"OK"&gt;&gt;}, example_db:save_script("jakub", "oboza", &lt;&lt;"yo dwang"&gt;&gt;) ),
+?_assertEqual({ok,&lt;&lt;"yo dwang"&gt;&gt;}, example_db:get_script("jakub", "oboza") )
+</code></pre>
+
+<p>  ].</p>
+
+<p>-endif
+```</p>
+
+<h2>Public Api</h2>
+
+<p>This code listing has two important parts first at top it starts at line 26.
+This is the public API which will be used by developer. This is this free api. Later on i will explain how to change redis to mongodb and probably to other db engines without doing changes in rest of our app. From my perspective this is awesome feature.
+In most cases when i had to make app scale problem of having code that was glues to one db engine was heavy.</p>
+
+<h2>eunit tests</h2>
+
+<p>At line 60. starts the declaration of tests, using <code>rebar</code> and <code>eunit</code> is very easy and it is always good to have test coverage in case of refactoring. I'm a fan of test driven development so i like to cover in tests first things that i will use or i think they might be error prone. Here is used "test generators" to just to show how to write tests for gen_server.</p>
+
+<h1>Rebar</h1>
+
+<p>Before i will explain more i need to say abit about <code>rebar</code>. Rebar is a command line tool that was developed by <code>basho</code> to help create app. it is by far the best thing i found learning erlang to help me do boring stuff and eliminate a lot of rage writing app.src files. To get rebar simply do (you can always go to <a href="https://github.com/basho/rebar">https://github.com/basho/rebar</a> to get most up to date informations about building it)</p>
+
+<p><code>bash
+λ  git clone git://github.com/basho/rebar.git
+λ  cd rebar
+λ  ./bootstrap
+</code></p>
+
+<p>I use my own set of zsh scripts so all i did to add it to my path was to edit .furby file in my home dir. I strongly suggest also adding it to <code>$PATH</code> just to make your life easier.</p>
+
+<p>To create app using rebar you just need to
+<code>bash
+λ mkdir example_db
+λ rebar create-app appid=example_db
+==&gt; example_db (create-app)
+Writing src/example_db.app.src
+Writing src/example_db_app.erl
+Writing src/example_db_sup.erl
+</code>
+Now you can compile it using <code>rebar compile</code> and run tests using <code>rebar compile eunit</code> in out app currently we will see
+<code>bash rebar compile eunit
+λ rebar compile eunit
+==&gt; example_db (compile)
+Compiled src/example_db_app.erl
+Compiled src/example_db_sup.erl
+==&gt; example_db (eunit)
+Compiled src/example_db_app.erl
+Compiled src/example_db_sup.erl
+  There were no tests to run.
+</code>
+Nothing to do because its empty. Lets add our db module.</p>
+
+<ul>
+<li>TODO: explain rebar (finish this)</li>
+<li>TODO: make repo with code so it can be donwloaded and tested</li>
+<li>TODO: finish this post.</li>
+</ul>
+
+]]></content>
+  </entry>
+  
+</feed>
