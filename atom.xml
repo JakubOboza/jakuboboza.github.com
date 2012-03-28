@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-03-27T23:16:32+01:00</updated>
+  <updated>2012-03-28T22:40:12+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -256,6 +256,8 @@ In most cases when i had to make app scale problem of having code that was glues
 
 <p>I use my own set of zsh scripts so all i did to add it to my path was to edit .furby file in my home dir. I strongly suggest also adding it to <code>$PATH</code> just to make your life easier.</p>
 
+<h1>Back to example_db!</h1>
+
 <p>To create app using rebar you just need to</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -273,7 +275,8 @@ In most cases when i had to make app scale problem of having code that was glues
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Now you can compile it using <code>rebar compile</code> and run tests using <code>rebar compile eunit</code> in out app currently we will see</p>
+<p>This command created <code>src</code> folder with scaffold of <code>application</code> OTP pattern and <code>supervisor</code> thats almost all we need :).
+Now you can compile it using <code>rebar compile</code> and run tests using <code>rebar compile eunit</code> in out app currently we will see</p>
 
 <figure class='code'><figcaption><span>rebar compile eunit</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -294,14 +297,149 @@ In most cases when i had to make app scale problem of having code that was glues
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Nothing to do because its empty. Lets add our db module.</p>
+<p>Nothing to do because its empty. Lets add our db module.
+But before this we need to add dependencies for eredis module. Lets create <code>rebar.config</code> file and add it.</p>
 
-<ul>
-<li>TODO: explain rebar (finish this)</li>
-<li>TODO: make repo with code so it can be donwloaded and tested</li>
-<li>TODO: finish this post.</li>
-</ul>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ emacs rebar.config
+</span><span class='line'>λ cat rebar.config
+</span><span class='line'>%%-*- mode: erlang -*-
+</span><span class='line'>
+</span><span class='line'><span class="o">{</span>erl_opts, <span class="o">[]}</span>.
+</span><span class='line'><span class="o">{</span>cover_enabled, <span class="nb">true</span><span class="o">}</span>.
+</span><span class='line'>
+</span><span class='line'><span class="o">{</span>deps,
+</span><span class='line'>  <span class="o">[</span>
+</span><span class='line'>    <span class="o">{</span>eredis, <span class="s2">&quot;.*&quot;</span>, <span class="o">{</span>git, <span class="s2">&quot;https://github.com/wooga/eredis.git&quot;</span>, <span class="s2">&quot;HEAD&quot;</span><span class="o">}}</span>
+</span><span class='line'>  <span class="o">]</span>
+</span><span class='line'><span class="o">}</span>.
+</span></code></pre></td></tr></table></div></figure>
 
+
+<p>Now just run <code>rebar get-deps</code> to get all dependencies downloaded.
+After adding our <code>example_db.erl</code> into <code>src</code> directory we can run <code>rebar compile eunit</code> to compile and run tests. We have added <code>{cover_enabled, true}</code> in rebar.conf so also test code coverage will be generated for us.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ rebar compile <span class="nv">eunit</span>
+</span><span class='line'><span class="o">==</span>&gt; eredis <span class="o">(</span>compile<span class="o">)</span>
+</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>compile<span class="o">)</span>
+</span><span class='line'>Compiled src/example_db.erl
+</span><span class='line'><span class="o">==</span>&gt; eredis <span class="o">(</span>eunit<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=</span>ERROR <span class="nv">REPORT</span><span class="o">====</span> 28-Mar-2012::22:19:35 <span class="o">===</span>
+</span><span class='line'>** Generic server &lt;0.263.0&gt; terminating
+</span><span class='line'>** Last message in was <span class="o">{</span>tcp,#Port&lt;0.4516&gt;,
+</span><span class='line'>                            &lt;&lt;<span class="s2">&quot;*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$2\r\n12\r\n&quot;</span>&gt;&gt;<span class="o">}</span>
+</span><span class='line'>** When Server <span class="nv">state</span> <span class="o">==</span> <span class="o">{</span>state,<span class="s2">&quot;127.0.0.1&quot;</span>,6379,&lt;&lt;&gt;&gt;,100,#Port&lt;0.4516&gt;,
+</span><span class='line'>                               <span class="o">{</span>pstate,undefined,undefined<span class="o">}</span>,
+</span><span class='line'>                               <span class="o">[</span>&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;<span class="o">]</span>,
+</span><span class='line'>                               <span class="o">{</span><span class="c">#Ref&lt;0.0.0.4058&gt;,&lt;0.180.0&gt;},</span>
+</span><span class='line'>                               <span class="o">{[{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;11&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;10&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;9&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;8&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;7&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;6&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;5&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;4&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;3&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}]</span>,
+</span><span class='line'>                                <span class="o">[{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;2&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}]}</span>,
+</span><span class='line'>                               10,exit,need_ack<span class="o">}</span>
+</span><span class='line'>** Reason <span class="k">for </span><span class="nv">termination</span> <span class="o">==</span>
+</span><span class='line'>** max_queue_size
+</span><span class='line'>  All 53 tests passed.
+</span><span class='line'>Cover analysis: /private/tmp/example_db/deps/eredis/.eunit/index.html
+</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>eunit<span class="o">)</span>
+</span><span class='line'>Compiled src/example_db.erl
+</span><span class='line'>  All 3 tests passed.
+</span><span class='line'>Cover analysis: /private/tmp/example_db/.eunit/index.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>All seems to be fine! lets create file called  <code>start.sh</code> to test it out</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ cat start.sh
+</span><span class='line'>erl -pa ebin -pa deps/*/ebin
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and make it executable with <code>chmod +x start.sh</code></p>
+
+<p>And lets rock &#8216;n&#8217; roll</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> λ ./start.sh
+</span><span class='line'>Erlang R15B <span class="o">(</span>erts-5.9<span class="o">)</span> <span class="o">[</span><span class="nb">source</span><span class="o">]</span> <span class="o">[</span>64-bit<span class="o">]</span> <span class="o">[</span>smp:4:4<span class="o">]</span> <span class="o">[</span>async-threads:0<span class="o">]</span> <span class="o">[</span>hipe<span class="o">]</span> <span class="o">[</span>kernel-poll:false<span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>Eshell V5.9  <span class="o">(</span>abort with ^G<span class="o">)</span>
+</span><span class='line'>1&gt; example_db:start_link<span class="o">()</span>.
+</span><span class='line'><span class="o">{</span>ok,&lt;0.33.0&gt;<span class="o">}</span>
+</span><span class='line'>2&gt; example_db:save_script<span class="o">(</span><span class="s2">&quot;example&quot;</span>, <span class="s2">&quot;script&quot;</span>, <span class="s2">&quot;puts &#39;2+2&#39;&quot;</span><span class="o">)</span>.
+</span><span class='line'><span class="o">{</span>ok,&lt;&lt;<span class="s2">&quot;OK&quot;</span>&gt;&gt;<span class="o">}</span>
+</span><span class='line'>3&gt; example_db:get_script<span class="o">(</span><span class="s2">&quot;example&quot;</span>, <span class="s2">&quot;script&quot;</span><span class="o">)</span>.
+</span><span class='line'><span class="o">{</span>ok,&lt;&lt;<span class="s2">&quot;puts &#39;2+2&#39;&quot;</span>&gt;&gt;<span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Have fun :) Hope it was useful. You can download code for this blog post here <a href="https://github.com/JakubOboza/example_db-code">https://github.com/JakubOboza/example_db-code</a></p>
+
+<h3>Huh ^___^</h3>
+
+<p>that was my first post on new blog ;)</p>
 ]]></content>
   </entry>
   

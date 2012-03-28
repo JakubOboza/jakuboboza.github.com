@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Redis | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/redis/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-03-27T23:16:32+01:00</updated>
+  <updated>2012-03-28T22:40:12+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -164,6 +164,8 @@ In most cases when i had to make app scale problem of having code that was glues
 
 <p>I use my own set of zsh scripts so all i did to add it to my path was to edit .furby file in my home dir. I strongly suggest also adding it to <code>$PATH</code> just to make your life easier.</p>
 
+<h1>Back to example_db!</h1>
+
 <p>To create app using rebar you just need to
 <code>bash
 λ mkdir example_db
@@ -173,6 +175,7 @@ Writing src/example_db.app.src
 Writing src/example_db_app.erl
 Writing src/example_db_sup.erl
 </code>
+This command created <code>src</code> folder with scaffold of <code>application</code> OTP pattern and <code>supervisor</code> thats almost all we need :).
 Now you can compile it using <code>rebar compile</code> and run tests using <code>rebar compile eunit</code> in out app currently we will see
 <code>bash rebar compile eunit
 λ rebar compile eunit
@@ -184,14 +187,94 @@ Compiled src/example_db_app.erl
 Compiled src/example_db_sup.erl
   There were no tests to run.
 </code>
-Nothing to do because its empty. Lets add our db module.</p>
+Nothing to do because its empty. Lets add our db module.
+But before this we need to add dependencies for eredis module. Lets create <code>rebar.config</code> file and add it.
+``` bash
+λ emacs rebar.config
+λ cat rebar.config
+%%-<em>- mode: erlang -</em>-</p>
 
-<ul>
-<li>TODO: explain rebar (finish this)</li>
-<li>TODO: make repo with code so it can be donwloaded and tested</li>
-<li>TODO: finish this post.</li>
-</ul>
+<p>{erl_opts, []}.
+{cover_enabled, true}.</p>
 
+<p>{deps,
+  [</p>
+
+<pre><code>{eredis, ".*", {git, "https://github.com/wooga/eredis.git", "HEAD"}}
+</code></pre>
+
+<p>  ]
+}.
+<code>
+Now just run `rebar get-deps` to get all dependencies downloaded.
+After adding our `example_db.erl` into `src` directory we can run `rebar compile eunit` to compile and run tests. We have added `{cover_enabled, true}` in rebar.conf so also test code coverage will be generated for us.
+</code> bash
+λ rebar compile eunit
+==> eredis (compile)
+==> example_db (compile)
+Compiled src/example_db.erl
+==> eredis (eunit)</p>
+
+<p>=ERROR REPORT==== 28-Mar-2012::22:19:35 ===
+<strong> Generic server &lt;0.263.0> terminating
+</strong> Last message in was {tcp,#Port&lt;0.4516>,</p>
+
+<pre><code>                        &lt;&lt;"*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$2\r\n12\r\n"&gt;&gt;}
+</code></pre>
+
+<p>** When Server state == {state,"127.0.0.1",6379,&lt;&lt;>>,100,#Port&lt;0.4516>,</p>
+
+<pre><code>                           {pstate,undefined,undefined},
+                           [&lt;&lt;"foo"&gt;&gt;],
+                           {#Ref&lt;0.0.0.4058&gt;,&lt;0.180.0&gt;},
+                           {[{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"11"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"10"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"9"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"8"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"7"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"6"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"5"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"4"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"3"&gt;&gt;,&lt;0.263.0&gt;}],
+                            [{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"2"&gt;&gt;,&lt;0.263.0&gt;}]},
+                           10,exit,need_ack}
+</code></pre>
+
+<p><strong> Reason for termination ==
+</strong> max_queue_size
+  All 53 tests passed.
+Cover analysis: /private/tmp/example_db/deps/eredis/.eunit/index.html
+==> example_db (eunit)
+Compiled src/example_db.erl
+  All 3 tests passed.
+Cover analysis: /private/tmp/example_db/.eunit/index.html
+<code>
+All seems to be fine! lets create file called  `start.sh` to test it out
+</code> bash
+λ cat start.sh
+erl -pa ebin -pa deps/*/ebin
+<code>``
+and make it executable with</code>chmod +x start.sh`</p>
+
+<p>And lets rock 'n' roll</p>
+
+<p>``` bash
+ λ ./start.sh
+Erlang R15B (erts-5.9) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] [kernel-poll:false]</p>
+
+<p>Eshell V5.9  (abort with ^G)
+1> example_db:start_link().
+{ok,&lt;0.33.0>}
+2> example_db:save_script("example", "script", "puts '2+2'").<br/>
+{ok,&lt;&lt;"OK">>}
+3> example_db:get_script("example", "script").
+{ok,&lt;&lt;"puts '2+2'">>}
+```
+Have fun :) Hope it was useful. You can download code for this blog post here <a href="https://github.com/JakubOboza/example_db-code">https://github.com/JakubOboza/example_db-code</a></p>
+
+<h3>Huh ^___^</h3>
+
+<p>that was my first post on new blog ;)</p>
 ]]></content>
   </entry>
   
