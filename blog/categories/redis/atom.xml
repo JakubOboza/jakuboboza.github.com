@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Redis | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/redis/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-03-28T23:59:43+01:00</updated>
+  <updated>2012-03-29T18:40:37+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,7 +18,7 @@
     <link href="http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang/"/>
     <updated>2012-03-23T23:28:00+00:00</updated>
     <id>http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang</id>
-    <content type="html"><![CDATA[<p>Recently i decided to move my blog from tumblr to octopress becasue it is just easier for me to maintain it and it looks nicer. The old blog is under <a href="http://no-fucking-idea.tumblr.com">http://no-fucking-idea.tumblr.com</a>. My first post on enw blog is dedicated to using redis with erlang.</p>
+    <content type="html"><![CDATA[<p>Recently i decided to move my blog from <code>tumblr.com</code> to <code>octopress engine</code> because it is just easier for me to maintain it and it looks nicer. The old blog is under <a href="http://no-fucking-idea.tumblr.com">http://no-fucking-idea.tumblr.com</a>. My first post on new blog is dedicated to using redis with erlang.</p>
 
 <h1>Eredis</h1>
 
@@ -154,7 +154,7 @@ In most cases when i had to make app scale problem of having code that was glues
 
 <h1>Rebar</h1>
 
-<p>Before i will explain more i need to say abit about <code>rebar</code>. Rebar is a command line tool that was developed by <code>basho</code> to help create app. it is by far the best thing i found learning erlang to help me do boring stuff and eliminate a lot of rage writing app.src files. To get rebar simply do (you can always go to <a href="https://github.com/basho/rebar">https://github.com/basho/rebar</a> to get most up to date informations about building it)</p>
+<p>Before i will explain more i need to say little about <code>rebar</code>. It is a command line tool that was developed by <code>basho</code> to help create app. it is by far the best thing i found learning erlang to help me do boring stuff and eliminate a lot of rage writing <code>app.src</code> files. To get rebar simply do (you can always go to <a href="https://github.com/basho/rebar">https://github.com/basho/rebar</a> to get most up to date informations about building it)</p>
 
 <p><code>bash
 λ  git clone git://github.com/basho/rebar.git
@@ -162,7 +162,7 @@ In most cases when i had to make app scale problem of having code that was glues
 λ  ./bootstrap
 </code></p>
 
-<p>I use my own set of zsh scripts so all i did to add it to my path was to edit .furby file in my home dir. I strongly suggest also adding it to <code>$PATH</code> just to make your life easier.</p>
+<p>I use my own set of zsh scripts so all i did to add it to my path was to edit <code>.furby</code> file in my home dir. I strongly suggest also adding it to <code>$PATH</code> just to make your life easier.</p>
 
 <h1>Back to example_db!</h1>
 
