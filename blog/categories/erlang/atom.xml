@@ -4,7 +4,7 @@
   <title><![CDATA[Category: Erlang | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/erlang/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-03-29T18:40:37+01:00</updated>
+  <updated>2012-03-29T19:26:10+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,167 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[rebar -> swiss army knife]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/03/29/rebar-swiss-army-knife/"/>
+    <updated>2012-03-29T18:55:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/03/29/rebar-swiss-army-knife</id>
+    <content type="html"><![CDATA[<h1>Intro</h1>
+
+<p>Rebar is a great command line tool for building your Erlang apps. It was developed by guys from <code>basho</code> <a href="http://basho.com/">http://basho.com/</a>. If you want to build Erlang app or module you can skip a lot of config / boilerplate code but using rebar.</p>
+
+<h1>Wait what? How do i get it ?</h1>
+
+<p>To obtain rebar all you have to do is clone source using
+<code>bash
+λ git clone git://github.com/basho/rebar.git
+</code>
+after obtaining source go into directory and bootstrap it.
+<code>bash
+λ cd rebar
+λ ./bootstrap
+</code>
+This will build rebar script if everything is successful. Last thing i suggest is adding this directory to your path.
+<code>bash
+λ export PATH=/path/to/rebar:$PATH
+</code>
+So you will be able to use it like other command lines tools from "global namespace".
+Now you should have working rebar installation. Just to test that everything is ok you can run <code>rebar</code> like this.
+``` bash
+λ rebar
+No command to run specified!
+Usage: rebar [-h] [-c] [-v <verbose>] [-V] [-f] [-D <defines>] [-j <jobs>] [-C <config>] [-p] [var=value,...] &lt;command,...></p>
+
+<p>  -h, --help        Show the program options
+  -c, --commands    Show available commands
+  -v, --verbose     Verbosity level (-v, -vv, -vvv, --verbose 3). Default: 0
+  -V, --version     Show version information
+  -f, --force       Force
+  -D            Define compiler macro
+  -j, --jobs        Number of concurrent workers a command may use. Default: 3
+  -C, --config      Rebar config file to use
+  -p, --profile     Profile this run of rebar
+  var=value     rebar global variables (e.g. force=1)
+  command       Command to run (e.g. compile)</p>
+
+<p>```</p>
+
+<h1>How do i use it @_@ ?</h1>
+
+<p>Two most important things you can generate using <code>rebar</code> are applications and nodes.
+To generate application you just need to create app directory and run <code>rebar create-app</code> command like this.
+``` bash
+mkdir furby<br/>
+λ cd furby
+λ rebar create-app appid=furby
+==> furby (create-app)
+Writing src/furby.app.src
+Writing src/furby_app.erl
+Writing src/furby_sup.erl</p>
+
+<p><code>``
+This has created application scaffold with ready to go supervisor. This is ready to go!
+to compile it just run</code>rebar compile`</p>
+
+<h1>Me gusta</h1>
+
+<p>This is all fine but that don't eliminate a lot, sweet things are behind the corner :).</p>
+
+<h3>eunit</h3>
+
+<p>Rebar enables you to use easy eunit testing framework within your code. Like we did it here <a href="http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/">http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/</a>. To do it just run <code>rebar compile eunit</code> .
+``` bash exmaple_output
+λ rebar compile eunit
+zsh: correct 'eunit' to '.eunit' [nyae]? n
+==> eredis (compile)
+==> example_db (compile)
+==> eredis (eunit)</p>
+
+<p>=ERROR REPORT==== 29-Mar-2012::19:13:21 ===
+<strong> Generic server &lt;0.259.0> terminating
+</strong> Last message in was {tcp,#Port&lt;0.4549>,</p>
+
+<pre><code>                        &lt;&lt;"*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$2\r\n12\r\n"&gt;&gt;}
+</code></pre>
+
+<p>** When Server state == {state,"127.0.0.1",6379,&lt;&lt;>>,100,#Port&lt;0.4549>,</p>
+
+<pre><code>                           {pstate,undefined,undefined},
+                           [&lt;&lt;"foo"&gt;&gt;],
+                           {#Ref&lt;0.0.0.3990&gt;,&lt;0.176.0&gt;},
+                           {[{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"11"&gt;&gt;,&lt;0.259.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"10"&gt;&gt;,&lt;0.259.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"9"&gt;&gt;,&lt;0.259.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"8"&gt;&gt;,&lt;0.259.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"7"&gt;&gt;,&lt;0.259.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"6"&gt;&gt;,&lt;0.259.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"5"&gt;&gt;,&lt;0.259.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"4"&gt;&gt;,&lt;0.259.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"3"&gt;&gt;,&lt;0.259.0&gt;}],
+                            [{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"2"&gt;&gt;,&lt;0.259.0&gt;}]},
+                           10,exit,need_ack}
+</code></pre>
+
+<p><strong> Reason for termination ==
+</strong> max_queue_size
+  All 53 tests passed.
+Cover analysis: /private/tmp/example_db/deps/eredis/.eunit/index.html
+==> example_db (eunit)
+  All 3 tests passed.
+Cover analysis: /private/tmp/example_db/.eunit/index.html
+```</p>
+
+<h3>coverage</h3>
+
+<p>Also if you will fiddle with <code>rebar.config</code> and set some variables like this:
+``` bash
+λ cat rebar.config
+%%-<em>- mode: erlang -</em>-</p>
+
+<p>{erl_opts, []}.
+{cover_enabled, true}.</p>
+
+<p><code>
+you can get test coverage generated in `.eunit` folder. but this is just the beginning.  lets look at it.
+</code> html example_db.COVER.html
+example_db/.eunit λ cat example_db.COVER.html
+<html>
+<head><title>.eunit/example_db.COVER.html</title></head><body bgcolor=white text=black></p>
+
+<pre>
+File generated from /private/tmp/example_db/.eunit/example_db.erl by COVER 2012-03-29 at 19:13:21
+
+****************************************************************************
+
+        |  -module(example_db).
+        |  -behaviour(gen_server).
+        |  
+...(and more)
+```
+
+### dependencies
+Last thing i want to mention is dependencies, i love this feature from `rebar`. You can add dependencies and rebar will do all the magic for you :). just open your `rebar.config`  and add thme like this:
+``` bash rebar.config
+%%-*- mode: erlang -*-
+
+{erl_opts, []}.
+{cover_enabled, true}.
+
+{deps,
+  [
+    {eredis, ".*", {git, "https://github.com/wooga/eredis.git", "HEAD"}}
+  ]
+}.
+
+```
+Whenever you will type `rebar get-deps` he will download all dependencies and install them into `deps` directory. This makes developing applications using things like mochiweb really easy!
+
+# Summary
+I love this tool, it makes learning and development in `Erlang` much easier and more rewarding experience. I hope this help you a bit :). Cheers!
+
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using eredis, redis with erlang]]></title>
