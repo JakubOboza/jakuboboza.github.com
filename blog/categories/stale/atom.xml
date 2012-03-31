@@ -1,0 +1,194 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: stale | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/stale/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-03-31T21:20:59+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Caching and serving stale content with nginx]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/"/>
+    <updated>2012-03-31T20:18:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx</id>
+    <content type="html"><![CDATA[<h1>Caching</h1>
+
+<p>With ruby and rails we often want to have caching of static content so we will try to reduce requests that has to come through rails stack when possible. Nginx in front is a great tool and we can use its abilities to add caching easy.</p>
+
+<h2>App</h2>
+
+<p>lets imagine we have a simple <code>sinatra</code> app. For purpose of this post we will have app with one method <code>/ohhai</code> that shows current time. This is a great way to test if out caching is working fine. Code of the app is really simple:
+``` ruby app.rb
+class ExampleStaleApp &lt; Sinatra::Base
+  get "/ohhai" do</p>
+
+<pre><code>sleep(5)
+Time.now.to_s
+</code></pre>
+
+<p>  end
+end
+<code>
+Also to start it easy i have created a config.ru `rackup` file describing how to start app (in repo there is start.sh script ;)
+</code> ruby config.ru
+require 'rubygems'
+require 'bundler'</p>
+
+<p>Bundler.require</p>
+
+<p>require './app'</p>
+
+<p>run ExampleStaleApp
+<code>
+If you are using code from my repo &lt;https://github.com/JakubOboza/003-nginx-cache-stale-example&gt; to start it all you need to do is
+</code>
+λ git clone https://github.com/JakubOboza/003-nginx-cache-stale-example
+λ cd 003-nginx-cache-stale-example
+λ bundle install
+λ ./start.sh
+```
+I configured the app with my own path/uri and to look for upstream server on port 6677 so you need to change it if you are using different settings.</p>
+
+<h1>Caching</h1>
+
+<p> Our app is running now. Lets add caching, for this we will need to add nginx frontend config. In most cases i create a single nginx config for each server in sites-available directory and symlink it in sites-enabled (like apache do by default). I like this setting, it helps a lot to maintain more then one site which is common in development environment and also common on shared applications servers.</p>
+
+<h2>Nginx config file</h2>
+
+<p>I will show complete nginx config file for this example and explain each bit one by one.
+``` nginx nginx.example.caching.conf
+upstream sinatra_rackup{
+  server 0.0.0.0:6677;
+}</p>
+
+<p>proxy_cache_path  /tmp/cache levels=1:2 keys_zone=my-test-cache:8m max_size=5000m inactive=300m;</p>
+
+<p>server {</p>
+
+<pre><code>listen 80;
+server_name example_stale.local;
+root /Users/kuba/Workspace/Ruby/example_stale/public;
+
+access_log  /var/log/nginx/example.stale.access.log;
+
+location / {
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header Host $http_host;
+  proxy_cache my-test-cache;
+  proxy_cache_valid  200 302  1m;
+  proxy_cache_valid  404      60m;
+  proxy_cache_use_stale   error timeout invalid_header updating;
+  proxy_redirect off;
+
+  if (-f $request_filename/index.html) {
+    rewrite (.*) $1/index.html break;
+  }
+  if (-f $request_filename.html) {
+    rewrite (.*) $1.html break;
+  }
+  if (!-f $request_filename) {
+    proxy_pass http://sinatra_rackup;
+    break;
+  }
+}
+
+error_page 500 502 503 504 /50x.html;
+location = /50x.html {
+  root html;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>It isn't even so long ;)</p>
+
+<h3>upstream</h3>
+
+<p><code>nginx
+upstream sinatra_rackup{
+  server 0.0.0.0:6677;
+}
+</code>
+in this part we create description of our upstream. In other words where our application server will be listening. It is easy to just use port but you can configure it to use unix.socket if you want to gain on performance.</p>
+
+<h3>global cache config</h3>
+
+<p><code>nginx
+proxy_cache_path  /tmp/cache levels=1:2 keys_zone=my-test-cache:8m max_size=5000m inactive=300m;
+</code>
+This directive sets the place where cache is stored and sets the zone name and how big it can be. We will refer tot his zone later on in proxy pass cache config.</p>
+
+<h3>app cache config</h3>
+
+<p>``` nginx
+server {</p>
+
+<pre><code>listen 80;
+server_name example_stale.local;
+root /Users/kuba/Workspace/Ruby/example_stale/public;
+
+location / {
+  proxy_set_header X-Real-IP $remote_addr;
+  proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
+  proxy_set_header Host $http_host;
+  proxy_cache my-test-cache;
+  proxy_cache_valid  200 302  1m;
+  proxy_cache_valid  404      60m;
+  proxy_cache_use_stale   error timeout invalid_header updating;
+  proxy_redirect off;
+
+  proxy_pass http://sinatra_rackup;
+}
+</code></pre>
+
+<p>}
+```</p>
+
+<p>Here we configure server name for out application, port to listen on for it and root directory (this is fixed with my mac so you should change it). Whole magic happens in location description. here you have few important things for us.</p>
+
+<p><code>nginx
+proxy_cache my-test-cache;
+</code>
+Sets which cache zone we will use. We use same cache zone we defined in <code>proxy_cache_path</code> with keys_zone.
+Next we are setting for how long it should be cached. I used 1 minute for 200 and 302 status. this lets us see on our example app how this works each minute we see new time :). This is awesome! Next you can set different caching time expiry for other status. Here we are refreshing 404 status cache each hour (it could be days :) ).</p>
+
+<p>Last but not the least is serving stale content if upstream is dead.</p>
+
+<p><code>nginx
+proxy_cache_use_stale error timeout invalid_header updating;
+</code>
+This sets up for us config that will enable serving stale content if upstream is dead. This is nice if you want to provide some content in case when your backend is dead.</p>
+
+<h1>Test</h1>
+
+<p>You can test it now. Or wait... with my config you have to add entry to <code>/etc/hosts</code>
+<code>bash hosts
+127.0.0.1 example_stale.local
+</code>
+Now you can go to <code>example_stale.local/ohhai</code> (or just <code>curl example_stale.local/ohhai</code>) and see how our cache works. Even more now you can kill your app server and still see cache being served correctly.</p>
+
+<h2>Results</h2>
+
+<p>First request
+<img src="http://img820.imageshack.us/img820/1484/screenshot20120331at211.png" alt="10 sec before" />
+Next requests
+<img src="http://img4.imageshack.us/img4/1484/screenshot20120331at211.png" alt="few ms after" /></p>
+
+<p>-> <a href="http://www.youtube.com/watch?v=lgoXUzIwXk0">http://www.youtube.com/watch?v=lgoXUzIwXk0</a></p>
+
+<h1>Cheers</h1>
+
+<p>How you can use it? Depends on your app architecture, but for every bit of content that you create which is "static" it is great thing to have. I like this feature of nginx and i hope this post will help you ;).</p>
+]]></content>
+  </entry>
+  
+</feed>

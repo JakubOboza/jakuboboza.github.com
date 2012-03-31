@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-03-29T19:26:10+01:00</updated>
+  <updated>2012-03-31T21:20:59+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,274 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Caching and serving stale content with nginx]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/"/>
+    <updated>2012-03-31T20:18:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx</id>
+    <content type="html"><![CDATA[<h1>Caching</h1>
+
+<p>With ruby and rails we often want to have caching of static content so we will try to reduce requests that has to come through rails stack when possible. Nginx in front is a great tool and we can use its abilities to add caching easy.</p>
+
+<h2>App</h2>
+
+<p>lets imagine we have a simple <code>sinatra</code> app. For purpose of this post we will have app with one method <code>/ohhai</code> that shows current time. This is a great way to test if out caching is working fine. Code of the app is really simple:</p>
+
+<figure class='code'><figcaption><span>app.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ExampleStaleApp</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Base</span>
+</span><span class='line'>  <span class="n">get</span> <span class="s2">&quot;/ohhai&quot;</span> <span class="k">do</span>
+</span><span class='line'>    <span class="nb">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+</span><span class='line'>    <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Also to start it easy i have created a config.ru <code>rackup</code> file describing how to start app (in repo there is start.sh script ;)</p>
+
+<figure class='code'><figcaption><span>config.ru</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;bundler&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span>
+</span><span class='line'>
+</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;./app&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">run</span> <span class="no">ExampleStaleApp</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>If you are using code from my repo <a href="https://github.com/JakubOboza/003-nginx-cache-stale-example">https://github.com/JakubOboza/003-nginx-cache-stale-example</a> to start it all you need to do is</p>
+
+<figure class='code'><figcaption><span>config.ru</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">λ</span> <span class="n">git</span> <span class="nb">clone</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="no">JakubOboza</span><span class="o">/</span><span class="mo">003</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="n">stale</span><span class="o">-</span><span class="n">example</span>
+</span><span class='line'><span class="err">λ</span> <span class="n">cd</span> <span class="mo">003</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="n">stale</span><span class="o">-</span><span class="n">example</span>
+</span><span class='line'><span class="err">λ</span> <span class="n">bundle</span> <span class="n">install</span>
+</span><span class='line'><span class="err">λ</span> <span class="o">.</span><span class="n">/start</span><span class="o">.</span><span class="n">sh</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>
+I configured the app with my own path/uri and to look for upstream server on port 6677 so you need to change it if you are using different settings.</p>
+
+<h1>Caching</h1>
+
+<p> Our app is running now. Lets add caching, for this we will need to add nginx frontend config. In most cases i create a single nginx config for each server in sites-available directory and symlink it in sites-enabled (like apache do by default). I like this setting, it helps a lot to maintain more then one site which is common in development environment and also common on shared applications servers.</p>
+
+<h2>Nginx config file</h2>
+
+<p>I will show complete nginx config file for this example and explain each bit one by one.</p>
+
+<figure class='code'><figcaption><span>nginx.example.caching.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">upstream</span> <span class="s">sinatra_rackup</span><span class="p">{</span>
+</span><span class='line'>  <span class="kn">server</span> <span class="n">0.0.0.0</span><span class="p">:</span><span class="mi">6677</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">proxy_cache_path</span>  <span class="s">/tmp/cache</span> <span class="s">levels=1:2</span> <span class="s">keys_zone=my-test-cache:8m</span> <span class="s">max_size=5000m</span> <span class="s">inactive=300m</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">server</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span><span class='line'>    <span class="kn">server_name</span> <span class="s">example_stale.local</span><span class="p">;</span>
+</span><span class='line'>    <span class="kn">root</span> <span class="s">/Users/kuba/Workspace/Ruby/example_stale/public</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kn">access_log</span>  <span class="s">/var/log/nginx/example.stale.access.log</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$http_host</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">200</span> <span class="mi">302</span>  <span class="mi">1m</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">404</span>      <span class="mi">60m</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_cache_use_stale</span>   <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kn">if</span> <span class="s">(-f</span> <span class="nv">$request_filename/index.html</span><span class="s">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kn">rewrite</span> <span class="s">(.*)</span> <span class="nv">$1/index.html</span> <span class="s">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="kn">if</span> <span class="s">(-f</span> <span class="nv">$request_filename.html</span><span class="s">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kn">rewrite</span> <span class="s">(.*)</span> <span class="nv">$1.html</span> <span class="s">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>      <span class="kn">if</span> <span class="s">(!-f</span> <span class="nv">$request_filename</span><span class="s">)</span> <span class="p">{</span>
+</span><span class='line'>        <span class="kn">proxy_pass</span> <span class="s">http://sinatra_rackup</span><span class="p">;</span>
+</span><span class='line'>        <span class="kn">break</span><span class="p">;</span>
+</span><span class='line'>      <span class="p">}</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kn">error_page</span> <span class="mi">500</span> <span class="mi">502</span> <span class="mi">503</span> <span class="mi">504</span> <span class="s">/50x.html</span><span class="p">;</span>
+</span><span class='line'>    <span class="kn">location</span> <span class="p">=</span> <span class="s">/50x.html</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kn">root</span> <span class="s">html</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It isn&#8217;t even so long ;)</p>
+
+<h3>upstream</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">upstream</span> <span class="s">sinatra_rackup</span><span class="p">{</span>
+</span><span class='line'>  <span class="kn">server</span> <span class="n">0.0.0.0</span><span class="p">:</span><span class="mi">6677</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>in this part we create description of our upstream. In other words where our application server will be listening. It is easy to just use port but you can configure it to use unix.socket if you want to gain on performance.</p>
+
+<h3>global cache config</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache_path</span>  <span class="s">/tmp/cache</span> <span class="s">levels=1:2</span> <span class="s">keys_zone=my-test-cache:8m</span> <span class="s">max_size=5000m</span> <span class="s">inactive=300m</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This directive sets the place where cache is stored and sets the zone name and how big it can be. We will refer tot his zone later on in proxy pass cache config.</p>
+
+<h3>app cache config</h3>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">server</span> <span class="p">{</span>
+</span><span class='line'>    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
+</span><span class='line'>    <span class="kn">server_name</span> <span class="s">example_stale.local</span><span class="p">;</span>
+</span><span class='line'>    <span class="kn">root</span> <span class="s">/Users/kuba/Workspace/Ruby/example_stale/public</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
+</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$http_host</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">200</span> <span class="mi">302</span>  <span class="mi">1m</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">404</span>      <span class="mi">60m</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_cache_use_stale</span>   <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
+</span><span class='line'>      <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="kn">proxy_pass</span> <span class="s">http://sinatra_rackup</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here we configure server name for out application, port to listen on for it and root directory (this is fixed with my mac so you should change it). Whole magic happens in location description. here you have few important things for us.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sets which cache zone we will use. We use same cache zone we defined in <code>proxy_cache_path</code> with keys_zone.
+Next we are setting for how long it should be cached. I used 1 minute for 200 and 302 status. this lets us see on our example app how this works each minute we see new time :). This is awesome! Next you can set different caching time expiry for other status. Here we are refreshing 404 status cache each hour (it could be days :) ).</p>
+
+<p>Last but not the least is serving stale content if upstream is dead.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache_use_stale</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This sets up for us config that will enable serving stale content if upstream is dead. This is nice if you want to provide some content in case when your backend is dead.</p>
+
+<h1>Test</h1>
+
+<p>You can test it now. Or wait&#8230; with my config you have to add entry to <code>/etc/hosts</code></p>
+
+<figure class='code'><figcaption><span>hosts</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>127.0.0.1 example_stale.local
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now you can go to <code>example_stale.local/ohhai</code> (or just <code>curl example_stale.local/ohhai</code>) and see how our cache works. Even more now you can kill your app server and still see cache being served correctly.</p>
+
+<h2>Results</h2>
+
+<p>First request
+<img src="http://img820.imageshack.us/img820/1484/screenshot20120331at211.png" alt="10 sec before" />
+Next requests
+<img src="http://img4.imageshack.us/img4/1484/screenshot20120331at211.png" alt="few ms after" /></p>
+
+<p>-> <a href="http://www.youtube.com/watch?v=lgoXUzIwXk0">http://www.youtube.com/watch?v=lgoXUzIwXk0</a></p>
+
+<h1>Cheers</h1>
+
+<p>How you can use it? Depends on your app architecture, but for every bit of content that you create which is &#8220;static&#8221; it is great thing to have. I like this feature of nginx and i hope this post will help you ;).</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[rebar -> swiss army knife]]></title>
