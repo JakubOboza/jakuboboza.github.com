@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: NoSQL | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/nosql/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-04-01T23:42:53+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using Map Reduce with Mongodb]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/04/01/using-map-reduce-with-mongodb/"/>
+    <updated>2012-04-01T23:05:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/04/01/using-map-reduce-with-mongodb</id>
+    <content type="html"><![CDATA[<p>Mongodb has support for running Map Reduce queries besides having regular sql like query interface. In documentation we can read that it is not the best idea to use it as a regular interface but it is very good for generating things in backgrounds like preparing reports or caching some data. I will try to show simple example how to create a useful map reduce query and execute it.</p>
+
+<h2>Javascript</h2>
+
+<p>Map reduce queries in Mongodb are written in javascript. All you have to do is to prepare two regular javascript functions
+``` javascript
+var map = function(){</p>
+
+<pre><code>/* emit values for each document */
+emit();
+</code></pre>
+
+<p>}
+<code>
+In map function you have to emit key -&gt; values from document, eg. for each document emit urls and counts of them.
+</code> javascript
+var reduce = function(key, value){</p>
+
+<pre><code>/* reduce emited values into result */
+return {result1: one, result2: two};
+</code></pre>
+
+<p>}
+```
+In reduce function you simple gather results and sum them up. It is easier to think about if you will imagine that reduce is something like fold or inject (depending on background) on emitted values from mapping function.</p>
+
+<h2>Running scripts</h2>
+
+<p>Mongo db has a really nice interface for running scripts. Lets examine a simple example
+<code>bash
+mongo localhost:27017/canis_production generate_report.js
+</code>
+This will run <code>generate_report.js</code> script on database <code>canis_production</code> on db node <code>localhost:27017</code>. You don't need to do it, but its easiet to write it into file then type each time functions ;).</p>
+
+<h1>Example Map reduce query</h1>
+
+<p>Now this is a simple mapReduce that actually do something. It is emitting for each document url field and value 1. Reducer is
+adding values for the same key so this way we will know how many occurrences of each url we have across whole collection.
+<code>javascript
+var map = function(){
+  emit(this.url, 1);
+}
+var reduce = function(key, values){
+  var res = 0;
+  values.forEach(function(v){ res += 1});
+  return {count: res};
+}
+</code>
+this is have we defined out map reduce functions now all we need to do is just runt he query.
+<code>javascript
+db.sites.mapReduce(map, reduce, { out: "mapped_urls" });
+</code>
+To run mapReduce we are using <code>mapReduce</code> function on collection (this example uses collection named "sites"), first argument is map function, second is reduce function and third is option but very useful, it is output collection where results will be stored in form of documents. This option lets us run the query at eg. night and see results in the morning :).</p>
+
+<h2>Lets test it</h2>
+
+<p>First some sample data
+``` javascript</p>
+
+<blockquote><p>db.sites.insert({url: "www.google.com", date: new Date(), trash_data: 5 });
+db.sites.insert({url: "www.no-fucking-idea.com", date: new Date(), trash_data: 13 });
+db.sites.insert({url: "www.google.com", date: new Date(), trash_data: 1 });
+db.sites.insert({url: "www.no-fucking-idea.com", date: new Date(), trash_data: 69 });
+db.sites.insert({url: "www.no-fucking-idea.com", date: new Date(), trash_data: 256 });
+<code>
+now functions and query
+</code> javascript
+var map = function(){
+...   emit(this.url, 1);
+... }
+var reduce = function(key, values){
+...   var res = 0;
+...   values.forEach(function(v){ res += 1});
+...   return {count: res};
+... }
+db.sites.mapReduce(map, reduce, { out: "mapped_urls" });
+{</p>
+
+<pre><code>"result" : "mapped_urls",
+"timeMillis" : 75,
+"counts" : {
+    "input" : 5,
+    "emit" : 5,
+    "reduce" : 2,
+    "output" : 2
+},
+"ok" : 1,
+</code></pre>
+
+<p>}
+<code>
+And results
+</code> javascript
+db.mapped_urls.find({})
+{ "<em>id" : "www.google.com", "value" : { "count" : 2 } }
+{ "</em>id" : "www.no-fucking-idea.com", "value" : { "count" : 3 } }
+```
+Worked perfect ;)</p></blockquote>
+
+<h1>Docs</h1>
+
+<p>More information on map reduce interface you can find in documentation for mongodb <a href="http://www.mongodb.org/display/DOCS/MapReduce">http://www.mongodb.org/display/DOCS/MapReduce</a></p>
+]]></content>
+  </entry>
+  
+</feed>
