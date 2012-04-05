@@ -1,0 +1,144 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: javascript | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/javascript/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-04-05T22:23:21+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Testing Handlebars with Mocha]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/04/05/testing-handlebars-with-mocha/"/>
+    <updated>2012-04-05T21:01:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/04/05/testing-handlebars-with-mocha</id>
+    <content type="html"><![CDATA[<p>Mocha and Handlebars are two great things i use. Mocha is a testing library which can be used for backend (node.js) and fronend testing. On frontend its only dependency is jQuery. Handlebars is templating language that can be used for frontend javascript partials or even for backend (node.js) layouts. What ever you want! :).</p>
+
+<h1>Mocha</h1>
+
+<p>When i started working with <code>express.js</code> sinatra like framework i took a peek at other projects that people from Vision Media do.
+One of them was mocha and at that time i needed something to test my backend code. It is good to use such a tool while learning new thing. This was you can document your failures :). As i found it is  also great tool to test front end code.</p>
+
+<h2>Chai.js / Should.js</h2>
+
+<p>Because Mocha is not shipped with everything i like i decided to use <code>should.js</code> <a href="https://github.com/visionmedia/should.js">https://github.com/visionmedia/should.js</a> on backend (node.js) and <code>chai.js</code> on frontend to make my tests suits more <code>rspec</code> like. This way we will be able to write our specs like this.
+``` javascript app.spec.js
+(function() {</p>
+
+<p>  describe('Application', function() {</p>
+
+<pre><code>it('should exists', function() {
+   var app = new Application();
+   app.should.be.an.instanceof(Application);
+});
+</code></pre>
+
+<p>  });</p>
+
+<p>}).call(this);
+<code>``
+I really like this</code>app.should.be.an.instanceof(Application);` syntax. But if you don't like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
+
+<h1>Handlebars</h1>
+
+<p>Second very useful thing that i never skip in my project is Handlebars, easy to use and clean language to build templates in javascript. Simply it is <code>mustache</code> on steroids. But lets dive straight into some example.
+``` html
+ <script id="list-entry" type="text/x-handlebars-template"></p>
+
+<pre><code>&lt;li  class= &gt;
+    &lt;span&gt;&lt;/span&gt; -&gt; 
+    &lt;strong&gt;&lt;/strong&gt;:&amp;nbsp;
+    &lt;span&gt;&lt;/span&gt;
+&lt;/li&gt;
+</code></pre>
+
+<p> </script>
+<code>``
+This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in</code><code>is getting interpolated. so in this example</code> class= <code>mans that if in rendering context we have class variable render</code>class=value_of_class_variable_in_context<code>as part of li element.</code><code>will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg.</code>underscore.js` templates explode if you don't have any param that you use inside of them.</p>
+
+<h1>Both tools in action</h1>
+
+<p>Ok so lets try it out and write some code in bdd style using handlebars. I have prepared initial setup for this, it contains lib directory with our javascripts, spec directory with out specs and support directory with our mocha.js, chai.js etc. Our test runner is single index.html file we can open in browser. All the code can be downloaded here <a href="https://github.com/JakubOboza/handlebars-and-mocha">https://github.com/JakubOboza/handlebars-and-mocha</a></p>
+
+<h2>Step one</h2>
+
+<p>Lets write a spec that makes checks if out app loads
+``` javascript app.spec.js
+(function() {</p>
+
+<p>  describe('Application', function() {</p>
+
+<pre><code>it('should exists', function() {
+   var app = new Application();
+   app.should.be.an.instanceof(Application);
+});
+</code></pre>
+
+<p>  });</p>
+
+<p>}).call(this);
+<code>
+![Failing spec](http://img814.imageshack.us/img814/1738/screenshot20120405at215.png)
+Obviously we have here a failing spec.
+Lets write some implementation to satisfy out spec.
+</code> javascript app.js
+function Application(template_id){</p>
+
+<p>}
+<code>
+![Success spec](http://img833.imageshack.us/img833/1738/screenshot20120405at215.png)
+Bang everything works fine :). Lets make it do something useful, render some templates!
+First lets write a spec for it -&gt;
+</code> javascript</p>
+
+<pre><code>it('should render handlebars template', function(){
+    var app = new Application("#test-template");
+    app.render({name: "kuba"}).should.equal("&lt;p&gt;kuba&lt;/p&gt;");
+});
+</code></pre>
+
+<p><code>
+![Failing spec](http://img862.imageshack.us/img862/9451/screenshot20120405at220.png)
+Now lets implement this, our template will look like this
+</code> html
+ <script id="test-template" type="text/x-handlebars-template"></p>
+
+<pre><code>&lt;p&gt;&lt;/p&gt;
+</code></pre>
+
+<p> </script>
+<code>
+It is very basic, hard to make mistake ;). And javascript code
+</code> javascript
+function Application(template_id){
+  var source = $(template_id);
+  this.template = Handlebars.compile(source.html());
+}</p>
+
+<p>Application.prototype.render = function(params){
+  return this.template(params);
+};
+```
+<img src="http://img684.imageshack.us/img684/2551/screenshot20120405at221.png" alt="Success" />
+Works! Like a charm!
+I really enjoy writing tests for javascript this way. It is much more like rspec. At least for me it is much more useful then jasmine</p>
+
+<h1>Why not jasmine</h1>
+
+<p>I prefer syntax of Mocha. On this few examples i think i show how to start using it and how fun it is. For people with rspec background this should be very easy tool to pick up. More about Mocha can be found on official project page <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
+
+<h2>Example code for this post</h2>
+
+<p>Can be found here <a href="https://github.com/JakubOboza/handlebars-and-mocha">https://github.com/JakubOboza/handlebars-and-mocha</a> just open <code>index.html</code> :)</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>
