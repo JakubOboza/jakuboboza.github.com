@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-04-11T21:07:08+01:00</updated>
+  <updated>2012-04-11T21:14:15+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -20,11 +20,11 @@
     <id>http://JakubOboza.github.com/blog/2012/04/11/building-gem-with-bundler</id>
     <content type="html"><![CDATA[<p>Building a new gem ( ruby library ) with bundler is easy task. I found a lot of tutorial on this topic in the web but none of them was covering more then just generating scaffold and packing up the gem. I will try to uncover a bit more. So at the end of this post you will be able to generate new gem, build it and it will have ready support for rspec.</p>
 
-<p>First of all you need bundler. To install bundler just type <code>gem instal bundler</code>. Probably most of you guys have it already :) but just in case.</p>
+<p>First of all you need bundler. To install bundler just type <code>gem install bundler</code>. Probably most of you guys have it already :) but just in case.</p>
 
 <h1>Generating new gem</h1>
 
-<p>To generate gem scaffold all you have to do is call <code>bundle gem &lt;gemnam&gt;</code> like here
+<p>To generate gem scaffold all you have to do is call <code>bundle gem &lt;gem name&gt;</code> like here
 ``` bash
 bundle gem doctor_toons</p>
 
