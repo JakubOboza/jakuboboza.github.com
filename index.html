@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Building a new gem ( ruby library ) with bundler is easy task. I found a lot of tutorial on this topic in the web but none of them was covering more &hellip;">
+  <meta name="description" content="This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid http://mongoid.org &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,492 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/">Building ORM/ODM Using Virtus for MongoDB Part 1</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-12T21:07:00+01:00" pubdate data-updated="true">Apr 12<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&#8217;s really worth reading) and i thought &#8220;it&#8217;s nice&#8221;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&#8217;s ORM&#8217;s is not so common topic across web.</p>
+
+<h1>Aim</h1>
+
+<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&#8217;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &#8220;Muppet&#8221;. Name describes the project :).</p>
+
+<h3>Virtus</h3>
+
+<p>Virtus handles properties for Plain Old Ruby Objects and this is all we need to have. This eliminates a lot of boilerplate code we would have to write to make anything work. PORO Powah!</p>
+
+<h3>Mongo</h3>
+
+<p><code>mongo</code> is a Mongodb native ruby driver. It has really good api and is easy to use. For most things in this post i just <code>proxied</code> calls to it :).</p>
+
+<h3>Database!</h3>
+
+<p>Be sure to have mongodb working ;).</p>
+
+<h1>First step: Building a gem</h1>
+
+<p>All about building gem you can find in my previous blog post here <a href="http://no-fucking-idea.com/blog/2012/04/11/building-gem-with-bundler/">http://no-fucking-idea.com/blog/2012/04/11/building-gem-with-bundler/</a>
+Be sure to add rspec :) i used it to describe tests for this project.</p>
+
+<h1>Second step: Describing api</h1>
+
+<p>I like do develop things in TDD/BDD style so first thing for me description of api i wanted to implement during this tutorial.
+All this specs are stripped to minimum to enhance readability.</p>
+
+<figure class='code'><figcaption><span>spec/muppet_spec.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">class</span> <span class="nc">User</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Virtus</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Muppet</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">attribute</span> <span class="ss">:name</span><span class="p">,</span> <span class="nb">String</span>
+</span><span class='line'>  <span class="n">attribute</span> <span class="ss">:age</span><span class="p">,</span> <span class="nb">Integer</span>
+</span><span class='line'>  <span class="n">attribute</span> <span class="ss">:birthday</span><span class="p">,</span> <span class="no">DateTime</span>
+</span><span class='line'><span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="n">describe</span> <span class="no">Muppet</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#configuration&quot;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should be configurable&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
+</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">configure</span> <span class="p">{{</span>
+</span><span class='line'>          <span class="n">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="n">port</span><span class="p">:</span> <span class="mi">27017</span><span class="p">,</span>
+</span><span class='line'>          <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span>
+</span><span class='line'>        <span class="p">}}</span>
+</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
+</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="ss">:host</span><span class="o">].</span><span class="n">should</span> <span class="n">eql</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should_not</span> <span class="n">raise_error</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should by default point to localhost:27017&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
+</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="ss">:host</span><span class="o">].</span><span class="n">should</span> <span class="n">eql</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
+</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="ss">:port</span><span class="o">].</span><span class="n">should</span> <span class="n">eql</span><span class="p">(</span><span class="mi">27017</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#connection&quot;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should connect to mongodb&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
+</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">connect!</span>
+</span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should_not</span> <span class="n">raise_error</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#inserting&quot;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should insert values to database&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">pending</span>
+</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
+</span><span class='line'>        <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Jakub&quot;</span><span class="p">,</span> <span class="n">age</span><span class="p">:</span> <span class="mi">27</span> <span class="p">)</span>
+</span><span class='line'>        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="o">.</span><span class="n">should</span> <span class="n">be_true</span>
+</span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should</span> <span class="n">change</span><span class="p">(</span><span class="no">User</span><span class="p">,</span> <span class="ss">:count</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#quering&quot;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should query all documents from collection&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">pending</span>
+</span><span class='line'>      <span class="no">User</span><span class="o">.</span><span class="n">find_one</span><span class="o">.</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="no">User</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should query first document from collection&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">pending</span>
+</span><span class='line'>      <span class="n">users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span>
+</span><span class='line'>      <span class="n">users</span><span class="o">.</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="nb">Array</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">users</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="no">User</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#destroy&quot;</span> <span class="k">do</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should destroy document&quot;</span> <span class="k">do</span>
+</span><span class='line'>      <span class="n">pending</span>
+</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
+</span><span class='line'>        <span class="no">User</span><span class="o">.</span><span class="n">find_one</span><span class="o">.</span><span class="n">destroy</span>
+</span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should</span> <span class="n">change</span><span class="p">(</span><span class="no">User</span><span class="p">,</span> <span class="ss">:count</span><span class="p">)</span><span class="o">.</span><span class="n">by</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I defined them in order how i wanted to implement this. First configuration and connection to db. Next inserting and querying and destroying as last thing. Also at top i have simple User object with <code>virtus</code> and <code>muppet</code> included.</p>
+
+<h1>Third step: layouting Muppet!</h1>
+
+<p>At this moment we should have ready specs, that fail hard throwing errors on unknown tokens. Its good.
+What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&#8217;s.</p>
+
+<figure class='code'><figcaption><span>muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;mongo&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/version&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/setup&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Setup</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>in <code>lib/muppet/</code> we will have components of our project. I we already know we will start with setup as defined in <code>muppet.rb</code> so lets create file <code>lib/muppet/setup</code> and configuration and connection to mongodb.</p>
+
+<figure class='code'><figcaption><span>lib/muppet/setup.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Setup</span>
+</span><span class='line'>    <span class="vc">@@configuration</span> <span class="o">=</span> <span class="p">{</span>
+</span><span class='line'>      <span class="n">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">port</span><span class="p">:</span> <span class="mi">27017</span><span class="p">,</span>
+</span><span class='line'>      <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="o">&amp;</span><span class="n">user_config</span><span class="p">)</span>
+</span><span class='line'>      <span class="vc">@@configuration</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="n">user_config</span><span class="o">.</span><span class="n">call</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">config</span>
+</span><span class='line'>      <span class="vc">@@configuration</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">connect!</span>
+</span><span class='line'>      <span class="vc">@@connection</span> <span class="o">=</span> <span class="no">Mongo</span><span class="o">::</span><span class="no">Connection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vc">@@configuration</span><span class="o">[</span><span class="ss">:host</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>        <span class="vc">@@configuration</span><span class="o">[</span><span class="ss">:port</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>      <span class="vc">@@database</span> <span class="o">=</span> <span class="vc">@@connection</span><span class="o">.</span><span class="n">db</span><span class="p">(</span><span class="vc">@@configuration</span><span class="o">[</span><span class="ss">:database</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">database</span>
+</span><span class='line'>      <span class="vc">@@database</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">def</span> <span class="nf">connection</span>
+</span><span class='line'>      <span class="vc">@@connection</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here i defined default configuration and few method to access vital part of our config like <code>database</code> , <code>connection</code>. Most important part is <code>connect!</code> this method uses mongo gem to establish connection to mongodb store it into connection variable and set the database we will be working on. I wanted to make few things explicit so i used some name redundancy. (later on i learned that i did not even need <code>config</code> method)</p>
+
+<p>With this working we can run out rspecs and if mongodb is up we should see all green and few yellows! Good it works!</p>
+
+<h1>Forth step: support for quering and inserting</h1>
+
+<p>Now lets remove pending marks from specs that  are in &#8220;describes&#8221; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.</p>
+
+<figure class='code'><figcaption><span>lib/muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;mongo&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/version&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/setup&quot;</span>
+</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/document&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Setup</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Document</span><span class="o">::</span><span class="no">InstanceMethods</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Document</span><span class="o">::</span><span class="no">ClassMethods</span> <span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok many new things. I created <code>lib/muppet/document.rb</code> module with the stuff we will put into class and instance definitions in the moment of inclusion. As we can see in definition of <code>User</code> in our test cases we will <code>include Muppet</code> so all the instance methods like (save, destroy) will have to be defined in separated module then class methods like (find_one, find). In <code>document.rb</code> we  can see how it is implemented.</p>
+
+<figure class='code'><figcaption><span>lib/muppet/document.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
+</span><span class='line'>  <span class="k">module</span> <span class="nn">Document</span>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">ClassMethods</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">collection_name</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">to_s</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">collection</span>
+</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="n">collection_name</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">find_one</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>        <span class="n">result</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="kp">nil</span> <span class="k">unless</span> <span class="n">result</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{})</span>
+</span><span class='line'>        <span class="n">results</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">results</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">result</span><span class="o">|</span> <span class="nb">self</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">}</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">count</span>
+</span><span class='line'>        <span class="n">collection</span><span class="o">.</span><span class="n">count</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">module</span> <span class="nn">InstanceMethods</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">save</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>      <span class="k">def</span> <span class="nf">destroy</span>
+</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
+</span><span class='line'>      <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I could not think of a way to implement it in a more simple way. We have to &#8220;sections&#8221; first is class methods where we define</p>
+
+<ul>
+<li>collection_name this method says to us what is the collection name (we can override it in model)</li>
+<li>collection uses database to return this collection object for us to use.</li>
+<li>find_one, find, count are methods that we proxy in a dirty explicit way (but without using method missing) things to mongo native driver.</li>
+</ul>
+
+
+<p>Only thing we do here is to wrap things that we get back into <code>self.new</code> object. So we can mimic AR/Mongoid api and when doing User.find we will get back array of all users. not array of hashes :).</p>
+
+<p>Instance methods are only two <code>save</code> and <code>destroy</code> save is raw and simple, takes all attributes from using virtues and saves them using mongo native driver. destroy acts in the same way.</p>
+
+<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&#8217;s and remove.</p>
+
+<h1>Summary</h1>
+
+<p>I really enjoyed writing this code and blog post :).
+You can find code for this blog post here <a href="https://github.com/JakubOboza/muppet">https://github.com/JakubOboza/muppet</a></p>
+
+<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &#8220;Muppet&#8221;</p>
+
+<p>-Cheers</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2061,6 +2547,10 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/">Building ORM/ODM using virtus for MongoDB part 1</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/04/11/building-gem-with-bundler/">Building Gem with Bundler</a>
       </li>
     
@@ -2074,10 +2564,6 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
     
       <li class="post">
         <a href="/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/">Caching and serving stale content with nginx</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/03/29/rebar-swiss-army-knife/">rebar -> swiss army knife</a>
       </li>
     
   </ul>
