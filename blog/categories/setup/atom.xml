@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: redis | No Fucking Idea]]></title>
-  <link href="http://JakubOboza.github.com/blog/categories/redis/atom.xml" rel="self"/>
+  <title><![CDATA[Category: setup | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/setup/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
   <updated>2012-04-16T20:15:07+01:00</updated>
   <id>http://JakubOboza.github.com/</id>

@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid http://mongoid.org &hellip;">
+  <meta name="description" content="redis cluster in currently unstable, i used todays master HEAD (93a74949d7bb5d0c4115d1bf45f856c368badf31) commit to build my redis server and client &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -76,6 +76,263 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/16/setting-up-redis-cluster/">Setting Up Redis Cluster</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-16T19:54:00+01:00" pubdate data-updated="true">Apr 16<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/04/16/setting-up-redis-cluster/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>redis cluster in currently unstable, i used todays master HEAD (93a74949d7bb5d0c4115d1bf45f856c368badf31) commit to build my redis server and client. Setting redis cluster requires only few settings to go! :)</p>
+
+<p>Here is link to overview how redis cluster works <a href="http://redis.io/presentation/Redis_Cluster.pdf">http://redis.io/presentation/Redis_Cluster.pdf</a></p>
+
+<h1>redis.conf</h1>
+
+<p>Regular nodes can&#8217;t be part of cluster :( so you have to prepare separate redis configs for your cluster servers.
+Most important thing is to setup <code>cluster-enabled</code> and <code>cluster-config-file</code> I decided to name my config files <code>redis-cluster-&lt;port&gt;.conf</code>. I used ports 4444, 4445 4446
+Here is my sample config</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>daemonize yes
+</span><span class='line'>timeout 0
+</span><span class='line'>loglevel notice
+</span><span class='line'>logfile stdout
+</span><span class='line'>databases 16
+</span><span class='line'>save 900 1
+</span><span class='line'>save 300 10
+</span><span class='line'>save 60 10000
+</span><span class='line'>stop-writes-on-bgsave-error yes
+</span><span class='line'>rdbcompression yes
+</span><span class='line'>rdbchecksum yes
+</span><span class='line'>dbfilename dump.rdb
+</span><span class='line'>dir ./cluster_4444
+</span><span class='line'>slave-serve-stale-data yes
+</span><span class='line'>slave-read-only yes
+</span><span class='line'>appendonly no
+</span><span class='line'>appendfsync everysec
+</span><span class='line'>no-appendfsync-on-rewrite no
+</span><span class='line'>auto-aof-rewrite-percentage 100
+</span><span class='line'>auto-aof-rewrite-min-size 64mb
+</span><span class='line'>lua-time-limit 5000
+</span><span class='line'>
+</span><span class='line'><span class="c"># Cluster</span>
+</span><span class='line'><span class="c">#</span>
+</span><span class='line'>pidfile /var/run/redis-4444.pid
+</span><span class='line'>port 4444
+</span><span class='line'>cluster-enabled yes
+</span><span class='line'>cluster-config-file redis-cluster-4444.conf
+</span><span class='line'>
+</span><span class='line'>slowlog-log-slower-than 10000
+</span><span class='line'>slowlog-max-len 1024
+</span><span class='line'><span class="nb">hash</span>-max-ziplist-entries 512
+</span><span class='line'><span class="nb">hash</span>-max-ziplist-value 64
+</span><span class='line'>list-max-ziplist-entries 512
+</span><span class='line'>list-max-ziplist-value 64
+</span><span class='line'><span class="nb">set</span>-max-intset-entries 512
+</span><span class='line'>zset-max-ziplist-entries 128
+</span><span class='line'>zset-max-ziplist-value 64
+</span><span class='line'>activerehashing yes
+</span><span class='line'>client-output-buffer-limit normal 0 0 0
+</span><span class='line'>client-output-buffer-limit slave 256mb 64mb 60
+</span><span class='line'>client-output-buffer-limit pubsub 32mb 8mb 60
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For each node i created directory <code>cluster_&lt;port&gt;</code> and that was the hardest part actually to do. With this all you have to do is to start ( for debug you can set daemonize to no) all nodes using <code>redis-server path/to/redis-cluster-&lt;port&gt;.conf</code> and then use magic ruby tool :)</p>
+
+<h1>redis-tribe.rb</h1>
+
+<p>In <code>src/</code> directory of source you can find ruby script for creating and managing cluster. But first you need to have ruby installed with <code>redis</code> gem. i just did <code>gem install redis</code> but if you don&#8217;t have ruby you have to google how to install it etc (hint: get 1.9.2).</p>
+
+<p>now you can run the script. <code>./redis-tribe.rb</code> and see</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ ./redis-trib.rb
+</span><span class='line'>Usage: redis-trib &lt;<span class="nb">command</span>&gt; &lt;arguments ...&gt;
+</span><span class='line'>
+</span><span class='line'>  create               host1:port host2:port ... hostN:port
+</span><span class='line'>  check                host:port
+</span><span class='line'>  reshard              host:port
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To start cluster we will type &#8220;create&#8221; (useless comment)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ ./redis-trib.rb create 127.0.0.1:4444 127.0.0.1:4445 127.0.0.1:4446
+</span><span class='line'>Creating cluster
+</span><span class='line'>Connecting to node 127.0.0.1:4444: OK
+</span><span class='line'>Connecting to node 127.0.0.1:4445: OK
+</span><span class='line'>Connecting to node 127.0.0.1:4446: OK
+</span><span class='line'>Performing <span class="nb">hash </span>slots allocation on 3 nodes...
+</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 5a2f6df453f1cd52bcb22c2afc45580283bcce87 127.0.0.1:4444 slots:0-1364 <span class="o">(</span>1365 slots<span class="o">)</span>
+</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 35d107017bc726ece9b57e1ea2f21678555cf6a8 127.0.0.1:4445 slots:1365-2729 <span class="o">(</span>1365 slots<span class="o">)</span>
+</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 76d06b0d3cb1b3829cb60574260dff2d06964cea 127.0.0.1:4446 slots:2730-4095 <span class="o">(</span>1366 slots<span class="o">)</span>
+</span><span class='line'>Can I <span class="nb">set </span>the above configuration? <span class="o">(</span><span class="nb">type</span> <span class="s1">&#39;yes&#39;</span> to accept<span class="o">)</span>: yes
+</span><span class='line'>** Nodes configuration updated
+</span><span class='line'>** Sending CLUSTER MEET messages to join the cluster
+</span><span class='line'>Performing Cluster Check <span class="o">(</span>using node 127.0.0.1:4444<span class="o">)</span>
+</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 5a2f6df453f1cd52bcb22c2afc45580283bcce87 127.0.0.1:4444 slots:0-1364 <span class="o">(</span>1365 slots<span class="o">)</span>
+</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 35d107017bc726ece9b57e1ea2f21678555cf6a8 127.0.0.1:4445 slots:1365-2729 <span class="o">(</span>1365 slots<span class="o">)</span>
+</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 76d06b0d3cb1b3829cb60574260dff2d06964cea 127.0.0.1:4446 slots:2730-4095 <span class="o">(</span>1366 slots<span class="o">)</span>
+</span><span class='line'><span class="o">[</span>OK<span class="o">]</span> All 4096 slots covered.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nice we have our cluster running :) now we can connect to any node and try it out.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ ./redis-cli -h 127.0.0.1 -p 4445
+</span><span class='line'>redis 127.0.0.1:4445&gt; <span class="nb">set</span> <span class="s2">&quot;jakub&quot;</span> <span class="s2">&quot;oboza&quot;</span>
+</span><span class='line'><span class="o">(</span>error<span class="o">)</span> MOVED 198 127.0.0.1:4444
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Sweet :D</p>
+
+<p>Using this tool you can also reshard :D I did on my 15 keys worked :-F.</p>
+
+<h1>Smart clients</h1>
+
+<p>In redis doc we can read that you will require &#8220;smart client&#8221; to make it low latency. Yes, you can read from output that it was moved so you will have to cache where the key is now and reset temp cache when it will be moved (resharding)</p>
+
+<h1>Fire!</h1>
+
+<p>You can now test how it will behaves under fire by killing and restarting your nodes eg.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:44:09.945 <span class="c"># Server started, Redis version 2.9.7</span>
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:44:09.946 * The server is now ready to accept connections on port 4444
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:45:14.414 * Connecting with Node c20290a7b70a2a840a168c3309f00e3de1b1844d at 127.0.0.1:14446
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:45:15.424 * Connecting with Node ab93647957ed4bb93fc43b1dc76202a6cdb94f49 at 127.0.0.1:14445
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:59:10.047 * 1 changes in 900 seconds. Saving...
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:59:10.047 * Background saving started by pid 19321
+</span><span class='line'><span class="o">[</span>19321<span class="o">]</span> 16 Apr 19:59:10.080 * DB saved on disk
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:59:10.248 * Background saving terminated with success
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:29.837 * I/O error reading from node link: connection closed
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:29.837 * I/O error reading from node link: connection closed
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:30.056 * Connecting with Node 76d06b0d3cb1b3829cb60574260dff2d06964cea at 127.0.0.1:14446
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:30.056 * I/O error writing to node link: Broken pipe
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:30.525 * I/O error reading from node link: connection closed
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:30.526 * I/O error reading from node link: connection closed
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:31.063 * Connecting with Node 35d107017bc726ece9b57e1ea2f21678555cf6a8 at 127.0.0.1:14445
+</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:31.064 * Connecting with Node 76d06b0d3cb1b3829cb60574260dff2d06964cea at 127.0.0.1:14446
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Summary</h1>
+
+<p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don&#8217;t work as intended and some keys are not pushed. But it is pulled from unstable branch so i&#8217;m crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2547,6 +2804,10 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/04/16/setting-up-redis-cluster/">Setting up redis cluster</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/">Building ORM/ODM using virtus for MongoDB part 1</a>
       </li>
     
@@ -2560,10 +2821,6 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
     
       <li class="post">
         <a href="/blog/2012/04/01/using-map-reduce-with-mongodb/">Using Map Reduce with Mongodb</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/">Caching and serving stale content with nginx</a>
       </li>
     
   </ul>
