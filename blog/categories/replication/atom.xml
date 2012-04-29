@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: replication | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/replication/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-04-29T20:35:03+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Setting up replication with Redis]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/04/29/setting-up-replication-with-redis/"/>
+    <updated>2012-04-29T20:16:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/04/29/setting-up-replication-with-redis</id>
+    <content type="html"><![CDATA[<p>Everyone who wants to feel safe about his data wants to have some sort of backup :). Redis have a support for replication.
+And it is very easy to setup.</p>
+
+<h1>Setup!</h1>
+
+<p>To setup replica node all you have to do is to add one line <code>slaveOf</code> in config @_@ of your new Redis instance.
+Sounds easy :). Lets think about most basic scenario.</p>
+
+<p>Two nodes, master node and slave node. For purpose of this example you can just start redis using <code>redis-server</code> command without by default he will start on port <code>6379</code> and this is all we need to know to setup replication.</p>
+
+<h2>Configuration of replica node</h2>
+
+<p>To configure replica node all we need to do is to create place to store the db eg. <code>mkdir replica_db</code> and choose port eg. <code>7789</code>. Last thing to do is to create config and point this node to the master. For me it looks like this:
+``` bash redis-replica.conf
+daemonize no
+timeout 0
+loglevel notice
+logfile stdout
+databases 16
+save 900 1
+save 300 10
+save 60 10000
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump.rdb
+dir ./replica_dir
+slave-serve-stale-data yes
+slave-read-only yes
+appendonly no
+appendfsync everysec
+no-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+lua-time-limit 5000</p>
+
+<p>pidfile /var/run/redis-replica-7789.pid
+port 7789</p>
+
+<h1>replication config</h1>
+
+<p>slaveof 127.0.0.1 6379</p>
+
+<p>slowlog-log-slower-than 10000
+slowlog-max-len 1024
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+set-max-intset-entries 512
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+activerehashing yes
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+<code>``
+Here the important thing really is</code>slaveof 127.0.0.1 6379<code>where we set where is our master.</code>port 7789<code>important if we are using few redis instances on one box and</code>dir ./replica_dir` be sure to not point this to master node db path if you do... you will suffer eternal flame.</p>
+
+<p>Now just start the node <code>redis-server redis-replica.conf</code> and he will start syncing.</p>
+
+<h1>Checking if everything works</h1>
+
+<p>So by now we should have master running on default port and replica connected to it. Lets connect using <code>redis-cli</code> to master and set some keys eg. <code>set name kuba</code>.  Now lets connect to our replica.  If you followed the same configuration then me you can simply do <code>./redis-cli -p 7789</code> this will prompt you with regular command line interface. Now jsut type <code>get name</code></p>
+
+<p><code>
+redis 127.0.0.1:7789&gt; get name
+"jakub"
+</code>
+Bang works!</p>
+
+<h1>RO</h1>
+
+<p>Important information is that one master can have many replicas and each replica is read only! So you can connect to it and read from it if you want / need.</p>
+
+<p><code>bash
+ λ ./redis-cli -p 7789
+redis 127.0.0.1:7789&gt; keys *
+ 1) "age"
+ 2) "name"
+redis 127.0.0.1:7789&gt; get name
+"jakub"
+redis 127.0.0.1:7789&gt; set name "not jakub"
+(error) READONLY You can't write against a read only slave.
+redis 127.0.0.1:7789&gt;
+</code></p>
+
+<h1>Summary</h1>
+
+<p>I never had deadly important data in redis :) But still its worth knowing how to setup this just in case something goes wrong you may want to have replica ready :).</p>
+
+<p>On official site <a href="http://redis.io/topics/replication">http://redis.io/topics/replication</a> you can learn more about replication in redis.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

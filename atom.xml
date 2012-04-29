@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-04-23T22:34:48+01:00</updated>
+  <updated>2012-04-29T20:35:03+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,160 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Setting up replication with Redis]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/04/29/setting-up-replication-with-redis/"/>
+    <updated>2012-04-29T20:16:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/04/29/setting-up-replication-with-redis</id>
+    <content type="html"><![CDATA[<p>Everyone who wants to feel safe about his data wants to have some sort of backup :). Redis have a support for replication.
+And it is very easy to setup.</p>
+
+<h1>Setup!</h1>
+
+<p>To setup replica node all you have to do is to add one line <code>slaveOf</code> in config @_@ of your new Redis instance.
+Sounds easy :). Lets think about most basic scenario.</p>
+
+<p>Two nodes, master node and slave node. For purpose of this example you can just start redis using <code>redis-server</code> command without by default he will start on port <code>6379</code> and this is all we need to know to setup replication.</p>
+
+<h2>Configuration of replica node</h2>
+
+<p>To configure replica node all we need to do is to create place to store the db eg. <code>mkdir replica_db</code> and choose port eg. <code>7789</code>. Last thing to do is to create config and point this node to the master. For me it looks like this:</p>
+
+<figure class='code'><figcaption><span>redis-replica.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>daemonize no
+</span><span class='line'>timeout 0
+</span><span class='line'>loglevel notice
+</span><span class='line'>logfile stdout
+</span><span class='line'>databases 16
+</span><span class='line'>save 900 1
+</span><span class='line'>save 300 10
+</span><span class='line'>save 60 10000
+</span><span class='line'>stop-writes-on-bgsave-error yes
+</span><span class='line'>rdbcompression yes
+</span><span class='line'>rdbchecksum yes
+</span><span class='line'>dbfilename dump.rdb
+</span><span class='line'>dir ./replica_dir
+</span><span class='line'>slave-serve-stale-data yes
+</span><span class='line'>slave-read-only yes
+</span><span class='line'>appendonly no
+</span><span class='line'>appendfsync everysec
+</span><span class='line'>no-appendfsync-on-rewrite no
+</span><span class='line'>auto-aof-rewrite-percentage 100
+</span><span class='line'>auto-aof-rewrite-min-size 64mb
+</span><span class='line'>lua-time-limit 5000
+</span><span class='line'>
+</span><span class='line'>pidfile /var/run/redis-replica-7789.pid
+</span><span class='line'>port 7789
+</span><span class='line'><span class="c"># replication config</span>
+</span><span class='line'>slaveof 127.0.0.1 6379
+</span><span class='line'>
+</span><span class='line'>slowlog-log-slower-than 10000
+</span><span class='line'>slowlog-max-len 1024
+</span><span class='line'><span class="nb">hash</span>-max-ziplist-entries 512
+</span><span class='line'><span class="nb">hash</span>-max-ziplist-value 64
+</span><span class='line'>list-max-ziplist-entries 512
+</span><span class='line'>list-max-ziplist-value 64
+</span><span class='line'><span class="nb">set</span>-max-intset-entries 512
+</span><span class='line'>zset-max-ziplist-entries 128
+</span><span class='line'>zset-max-ziplist-value 64
+</span><span class='line'>activerehashing yes
+</span><span class='line'>client-output-buffer-limit normal 0 0 0
+</span><span class='line'>client-output-buffer-limit slave 256mb 64mb 60
+</span><span class='line'>client-output-buffer-limit pubsub 32mb 8mb 60
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here the important thing really is <code>slaveof 127.0.0.1 6379</code> where we set where is our master. <code>port 7789</code> important if we are using few redis instances on one box and <code>dir ./replica_dir</code> be sure to not point this to master node db path if you do&#8230; you will suffer eternal flame.</p>
+
+<p>Now just start the node <code>redis-server redis-replica.conf</code> and he will start syncing.</p>
+
+<h1>Checking if everything works</h1>
+
+<p>So by now we should have master running on default port and replica connected to it. Lets connect using <code>redis-cli</code> to master and set some keys eg. <code>set name kuba</code>.  Now lets connect to our replica.  If you followed the same configuration then me you can simply do <code>./redis-cli -p 7789</code> this will prompt you with regular command line interface. Now jsut type <code>get name</code></p>
+
+<figure class='code'><figcaption><span>redis-replica.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:7789&gt; get name
+</span><span class='line'><span class="s2">&quot;jakub&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Bang works!</p>
+
+<h1>RO</h1>
+
+<p>Important information is that one master can have many replicas and each replica is read only! So you can connect to it and read from it if you want / need.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> λ ./redis-cli -p 7789
+</span><span class='line'>redis 127.0.0.1:7789&gt; keys *
+</span><span class='line'> 1<span class="o">)</span> <span class="s2">&quot;age&quot;</span>
+</span><span class='line'> 2<span class="o">)</span> <span class="s2">&quot;name&quot;</span>
+</span><span class='line'>redis 127.0.0.1:7789&gt; get name
+</span><span class='line'><span class="s2">&quot;jakub&quot;</span>
+</span><span class='line'>redis 127.0.0.1:7789&gt; <span class="nb">set </span>name <span class="s2">&quot;not jakub&quot;</span>
+</span><span class='line'><span class="o">(</span>error<span class="o">)</span> READONLY You can<span class="err">&#39;</span>t write against a <span class="nb">read </span>only slave.
+</span><span class='line'>redis 127.0.0.1:7789&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Summary</h1>
+
+<p>I never had deadly important data in redis :) But still its worth knowing how to setup this just in case something goes wrong you may want to have replica ready :).</p>
+
+<p>On official site <a href="http://redis.io/topics/replication">http://redis.io/topics/replication</a> you can learn more about replication in redis.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Building node.js module using npm]]></title>
