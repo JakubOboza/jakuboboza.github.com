@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: processing | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/processing/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-04-29T21:20:57+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Future toons processing logs with node.js]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
+    <updated>2012-04-29T20:41:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
+    <content type="html"><![CDATA[<p>I'm using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
+just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
+
+<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by "entry". Some of the</p>
+
+<h1>Initial idea</h1>
+
+<p>We will emit single "entry" so for logs that are build around "lines" we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
+
+<h1>Future toons</h1>
+
+<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can't be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That's ok.</p>
+
+<p>``` javascript lib/toons.js
+function FutureToons(filename, callback, end_callback){
+  // in case someone will call it wrong way ;)
+  if(false === (this instanceof FutureToons)) {</p>
+
+<pre><code>return new FutureToons(filename, callback);
+</code></pre>
+
+<p>  }
+  events.EventEmitter.call(this);</p>
+
+<p>  this.onEnd(end_callback);</p>
+
+<p>  if(filename &amp;&amp; callback){</p>
+
+<pre><code>// if both present run instant
+this.onLine(callback);
+this.run(filename);
+</code></pre>
+
+<p>  }</p>
+
+<p>}</p>
+
+<p>// do not put methods between this line and initial definition
+util.inherits(FutureToons, events.EventEmitter);
+```</p>
+
+<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don't need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don't wanna lose your "instance methods" don't you.</p>
+
+<p>Next nice thing to help users is check of instanceof just at top of "constructor" function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.
+<code>javascript
+var toons = require('future_toons');
+new toons("example.js", function(line){});
+</code>
+and
+<code>javascript
+var toons = require('future_toons');
+toons("example.js", function(line){});
+</code>
+This will produce same output and act in same way.</p>
+
+<h1>How to use this ?</h1>
+
+<p>It is simple :) You need to know three things, where the file is, what do you want to do with each line and do you need to do something at the end.</p>
+
+<p>basic example:</p>
+
+<p>``` javascript</p>
+
+<p>var toons = require('future_toons');</p>
+
+<p>var on_each_line_callback = function(line){
+  console.log("> " + line);
+};</p>
+
+<p>new toons("example.txt", on_each_line_callback);
+// this will auto trigger run and process it but you can delay it like this</p>
+
+<p>var streamer = new toons();
+streamer.onLine(on_each_line_callback);
+// you can add function on end! also :)
+streamer.onEnd(function(){console.log("lol")});
+// run it naow!
+streamer.run("example.txt");
+// you can reuse it for many files if you want ;p
+```
+This example will show each line of the file prefixed with ">" symbol and at the end he will print out "lol". This is most common case in real world :) you need to optimize "lol". And for now thats the whole api.</p>
+
+<h1>Command line interface</h1>
+
+<p>Currently i added simple command line interface just to play with it. example usage:
+<code>bash
+λ time node bin/toons -f ~/Downloads/access.log -e "function(line){}" node bin/toons -f ~/Downloads/access.log -e "function(line){}"
+0.38s user 0.07s system 101% cpu 0.440 total
+</code>
+It is a bit unsafe now so maybe i will remove it soonish.</p>
+
+<h1>Db vs File</h1>
+
+<p>Some people say they need to put logs into db, i always ask this people "why not just file? this db will have to write it to this file anyway :)"</p>
+
+<h1>Summary</h1>
+
+<p>if you will get email from new relic sales guy, ignore! don't reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-04-29T20:35:03+01:00</updated>
+  <updated>2012-04-29T21:20:57+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,155 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Future toons processing logs with node.js]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
+    <updated>2012-04-29T20:41:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
+    <content type="html"><![CDATA[<p>I&#8217;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
+just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
+
+<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by &#8220;entry&#8221;. Some of the</p>
+
+<h1>Initial idea</h1>
+
+<p>We will emit single &#8220;entry&#8221; so for logs that are build around &#8220;lines&#8221; we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
+
+<h1>Future toons</h1>
+
+<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can&#8217;t be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That&#8217;s ok.</p>
+
+<figure class='code'><figcaption><span>lib/toons.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">FutureToons</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">callback</span><span class="p">,</span> <span class="nx">end_callback</span><span class="p">){</span>
+</span><span class='line'>  <span class="c1">// in case someone will call it wrong way ;)</span>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="kc">false</span> <span class="o">===</span> <span class="p">(</span><span class="k">this</span> <span class="k">instanceof</span> <span class="nx">FutureToons</span><span class="p">))</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">return</span> <span class="k">new</span> <span class="nx">FutureToons</span><span class="p">(</span><span class="nx">filename</span><span class="p">,</span> <span class="nx">callback</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>  <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">.</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">onEnd</span><span class="p">(</span><span class="nx">end_callback</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="nx">filename</span> <span class="o">&amp;&amp;</span> <span class="nx">callback</span><span class="p">){</span>
+</span><span class='line'>    <span class="c1">// if both present run instant</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">onLine</span><span class="p">(</span><span class="nx">callback</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">this</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="nx">filename</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">// do not put methods between this line and initial definition</span>
+</span><span class='line'><span class="nx">util</span><span class="p">.</span><span class="nx">inherits</span><span class="p">(</span><span class="nx">FutureToons</span><span class="p">,</span> <span class="nx">events</span><span class="p">.</span><span class="nx">EventEmitter</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don&#8217;t need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don&#8217;t wanna lose your &#8220;instance methods&#8221; don&#8217;t you.</p>
+
+<p>Next nice thing to help users is check of instanceof just at top of &#8220;constructor&#8221; function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">toons</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;future_toons&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="k">new</span> <span class="nx">toons</span><span class="p">(</span><span class="s2">&quot;example.js&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">){});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">toons</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;future_toons&#39;</span><span class="p">);</span>
+</span><span class='line'><span class="nx">toons</span><span class="p">(</span><span class="s2">&quot;example.js&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">){});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will produce same output and act in same way.</p>
+
+<h1>How to use this ?</h1>
+
+<p>It is simple :) You need to know three things, where the file is, what do you want to do with each line and do you need to do something at the end.</p>
+
+<p>basic example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">toons</span> <span class="o">=</span> <span class="nx">require</span><span class="p">(</span><span class="s1">&#39;future_toons&#39;</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">on_each_line_callback</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">line</span><span class="p">){</span>
+</span><span class='line'>  <span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;&gt; &quot;</span> <span class="o">+</span> <span class="nx">line</span><span class="p">);</span>  
+</span><span class='line'><span class="p">};</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">new</span> <span class="nx">toons</span><span class="p">(</span><span class="s2">&quot;example.txt&quot;</span><span class="p">,</span> <span class="nx">on_each_line_callback</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// this will auto trigger run and process it but you can delay it like this</span>
+</span><span class='line'>
+</span><span class='line'><span class="kd">var</span> <span class="nx">streamer</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">toons</span><span class="p">();</span>
+</span><span class='line'><span class="nx">streamer</span><span class="p">.</span><span class="nx">onLine</span><span class="p">(</span><span class="nx">on_each_line_callback</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// you can add function on end! also :)</span>
+</span><span class='line'><span class="nx">streamer</span><span class="p">.</span><span class="nx">onEnd</span><span class="p">(</span><span class="kd">function</span><span class="p">(){</span><span class="nx">console</span><span class="p">.</span><span class="nx">log</span><span class="p">(</span><span class="s2">&quot;lol&quot;</span><span class="p">)});</span>
+</span><span class='line'><span class="c1">// run it naow!</span>
+</span><span class='line'><span class="nx">streamer</span><span class="p">.</span><span class="nx">run</span><span class="p">(</span><span class="s2">&quot;example.txt&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="c1">// you can reuse it for many files if you want ;p</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This example will show each line of the file prefixed with &#8220;>&#8221; symbol and at the end he will print out &#8220;lol&#8221;. This is most common case in real world :) you need to optimize &#8220;lol&#8221;. And for now thats the whole api.</p>
+
+<h1>Command line interface</h1>
+
+<p>Currently i added simple command line interface just to play with it. example usage:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ <span class="nb">time </span>node bin/toons -f ~/Downloads/access.log -e <span class="s2">&quot;function(line){}&quot;</span> node bin/toons -f ~/Downloads/access.log -e <span class="s2">&quot;function(line){}&quot;</span>
+</span><span class='line'>0.38s user 0.07s system 101% cpu 0.440 total
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It is a bit unsafe now so maybe i will remove it soonish.</p>
+
+<h1>Db vs File</h1>
+
+<p>Some people say they need to put logs into db, i always ask this people &#8220;why not just file? this db will have to write it to this file anyway :)&#8221;</p>
+
+<h1>Summary</h1>
+
+<p>if you will get email from new relic sales guy, ignore! don&#8217;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Setting up replication with Redis]]></title>
