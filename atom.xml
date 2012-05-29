@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-05-09T00:18:36+01:00</updated>
+  <updated>2012-05-29T22:07:08+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,158 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Rebar templates]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/05/29/rebar-templates/"/>
+    <updated>2012-05-29T21:38:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/05/29/rebar-templates</id>
+    <content type="html"><![CDATA[<p>First question when i need to add new blog to my code I ask is, do i remember all the boilerplate and how many times i will make a mistake this time. No more :). Rebar has a nice thing built in it is templating language that lets us build our own templates.</p>
+
+<h1>Custom template ?</h1>
+
+<p>I always end up looking at old projects and copying parts like <code>gen_server</code> and reusing them. I always knew rebar has option to write them but never had time to look at it. Today lol, i wanted to do some cleaning at home so every thing seems to be a good excuse to not do any cleaning :D.</p>
+
+<h2>What i need to know</h2>
+
+<p>Basic template is made from one or many <code>.erl</code> files written with <code>mustache</code> style <code>{ { } }</code> code and <code>.template</code> file describing what to do with files.</p>
+
+<h2>Let&#8217;s build gen_server template</h2>
+
+<p>So my first file will be <code>gen_server.erl</code></p>
+
+<figure class='code'><figcaption><span>gen_server.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>%%% @author  <span class="o">{</span> <span class="o">{</span>author_name <span class="o">}</span> <span class="o">}</span> &lt;<span class="o">{</span> <span class="o">{</span>author_email<span class="o">}</span> <span class="o">}</span>&gt;
+</span><span class='line'>%%% @copyright  <span class="o">{</span> <span class="o">{</span>copyright_year <span class="o">}</span> <span class="o">}</span>  <span class="o">{</span> <span class="o">{</span>author_name<span class="o">}</span> <span class="o">}</span>.
+</span><span class='line'>%%% @doc  <span class="o">{</span> <span class="o">{</span>description <span class="o">}</span> <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>-module<span class="o">(</span> <span class="o">{</span> <span class="o">{</span>name <span class="o">}</span> <span class="o">})</span>.
+</span><span class='line'>-behaviour<span class="o">(</span>gen_server<span class="o">)</span>.
+</span><span class='line'>
+</span><span class='line'>-author<span class="o">(</span><span class="s1">&#39; { {author_name } } &lt;{ {author_email } }&gt;&#39;</span><span class="o">)</span>.
+</span><span class='line'>
+</span><span class='line'>-export<span class="o">([</span>start_link/1<span class="o">])</span>.
+</span><span class='line'>-export<span class="o">([</span>init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1<span class="o">])</span>.
+</span><span class='line'>
+</span><span class='line'>% public api
+</span><span class='line'>
+</span><span class='line'>start_link<span class="o">(</span>_Args<span class="o">)</span> -&gt;
+</span><span class='line'>  gen_server:start_link<span class="o">({</span><span class="nb">local</span>, ?MODULE<span class="o">}</span>, ?MODULE, <span class="o">[]</span>, <span class="o">[])</span>.
+</span><span class='line'>
+</span><span class='line'>% state should be change with State that you will pass
+</span><span class='line'>init<span class="o">([])</span> -&gt;
+</span><span class='line'>  <span class="o">{</span>ok, state<span class="o">}</span>.
+</span><span class='line'>
+</span><span class='line'>stop<span class="o">(</span>_Pid<span class="o">)</span> -&gt;
+</span><span class='line'>  stop<span class="o">()</span>.
+</span><span class='line'>
+</span><span class='line'>stop<span class="o">()</span> -&gt;
+</span><span class='line'>  gen_server:cast<span class="o">(</span>?MODULE, stop<span class="o">)</span>.
+</span><span class='line'>
+</span><span class='line'>handle_call<span class="o">({</span>method_name_and_params<span class="o">}</span>, _From, State<span class="o">)</span> -&gt;
+</span><span class='line'>  <span class="nv">Response</span> <span class="o">=</span> ok,
+</span><span class='line'>  <span class="o">{</span>reply, Response, State<span class="o">}</span>;
+</span><span class='line'>
+</span><span class='line'>handle_call<span class="o">(</span>_Message, _From, State<span class="o">)</span> -&gt;
+</span><span class='line'>  <span class="o">{</span>reply, error, State<span class="o">}</span>.
+</span><span class='line'>
+</span><span class='line'>handle_cast<span class="o">(</span>_Message, State<span class="o">)</span> -&gt; <span class="o">{</span>noreply, State<span class="o">}</span>.
+</span><span class='line'>handle_info<span class="o">(</span>_Message, State<span class="o">)</span> -&gt; <span class="o">{</span>noreply, State<span class="o">}</span>.
+</span><span class='line'>terminate<span class="o">(</span>_Reason, _State<span class="o">)</span> -&gt; ok.
+</span><span class='line'>code_change<span class="o">(</span>_OldVersion, State, _Extra<span class="o">)</span> -&gt; <span class="o">{</span>ok, State<span class="o">}</span>.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is the template, i know a bit long i tried to cut out all comments, euint etc and narrow it to minimum. I posted it to show how much you can save :). Now you will need the <code>transformation file</code>. All this things in { { something } } will be replaced by things we will type in command line or defaults from template file.</p>
+
+<figure class='code'><figcaption><span>gen_server.template</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>variables, <span class="o">[</span>
+</span><span class='line'>  <span class="o">{</span>name, <span class="s2">&quot;template&quot;</span><span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span>copyright_year, <span class="s2">&quot;2012&quot;</span><span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span>author_name, <span class="s2">&quot;jakub Oboza&quot;</span><span class="o">}</span>,
+</span><span class='line'>  <span class="o">{</span>author_email, <span class="s2">&quot;jakub.oboza@gmail.com&quot;</span><span class="o">}</span>
+</span><span class='line'><span class="o">]}</span>.
+</span><span class='line'><span class="o">{</span>template, <span class="s2">&quot;gen_server.erl&quot;</span>, <span class="s2">&quot;src/{ {name} }.erl&quot;</span><span class="o">}</span>.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>For me it looks like this, we have few default definitions and at the bottom. template! This is important part it says which file he has to copy where and what will be the name of new file. Now everything should be clear!</p>
+
+<h2>Injet it into rebar!</h2>
+
+<p>All you need now to do is symlink your template folders to <code>~/.rebar/templates</code> and you can use them!
+(you can symlink your folder or just create one there :) )</p>
+
+<h2>Use!</h2>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ rebar create <span class="nv">template</span><span class="o">=</span>gen_server <span class="nv">name</span><span class="o">=</span><span class="nv">example</span>
+</span><span class='line'><span class="o">==</span>&gt; tmp <span class="o">(</span>create<span class="o">)</span>
+</span><span class='line'>Writing src/example.erl
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Viola!</p>
+
+<h1>important</h1>
+
+<p>When i was looking at this post i saw that {{ is converted in a wrong way by octopress so i added spaces between them! check repo for correct code!</p>
+
+<h1>My own templates</h1>
+
+<p>Today i started adding my own templates initially i have only <code>gen_server</code> and <code>webmachine_resource</code> but i will add more :). It is fun it is like building your own anti-boiler plate framework.</p>
+
+<p>My templates repo: <a href="https://github.com/JakubOboza/rebar-templates">https://github.com/JakubOboza/rebar-templates</a></p>
+
+<p>Hope this helps!
+Cheers!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Future toons processing logs with node.js]]></title>
