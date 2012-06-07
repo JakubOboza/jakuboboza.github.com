@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: pong | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/pong/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-06-07T19:42:24+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Pong tests are wrong]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/06/07/pong-tests-are-wrong/"/>
+    <updated>2012-06-07T19:09:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/06/07/pong-tests-are-wrong</id>
+    <content type="html"><![CDATA[<p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
+In my opinion pong tests are wrong and do not show real "performance". I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
+
+<p>From this gist we can see that his vibe.d benchmark set pong test at 8425.85 req/sec (He used ab and i used httperf).</p>
+
+<h1>Warp</h1>
+
+<p>My first candidate in this competition of pong tests is haskell warp handler.</p>
+
+<p>code:</p>
+
+<p>``` haskell pingpong.hs</p>
+
+<p>{-# LANGUAGE OverloadedStrings #-}</p>
+
+<p>import Network.Wai
+import Network.Wai.Handler.Warp
+import Network.HTTP.Types (status200)
+import Blaze.ByteString.Builder (copyByteString)
+import qualified Data.ByteString.UTF8 as BU
+import Data.Monoid
+import Data.Enumerator (run_, enumList, ($$))</p>
+
+<p>main = do</p>
+
+<pre><code>let port = 8000
+putStrLn $ "Listening on port " ++ show port
+run port app
+</code></pre>
+
+<p>app req = return $</p>
+
+<pre><code>case pathInfo req of
+    ["pong"] -&gt; pong
+    x -&gt; index x
+</code></pre>
+
+<p>pong = ResponseBuilder status200 [ ("Content-Type", "text/plain") ] $ mconcat $ map copyByteString</p>
+
+<pre><code>[ "pong" ]
+</code></pre>
+
+<p>index x = ResponseBuilder status200 [("Content-Type", "text/html")] $ mconcat $ map copyByteString</p>
+
+<pre><code>[ "&lt;p&gt;Hello from ", BU.fromString $ show x, "!&lt;/p&gt;"
+, "&lt;p&gt;&lt;a href='http://JakubOboza.github.com/pong'&gt;pong&lt;/a&gt;&lt;/p&gt;\n" ]
+</code></pre>
+
+<p>```</p>
+
+<p>it is semi rack like syntax ;)</p>
+
+<h1>Benchmark results</h1>
+
+<p>I prepared results to show how big lie is pong test. Because in this type of test / showoff all you test is how fast really you can accept connections. Single thread will always win :). But lets look at results:</p>
+
+<ul>
+<li>Multi threaded - 50 threads   - Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
+<li>Multi threaded - 4 threads ( on for each core ) - Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
+<li>Single threaded - default compilation  - Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
+</ul>
+
+
+<p>Tested with <code>httperf --uri=/ --port=8000 --num-calls=10000 --num-conns=20</code> httperf command.</p>
+
+<h1>Summary</h1>
+
+<p>You can test it on your own, i did it on latest 7.4.1 Ghc from haskell platform on OSX 10.7. And post reply with your results :) maybe i missed something. Code, scripts to build and run are in repository <a href="https://github.com/JakubOboza/haskell-warp-pong-test">https://github.com/JakubOboza/haskell-warp-pong-test</a>.</p>
+
+<h2>So how to test ?!</h2>
+
+<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday... users are really testing performance of our db ;>... or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
+]]></content>
+  </entry>
+  
+</feed>

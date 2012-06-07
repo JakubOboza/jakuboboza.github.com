@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-05-29T22:07:08+01:00</updated>
+  <updated>2012-06-07T19:42:24+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,102 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Pong tests are wrong]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/06/07/pong-tests-are-wrong/"/>
+    <updated>2012-06-07T19:09:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/06/07/pong-tests-are-wrong</id>
+    <content type="html"><![CDATA[<p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
+In my opinion pong tests are wrong and do not show real &#8220;performance&#8221;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
+
+<p>From this gist we can see that his vibe.d benchmark set pong test at 8425.85 req/sec (He used ab and i used httperf).</p>
+
+<h1>Warp</h1>
+
+<p>My first candidate in this competition of pong tests is haskell warp handler.</p>
+
+<p>code:</p>
+
+<figure class='code'><figcaption><span>pingpong.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="cm">{-# LANGUAGE OverloadedStrings #-}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Network.Wai</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Network.Wai.Handler.Warp</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Network.HTTP.Types</span> <span class="p">(</span><span class="nf">status200</span><span class="p">)</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Blaze.ByteString.Builder</span> <span class="p">(</span><span class="nf">copyByteString</span><span class="p">)</span>
+</span><span class='line'><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Data.ByteString.UTF8</span> <span class="k">as</span> <span class="n">BU</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Monoid</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Enumerator</span> <span class="p">(</span><span class="nf">run_</span><span class="p">,</span> <span class="nf">enumList</span><span class="p">,</span> <span class="p">(</span><span class="o">$$</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>    <span class="kr">let</span> <span class="n">port</span> <span class="ow">=</span> <span class="mi">8000</span>
+</span><span class='line'>    <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;Listening on port &quot;</span> <span class="o">++</span> <span class="n">show</span> <span class="n">port</span>
+</span><span class='line'>    <span class="n">run</span> <span class="n">port</span> <span class="n">app</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">app</span> <span class="n">req</span> <span class="ow">=</span> <span class="n">return</span> <span class="o">$</span>
+</span><span class='line'>    <span class="kr">case</span> <span class="n">pathInfo</span> <span class="n">req</span> <span class="kr">of</span>
+</span><span class='line'>        <span class="p">[</span><span class="s">&quot;pong&quot;</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">pong</span>
+</span><span class='line'>        <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">index</span> <span class="n">x</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">pong</span> <span class="ow">=</span> <span class="kt">ResponseBuilder</span> <span class="n">status200</span> <span class="p">[</span> <span class="p">(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/plain&quot;</span><span class="p">)</span> <span class="p">]</span> <span class="o">$</span> <span class="n">mconcat</span> <span class="o">$</span> <span class="n">map</span> <span class="n">copyByteString</span>
+</span><span class='line'>    <span class="p">[</span> <span class="s">&quot;pong&quot;</span> <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">index</span> <span class="n">x</span> <span class="ow">=</span> <span class="kt">ResponseBuilder</span> <span class="n">status200</span> <span class="p">[(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span><span class="p">)]</span> <span class="o">$</span> <span class="n">mconcat</span> <span class="o">$</span> <span class="n">map</span> <span class="n">copyByteString</span>
+</span><span class='line'>    <span class="p">[</span> <span class="s">&quot;&lt;p&gt;Hello from &quot;</span><span class="p">,</span> <span class="kt">BU</span><span class="o">.</span><span class="n">fromString</span> <span class="o">$</span> <span class="n">show</span> <span class="n">x</span><span class="p">,</span> <span class="s">&quot;!&lt;/p&gt;&quot;</span>
+</span><span class='line'>    <span class="p">,</span> <span class="s">&quot;&lt;p&gt;&lt;a href=&#39;/pong&#39;&gt;pong&lt;/a&gt;&lt;/p&gt;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>it is semi rack like syntax ;)</p>
+
+<h1>Benchmark results</h1>
+
+<p>I prepared results to show how big lie is pong test. Because in this type of test / showoff all you test is how fast really you can accept connections. Single thread will always win :). But lets look at results:</p>
+
+<ul>
+<li>Multi threaded - 50 threads   - Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
+<li>Multi threaded - 4 threads ( on for each core ) - Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
+<li>Single threaded - default compilation  - Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
+</ul>
+
+
+<p>Tested with <code>httperf --uri=/ --port=8000 --num-calls=10000 --num-conns=20</code> httperf command.</p>
+
+<h1>Summary</h1>
+
+<p>You can test it on your own, i did it on latest 7.4.1 Ghc from haskell platform on OSX 10.7. And post reply with your results :) maybe i missed something. Code, scripts to build and run are in repository <a href="https://github.com/JakubOboza/haskell-warp-pong-test">https://github.com/JakubOboza/haskell-warp-pong-test</a>.</p>
+
+<h2>So how to test ?!</h2>
+
+<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&#8230; users are really testing performance of our db ;>&#8230; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Rebar templates]]></title>
