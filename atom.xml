@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-06-07T19:42:24+01:00</updated>
+  <updated>2012-06-15T23:31:42+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,113 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Api prototyping with Rails respond_with]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/"/>
+    <updated>2012-06-15T23:11:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/06/15/api-prototyping-with-rails-respond-with</id>
+    <content type="html"><![CDATA[<p>Prototyping json / xml RESTfull api with rails is easy. Before we will want to rewrite it to something like erlang webmachine or node.js! For purpose of this we can use syntax introduced in rails 3. (ages ago) with <code>respond_to/respond_with</code> it is very cool.</p>
+
+<h1>Example controller</h1>
+
+<p>How we use this ?  Lets take a peek and simple example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">VenuesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:json</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venues</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">per</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Two things we will notice at start is <code>respond_to :html, :xml, :json</code> this is something like old merbs <code>provides</code> where we specify to which formats we want to respond. Second change is how we layout the action. All we have to do is to put into <code>respond_with</code> object we want to respond with.</p>
+
+<p>What this buys for us ?</p>
+
+<ul>
+<li>If we have html request to actions like create, update or destroy we want to redirect on success</li>
+<li>if we have json, xml request to same type of &#8220;state changing&#8221; actions we want to render response with our format.</li>
+</ul>
+
+
+<p>We achieve both of this with reponds_with in just one line. But lets take a peek at longer example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">VenuesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">before_filter</span> <span class="ss">:authenticate_user!</span><span class="p">,</span> <span class="ss">:except</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="p">,</span> <span class="ss">:near</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:json</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venues</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">per</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
+</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="n">permalink</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">new</span>
+</span><span class='line'>    <span class="n">repond_with</span><span class="p">(</span><span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>    <span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:venue</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venue</span><span class="p">,</span> <span class="ss">:location</span> <span class="o">=&gt;</span> <span class="n">venues_url</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this example we can see example of <code>create</code> action where we add <code>:location =&gt; venues_url</code> this will in case of format: html success redirect to this url.</p>
+
+<h1>Summary</h1>
+
+<p>Using this helps to write stuff fast and readable, you can still use plain old <code>respond_to</code> in action with old <code>format.html</code> syntax..</p>
+
+<p>I hope you liked it :)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Pong tests are wrong]]></title>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-06-07T19:42:24+01:00</updated>
+  <updated>2012-06-15T23:31:42+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,91 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Api prototyping with Rails respond_with]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/"/>
+    <updated>2012-06-15T23:11:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/06/15/api-prototyping-with-rails-respond-with</id>
+    <content type="html"><![CDATA[<p>Prototyping json / xml RESTfull api with rails is easy. Before we will want to rewrite it to something like erlang webmachine or node.js! For purpose of this we can use syntax introduced in rails 3. (ages ago) with <code>respond_to/respond_with</code> it is very cool.</p>
+
+<h1>Example controller</h1>
+
+<p>How we use this ?  Lets take a peek and simple example:
+``` ruby
+class VenuesController &lt; ApplicationController</p>
+
+<p>  respond_to :html, :xml, :json</p>
+
+<p>  def index</p>
+
+<pre><code>respond_with(@venues = Venue.all.page(params[:page]).per(20))
+</code></pre>
+
+<p>  end</p>
+
+<p>end
+<code>``
+Two things we will notice at start is</code>respond_to :html, :xml, :json<code>this is something like old merbs</code>provides<code>where we specify to which formats we want to respond. Second change is how we layout the action. All we have to do is to put into</code>respond_with` object we want to respond with.</p>
+
+<p>What this buys for us ?</p>
+
+<ul>
+<li>If we have html request to actions like create, update or destroy we want to redirect on success</li>
+<li>if we have json, xml request to same type of "state changing" actions we want to render response with our format.</li>
+</ul>
+
+
+<p>We achieve both of this with reponds_with in just one line. But lets take a peek at longer example.</p>
+
+<p>``` ruby
+class VenuesController &lt; ApplicationController</p>
+
+<p>  before_filter :authenticate_user!, :except => [:index, :show, :near]</p>
+
+<p>  respond_to :html, :xml, :json</p>
+
+<p>  def index</p>
+
+<pre><code>respond_with(@venues = Venue.all.page(params[:page]).per(20))
+</code></pre>
+
+<p>  end</p>
+
+<p>  def show</p>
+
+<pre><code>respond_with(@venue = Venue.find_by(permalink: params[:id]))
+</code></pre>
+
+<p>  end</p>
+
+<p>  def new</p>
+
+<pre><code>repond_with(@venue = Venue.new)
+</code></pre>
+
+<p>  end</p>
+
+<p>  def create</p>
+
+<pre><code>@venue = Venue.create(params[:venue])
+respond_with(@venue, :location =&gt; venues_url)
+</code></pre>
+
+<p>  end</p>
+
+<p>end
+```</p>
+
+<p>In this example we can see example of <code>create</code> action where we add <code>:location =&gt; venues_url</code> this will in case of format: html success redirect to this url.</p>
+
+<h1>Summary</h1>
+
+<p>Using this helps to write stuff fast and readable, you can still use plain old <code>respond_to</code> in action with old <code>format.html</code> syntax..</p>
+
+<p>I hope you liked it :)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Building ORM/ODM using virtus for MongoDB part 1]]></title>
