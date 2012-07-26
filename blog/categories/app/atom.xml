@@ -1,0 +1,258 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: app | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/app/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-07-26T19:47:06+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Designing todo app backend using redis and mongodb]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/"/>
+    <updated>2012-07-26T18:06:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb</id>
+    <content type="html"><![CDATA[<h2>side note</h2>
+
+<p>Upgrading octopress is a @!#!@pain! :></p>
+
+<h1>What is this post about :)</h1>
+
+<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was "how i would design it in different databases". (i'm taking only about data model)</p>
+
+<h2>Requirements</h2>
+
+<p>What we know:</p>
+
+<ul>
+<li>User has some sort of id. (number, email, hash of something)</li>
+<li>We need to be able to have different todo lists</li>
+<li>User can choose his todo list and see tasks ( obvious )</li>
+<li>User can tag tasks!</li>
+<li>User can query tasks in list by tags</li>
+<li>User can see all tags.</li>
+</ul>
+
+
+<h1>Design using Redis</h1>
+
+<p>How to do it with redis ? :)</p>
+
+<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase "todoapp".</p>
+
+<p>So lets start with user and his list of todo lists :). This gives us first key</p>
+
+<p><code>bash
+todo:&lt;user_id&gt;:todolist:next =&gt; auto incrementing counter for lists id
+todo:&lt;user_id&gt;:todolists =&gt; [LIST]
+todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:name =&gt; list name
+</code></p>
+
+<p>Here we have two keys, first is  list id counter that we will bump to get new list counter :), second is list of todolists ids. Why do it this way ? Well people can add and remove todo lists.</p>
+
+<p>Ok so how to create new list ?</p>
+
+<p><code>bash example
+redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:next
+(integer) 1
+redis 127.0.0.1:6379&gt; RPUSH todo:kuba:todolists 1
+(integer) 1
+redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolists 0 -1
+1) "1"
+redis 127.0.0.1:6379&gt; SET todo:kuba:todolist:1:name "things to do"
+OK
+</code>
+Hey ! we just added id of our first list to list of our todo lists (lots of list word here!). Ok so now lets add a task.</p>
+
+<p>list:
+<code>bash
+todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:next =&gt; auto incrementing counter for tasks id
+todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt; =&gt; [LIST]
+</code>
+and task:
+<code>bash
+todo:&lt;user_id&gt;:task:&lt;task_id&gt; =&gt; content of task eg. "finish blog post"
+todo:&lt;user_id&gt;:task:&lt;task_id&gt;:created_at =&gt; epoch time when it was created handled by app
+todo:&lt;user_id&gt;:task:&lt;task_id&gt;:updated_at =&gt; epoch time when it was last updated handled by app
+</code></p>
+
+<p>Ok so how to i add task to my list
+<code>bash adding task
+redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:1:next
+(integer) 1
+redis 127.0.0.1:6379&gt; LPUSH todo:kuba:todolist:1 1
+(integer) 1
+redis 127.0.0.1:6379&gt; SET todo:kuba:task:1 "finish blog post"
+OK
+redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:created_at  1343324314
+OK
+redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:updated_at  1343324315
+OK
+</code>
+And we have our first task in. How do we get tasks from out todo list simple!
+<code>bash peeking task
+redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
+1) "1"
+redis 127.0.0.1:6379&gt; GET todo:kuba:task:1
+"finish blog post"
+redis 127.0.0.1:6379&gt; GET todo:kuba:task:1:created_at
+"1343324314"
+</code>
+Ok so now we have very simple todo lists with tasks, well at least overview. Ofc you can use sets for todo lists or zsets but lets stay with lists to keep it simple for now.</p>
+
+<p>How ro remove task from the list ?
+<code>bash removing task
+redis 127.0.0.1:6379&gt; LREM todo:kuba:todolist:1 -1 1
+(integer) 1
+redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
+(empty list or set)
+</code>
+Good, now we can add tasks, remove tasks, same sotry with adding todo lists and removing todo lists.
+One last thing is to add tags!. Simply here each task will have list of tags and each tag will have list of tasks related with.
+<code>bash
+todo:&lt;user_id&gt;:task:&lt;task_id&gt;:tags =&gt; [LIST]
+todo:&lt;user_id&gt;:tag:&lt;tag&gt;:tasks =&gt; [LIST]
+</code>
+So how we will add tags to tasks ? Simple!
+<code>bash tagging
+redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags "redis"
+(integer) 1
+redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags "design"
+(integer) 2
+redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:redis:tasks 1
+(integer) 1
+redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:design:tasks 1
+(integer) 1
+redis 127.0.0.1:6379&gt; LRANGE todo:kuba:tag:design:tasks 0 -1
+1) "1"
+redis 127.0.0.1:6379&gt; LRANGE todo:kuba:task:1:tags 0 -1
+1) "design"
+2) "redis"
+</code>
+This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like "redis" you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
+
+<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of "ultimate"  non splittable lists.</p>
+
+<h1>Design using Mongodb</h1>
+
+<p>Well this case upfront is easier to grasp because for each list we can use single document or collection of documents lets talk about both solutions.</p>
+
+<h2>Todolist = Document</h2>
+
+<p>In this example we will use built in "array" operators</p>
+
+<p>``` javascript  creating</p>
+
+<blockquote><p>db.todolists.save({name: "House work", tasks: []})
+"ok"
+db.todolists.find({name: "House work"})
+[
+  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
+
+<pre><code>  "tasks" : [   ]   }
+</code></pre>
+
+<p>]
+```</p></blockquote>
+
+<p>So lets add a task :)
+``` javascript
+db.todolists.update({name: "House work"},{$push:{"tasks":{"name":"finish blog post", "tags":["mongo"] } } })
+"ok"</p>
+
+<blockquote><blockquote><p>db.todolists.find({name: "House work"})
+[
+  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
+
+<pre><code>  "tasks" : [  
+   {   "name" : "finish blog post",   "tags" : [   "mongo" ]   }
+  ]   }
+</code></pre>
+
+<p>]
+```</p></blockquote></blockquote>
+
+<p>this will create empty todo list with name "House work" of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra "lists" while doing search.</p>
+
+<p>Lets try it out how to find out mongo tagged entries?</p>
+
+<p>``` javascript find by tag</p>
+
+<blockquote><p>db.todolists.find({"tasks.tags": { $in : ["mongo"] } })</p></blockquote>
+
+<p>[
+  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
+
+<pre><code>  "tasks" : [ 
+    {   "name" : "finish blog post",   "tags" : [   "mongo" ]   }
+  ]   }
+</code></pre>
+
+<p>]
+```</p>
+
+<p>This way we can find whole todolist with task that contains tag "mongo" but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this
+``` javascript  todo list structure
+{
+ user: "user id",
+ name: "<name>",
+ tasks: [
+   {</p>
+
+<pre><code>text : "todo text",
+tags : [
+  "Tag1", "Tag2"
+]
+created_at : Time,
+updated_at : Time
+</code></pre>
+
+<p>   }
+ ]
+}
+```
+Using redis we could wrapp stuff into MULTI command while using mongodb "array" command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
+
+<h2>Todolist = many documents</h2>
+
+<p>Using this approach we can leverage more of our stuff on mongodb search in this approach each task will be a different document.
+With structure like this
+``` javascript task structure
+{
+  todo_list: "todo list id",
+  user: "user id",
+  text: "todo text",
+  tags: ["Tag1", "Tag2"]
+}</p>
+
+<p><code>
+This way we will have a lot of documents, more disk space consumption and still we will have to have second collection with with objects with structure like this
+</code> javascript structure of todolist
+{
+  todo_list: "todo list id",
+  name: "todo list name",
+  user: "user id",
+  // tasks: [Tasks OBjectID Array] you could have this and remove todo_list id from tasks choice is yours :)
+}
+<code>``
+And this way we can use</code>find` tool very easy and get documents fast.</p>
+
+<h1>Summary</h1>
+
+<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is "strucutres" and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
+
+<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i'm sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things "rawly" in redis hiredis client.</p>
+
+<p>btw i jsut wrote this from "top of my head" so it may contain typos and i'm sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

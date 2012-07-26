@@ -2,80 +2,86 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang/</loc>
-        <lastmod>2012-03-29T18:39:28+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/03/29/rebar-swiss-army-knife/</loc>
-        <lastmod>2012-03-29T19:24:46+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/
         </loc>
-        <lastmod>2012-03-31T21:20:22+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/04/01/using-map-reduce-with-mongodb/</loc>
-        <lastmod>2012-04-01T23:42:08+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/04/05/testing-handlebars-with-mocha/</loc>
-        <lastmod>2012-04-05T22:22:41+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/04/11/building-gem-with-bundler/</loc>
-        <lastmod>2012-04-11T21:13:13+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://JakubOboza.github.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/
         </loc>
-        <lastmod>2012-04-12T22:04:58+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/04/16/setting-up-redis-cluster/</loc>
-        <lastmod>2012-04-16T20:13:32+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://JakubOboza.github.com/blog/2012/04/23/building-node-dot-js-module-using-npm/
         </loc>
-        <lastmod>2012-04-23T22:32:51+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/04/29/setting-up-replication-with-redis/</loc>
-        <lastmod>2012-04-29T20:32:48+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/
         </loc>
-        <lastmod>2012-04-29T21:19:29+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/05/29/rebar-templates/</loc>
-        <lastmod>2012-05-29T22:06:47+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/2012/06/07/pong-tests-are-wrong/</loc>
-        <lastmod>2012-06-07T19:39:08+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
     <url>
         <loc>
             http://JakubOboza.github.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/
         </loc>
-        <lastmod>2012-06-15T23:29:58+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://JakubOboza.github.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/
+        </loc>
+        <lastmod>2012-07-26T19:46:14+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/blog/archives/</loc>
-        <lastmod>2012-06-15T23:29:58+01:00</lastmod>
+        <lastmod>2012-07-26T19:46:14+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/</loc>
-        <lastmod>2012-06-15T23:29:58+01:00</lastmod>
+        <lastmod>2012-07-26T19:46:14+01:00</lastmod>
     </url>
     <url>
         <loc>http://JakubOboza.github.com/link-lib/</loc>
-        <lastmod>2012-06-15T23:49:53+01:00</lastmod>
+        <lastmod>2012-07-26T18:04:12+01:00</lastmod>
     </url>
 </urlset>

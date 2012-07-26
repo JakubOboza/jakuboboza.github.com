@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Mongodb has support for running Map Reduce queries besides having regular sql like query interface. In documentation we can read that it is not the &hellip;">
+  <meta name="description" content="Mocha and Handlebars are two great things i use. Mocha is a testing library which can be used for backend (node.js) and fronend testing. On frontend &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,7 +18,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://JakubOboza.github.com/blog/page/2">
+  <link rel="canonical" href="http://JakubOboza.github.com/blog/page/2/">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
   <script src="/javascripts/modernizr-2.0.js"></script>
@@ -77,6 +77,207 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/05/testing-handlebars-with-mocha/">Testing Handlebars With Mocha</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-05T21:01:00+01:00" pubdate data-updated="true">Apr 5<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/04/05/testing-handlebars-with-mocha/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Mocha and Handlebars are two great things i use. Mocha is a testing library which can be used for backend (node.js) and fronend testing. On frontend its only dependency is jQuery. Handlebars is templating language that can be used for frontend javascript partials or even for backend (node.js) layouts. What ever you want! :).</p>
+
+<h1>Mocha</h1>
+
+<p>When i started working with <code>express.js</code> sinatra like framework i took a peek at other projects that people from Vision Media do.
+One of them was mocha and at that time i needed something to test my backend code. It is good to use such a tool while learning new thing. This was you can document your failures :). As i found it is  also great tool to test front end code.</p>
+
+<h2>Chai.js / Should.js</h2>
+
+<p>Because Mocha is not shipped with everything i like i decided to use <code>should.js</code> <a href="https://github.com/visionmedia/should.js">https://github.com/visionmedia/should.js</a> on backend (node.js) and <code>chai.js</code> on frontend to make my tests suits more <code>rspec</code> like. This way we will be able to write our specs like this.</p>
+
+<figure class='code'><figcaption><span>app.spec.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Application&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should exists&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>       <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">();</span>
+</span><span class='line'>       <span class="nx">app</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">an</span><span class="p">.</span><span class="k">instanceof</span><span class="p">(</span><span class="nx">Application</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I really like this <code>app.should.be.an.instanceof(Application);</code> syntax. But if you don&#8217;t like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
+
+<h1>Handlebars</h1>
+
+<p>Second very useful thing that i never skip in my project is Handlebars, easy to use and clean language to build templates in javascript. Simply it is <code>mustache</code> on steroids. But lets dive straight into some example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;list-entry&quot;</span> <span class="na">type=</span><span class="s">&quot;text/x-handlebars-template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">li</span> <span class="p"></span> <span class="kr">class</span><span class="o">=</span><span class="p"></span> <span class="p">&gt;</span>
+</span><span class='line'>        <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/span&gt; -&gt; </span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">strong</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/strong&gt;:&amp;nbsp;</span>
+</span><span class='line'>      <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/span&gt;</span>
+</span><span class='line'>  <span class="o">&lt;</span><span class="err">/li&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in <code>is getting interpolated. so in this example ` class= ` mans that if in rendering context we have class variable render `class=value_of_class_variable_in_context` as part of li element.</code> will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg. <code>underscore.js</code> templates explode if you don&#8217;t have any param that you use inside of them.</p>
+
+<h1>Both tools in action</h1>
+
+<p>Ok so lets try it out and write some code in bdd style using handlebars. I have prepared initial setup for this, it contains lib directory with our javascripts, spec directory with out specs and support directory with our mocha.js, chai.js etc. Our test runner is single index.html file we can open in browser. All the code can be downloaded here <a href="https://github.com/JakubOboza/handlebars-and-mocha">https://github.com/JakubOboza/handlebars-and-mocha</a></p>
+
+<h2>Step one</h2>
+
+<p>Lets write a spec that makes checks if out app loads</p>
+
+<figure class='code'><figcaption><span>app.spec.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Application&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should exists&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
+</span><span class='line'>       <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">();</span>
+</span><span class='line'>       <span class="nx">app</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">an</span><span class="p">.</span><span class="k">instanceof</span><span class="p">(</span><span class="nx">Application</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">});</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://img814.imageshack.us/img814/1738/screenshot20120405at215.png" alt="Failing spec" />
+Obviously we have here a failing spec.
+Lets write some implementation to satisfy out spec.</p>
+
+<figure class='code'><figcaption><span>app.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Application</span><span class="p">(</span><span class="nx">template_id</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://img833.imageshack.us/img833/1738/screenshot20120405at215.png" alt="Success spec" />
+Bang everything works fine :). Lets make it do something useful, render some templates!
+First lets write a spec for it -></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should render handlebars template&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">(</span><span class="s2">&quot;#test-template&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="nx">app</span><span class="p">.</span><span class="nx">render</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;kuba&quot;</span><span class="p">}).</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;kuba&lt;/p&gt;&quot;</span><span class="p">);</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://img862.imageshack.us/img862/9451/screenshot20120405at220.png" alt="Failing spec" />
+Now lets implement this, our template will look like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;test-template&quot;</span> <span class="na">type=</span><span class="s">&quot;text/x-handlebars-template&quot;</span><span class="nt">&gt;</span>
+</span><span class='line'>    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/p&gt;</span>
+</span><span class='line'> <span class="nt">&lt;/script&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It is very basic, hard to make mistake ;). And javascript code</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Application</span><span class="p">(</span><span class="nx">template_id</span><span class="p">){</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">template_id</span><span class="p">);</span>
+</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">template</span> <span class="o">=</span> <span class="nx">Handlebars</span><span class="p">.</span><span class="nx">compile</span><span class="p">(</span><span class="nx">source</span><span class="p">.</span><span class="nx">html</span><span class="p">());</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">Application</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">render</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">params</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
+</span><span class='line'><span class="p">};</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p><img src="http://img684.imageshack.us/img684/2551/screenshot20120405at221.png" alt="Success" />
+Works! Like a charm!
+I really enjoy writing tests for javascript this way. It is much more like rspec. At least for me it is much more useful then jasmine</p>
+
+<h1>Why not jasmine</h1>
+
+<p>I prefer syntax of Mocha. On this few examples i think i show how to start using it and how fun it is. For people with rspec background this should be very easy tool to pick up. More about Mocha can be found on official project page <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
+
+<h2>Example code for this post</h2>
+
+<p>Can be found here <a href="https://github.com/JakubOboza/handlebars-and-mocha">https://github.com/JakubOboza/handlebars-and-mocha</a> just open <code>index.html</code> :)</p>
+
+<p>Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1322,6 +1523,10 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/">Designing todo app backend using redis and mongodb</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/">Api prototyping with Rails respond_with</a>
       </li>
     
@@ -1335,10 +1540,6 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
     
       <li class="post">
         <a href="/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/">Future toons processing logs with node.js</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/04/29/setting-up-replication-with-redis/">Setting up replication with Redis</a>
       </li>
     
   </ul>
