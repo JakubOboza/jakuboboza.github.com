@@ -1,0 +1,502 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Designing Twitter clone in redis - No Fucking Idea</title>
+  <meta name="author" content="Jakub Oboza">
+
+  
+  <meta name="description" content="Ont he official redis site http://redis.io you can find this http://redis.io/topics/twitter-clone/ post about building twitter clone in redis. I &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="No Fucking Idea" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-17523816-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">No Fucking Idea</a></h1>
+  
+    <h2>Common answer to everything</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:JakubOboza.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/link-lib">LIB!</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Designing Twitter Clone in Redis</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-31T14:02:00+01:00" pubdate data-updated="true">Jul 31<span>st</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Ont he official redis site <a href="http://redis.io">http://redis.io</a>  you can find this <a href="http://redis.io/topics/twitter-clone/">http://redis.io/topics/twitter-clone/</a> post about building twitter clone in redis. I based my design post partially on it but i would like to go more deep into building timeline and posts.</p>
+
+<h1>Quick review</h1>
+
+<p>I used similar approach to store followers and following so i will just go fast through the keys and design.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  twtr:&lt;user_id&gt;:follows -&gt; <span class="nb">set </span>of ids this user follows
+</span><span class='line'>  twtr:&lt;user_id&gt;:followers -&gt; <span class="nb">set </span>of id<span class="err">&#39;</span>s  that follows this user
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What happens when i click &#8220;follow&#8221;</p>
+
+<figure class='code'><figcaption><span>example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; SADD twtr:kuba:following amelia
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; SADD twtr:amelia:followers kuba
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; SADD twtr:kuba:following dan
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; SADD twtr:dan:followers kuba
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; SADD twtr:kuba:following ben
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; SADD twtr:ben:followers kuba
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; SMEMBERS twtr:kuba:following
+</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;ben&quot;</span>
+</span><span class='line'>2<span class="o">)</span> <span class="s2">&quot;amelia&quot;</span>
+</span><span class='line'>3<span class="o">)</span> <span class="s2">&quot;dan&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So now i follow amelia, ben and dan.</p>
+
+<p>What happens when amelia click followers!</p>
+
+<figure class='code'><figcaption><span>example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; SMEMBERS twtr:amelia:followers
+</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;kuba&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This way for each user we can see set of people who follow him and those who he follows. Thats all we need like in tutorial.</p>
+
+<h1>Post</h1>
+
+<p>So i think it is not waste if we will decide to keep post in form of 2 keys</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  twtr:&lt;user_id&gt;:post:&lt;post_id&gt; -&gt; content text of post
+</span><span class='line'>  twtr:&lt;user_id&gt;:post:&lt;post_id&gt;:created_at -&gt; creation <span class="nb">time </span>of post
+</span><span class='line'>  twtr:post_owner:&lt;post_id&gt; -&gt; id of post creator.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Why this approach and not compacting all the things into pipe separate key? Both solutions seems to be ok, this just leaves little bit more flexibility. I know that it will generate 2 x times more pickups to redis then previous so you can consider doing</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  twtr:&lt;user_id&gt;:post:&lt;post_id&gt; -&gt; <span class="o">(</span>timestamp|text<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Both solutions have a pros and cones, first one will require 2 x lookups and second one will require parsing data in app layer. Still i prefer first one.</p>
+
+<h2>Post id</h2>
+
+<p>This is hard topic, because in future we would want to scale ( lol ) . Generating post id is not easy task in this case. We could just use auto incrementing counter like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  twtr:post_id:next -&gt; auto incr
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But to have something more flexible you should look at something like snowflake <a href="http://engineering.twitter.com/2010/06/announcing-snowflake.html">http://engineering.twitter.com/2010/06/announcing-snowflake.html</a>.</p>
+
+<h1>Post list</h1>
+
+<p>For each user we will store a list of posts he wrote. Initially i thought that we could just pump everything into list. But this is not optimal. This is single point which will grow like crazy and we will be not able to decide how and when to archive parts that are not used. Eg. posts did by user 8 months ago are not really relevant today because if we will make assumption that on average person posts few times a week this 8 month old entry will be way forgotten. We want to archive it, also it will be healthier for memory to store short lists.</p>
+
+<p>I see here two scenarios:</p>
+
+<ul>
+<li>user looks at his last few posts &lt; 100</li>
+<li>user is infinite scrolling through all posts.</li>
+</ul>
+
+
+<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&#8217;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  twtr:&lt;user_id&gt;:lists -&gt; list of lits id<span class="s1">&#39;s only LPUSH id and LRANGE 0 number.</span>
+</span><span class='line'><span class="s1">  twtr:&lt;user_id&gt;:list_next -&gt; auto incr counter for lists id&#39;</span>s
+</span><span class='line'>  twtr:&lt;user_id&gt;:list:&lt;list_id&gt; -&gt; list with 100 posts
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH&#8217;ed so should be semi ordered. (we don&#8217;t really care about order). adding stuff to time line is bit tricky.</p>
+
+<p>we need to do it like this
+<code>LRANGE &lt;key&gt; 0 1</code> current list id, next we need to <code>LLEN &lt;key&gt;</code> to check size and if it is &lt; SIZE ( for our example 100 ) we just <code>LPUSH &lt;key&gt; &lt;value&gt;</code> and job done, if size is > 100 we need to <code>INCR &lt;list counter&gt;</code> and LPUSH its result on list of lists and next we need to <code>LPUSH &lt;key&gt; &lt;value&gt;</code> on the new list.</p>
+
+<p>And all of this in application layer. But this is the hardest bit to do. May seem to be complicated but if this seems to be not optimal you can add one more list</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  twtr:&lt;user_id&gt;:list:current -&gt; list of current 100 posts
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This list is just the most current posts of particular user. How does this list work ? Algorithm is simple</p>
+
+<ul>
+<li>LPUSH new post id&#8217;s</li>
+<li>RPOP if SIZE > 100</li>
+</ul>
+
+
+<p>This could be useful to reduce number of hits you get against redis.</p>
+
+<h2>Time line</h2>
+
+<p>Now the time line. Time line is exactly the same as user post list. we will just one &#8220;bit&#8221; about adding posts.</p>
+
+<p>Algorithm here is when you add a post you have to pick all id&#8217;s of people who follow you. (example from top if you are adding post as amelia)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>SMEMBERS twtr:&lt;user_id&gt;:followers
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And you need to push your post id into their time line posts list. Thats all. Ofc one thing that we need to add are keys for time line</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  twtr:&lt;user_id&gt;:timeline:lists -&gt; list of lits id<span class="s1">&#39;s only LPUSH id and LRANGE 0 number.</span>
+</span><span class='line'><span class="s1">  twtr:&lt;user_id&gt;:timeline:list_next -&gt; auto incr counter for lists id&#39;</span>s
+</span><span class='line'>  twtr:&lt;user_id&gt;:timeline:list:&lt;list_id&gt; -&gt; list with 100 posts
+</span><span class='line'>  twtr:&lt;user_id&gt;:timeline:current -&gt; LPUSH, RPOP &gt; SIZE current list cache
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Summary</h1>
+
+<p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys <user_id> this could be skiped but in my opinion it is not bad. IF you will use <user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
+
+<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &#8220;lazy way&#8221; you can minimize number of hits to around 10.</p>
+
+<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &#8220;sharding&#8221; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
+
+<p>Cheers!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jakub Oboza</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-31T14:02:00+01:00" pubdate data-updated="true">Jul 31<span>st</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/clone/'>clone</a>, <a class='category' href='/blog/categories/design/'>design</a>, <a class='category' href='/blog/categories/redis/'>redis</a>, <a class='category' href='/blog/categories/twitter/'>twitter</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis/" data-via="JakubOboza" data-counturl="http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/" title="Previous Post: Designing todo app backend using redis and mongodb">&laquo; Designing todo app backend using redis and mongodb</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/07/31/designing-twitter-clone-in-redis/">Designing Twitter clone in redis</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/">Designing todo app backend using redis and mongodb</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/">Api prototyping with Rails respond_with</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/07/pong-tests-are-wrong/">Pong tests are wrong</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/05/29/rebar-templates/">Rebar templates</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'JakubOboza',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("JakubOboza", 9000, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/JakubOboza" class="twitter-follow-button" data-show-count="false">Follow @JakubOboza</a>
+  
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/101398174644580064637?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Jakub Oboza -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'nofuckingidea';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis/';
+        var disqus_url = 'http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

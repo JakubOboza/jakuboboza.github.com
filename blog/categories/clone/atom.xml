@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: clone | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/clone/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-08-01T12:43:52+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Designing Twitter clone in redis]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis/"/>
+    <updated>2012-07-31T14:02:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis</id>
+    <content type="html"><![CDATA[<p>Ont he official redis site <a href="http://redis.io">http://redis.io</a>  you can find this <a href="http://redis.io/topics/twitter-clone/">http://redis.io/topics/twitter-clone/</a> post about building twitter clone in redis. I based my design post partially on it but i would like to go more deep into building timeline and posts.</p>
+
+<h1>Quick review</h1>
+
+<p>I used similar approach to store followers and following so i will just go fast through the keys and design.</p>
+
+<p><code>bash
+  twtr:&lt;user_id&gt;:follows -&gt; set of ids this user follows
+  twtr:&lt;user_id&gt;:followers -&gt; set of id's  that follows this user
+</code></p>
+
+<p>What happens when i click "follow"
+<code>bash example
+redis 127.0.0.1:6379&gt; SADD twtr:kuba:following amelia
+(integer) 1
+redis 127.0.0.1:6379&gt; SADD twtr:amelia:followers kuba
+(integer) 1
+redis 127.0.0.1:6379&gt; SADD twtr:kuba:following dan
+(integer) 1
+redis 127.0.0.1:6379&gt; SADD twtr:dan:followers kuba
+(integer) 1
+redis 127.0.0.1:6379&gt; SADD twtr:kuba:following ben
+(integer) 1
+redis 127.0.0.1:6379&gt; SADD twtr:ben:followers kuba
+(integer) 1
+redis 127.0.0.1:6379&gt; SMEMBERS twtr:kuba:following
+1) "ben"
+2) "amelia"
+3) "dan"
+</code>
+So now i follow amelia, ben and dan.</p>
+
+<p>What happens when amelia click followers!
+<code>bash example
+redis 127.0.0.1:6379&gt; SMEMBERS twtr:amelia:followers
+1) "kuba"
+</code></p>
+
+<p>This way for each user we can see set of people who follow him and those who he follows. Thats all we need like in tutorial.</p>
+
+<h1>Post</h1>
+
+<p>So i think it is not waste if we will decide to keep post in form of 2 keys</p>
+
+<p><code>bash
+  twtr:&lt;user_id&gt;:post:&lt;post_id&gt; -&gt; content text of post
+  twtr:&lt;user_id&gt;:post:&lt;post_id&gt;:created_at -&gt; creation time of post
+  twtr:post_owner:&lt;post_id&gt; -&gt; id of post creator.
+</code>
+Why this approach and not compacting all the things into pipe separate key? Both solutions seems to be ok, this just leaves little bit more flexibility. I know that it will generate 2 x times more pickups to redis then previous so you can consider doing</p>
+
+<p><code>bash
+  twtr:&lt;user_id&gt;:post:&lt;post_id&gt; -&gt; (timestamp|text)
+</code></p>
+
+<p>Both solutions have a pros and cones, first one will require 2 x lookups and second one will require parsing data in app layer. Still i prefer first one.</p>
+
+<h2>Post id</h2>
+
+<p>This is hard topic, because in future we would want to scale ( lol ) . Generating post id is not easy task in this case. We could just use auto incrementing counter like this</p>
+
+<p><code>bash
+  twtr:post_id:next -&gt; auto incr
+</code></p>
+
+<p>But to have something more flexible you should look at something like snowflake <a href="http://engineering.twitter.com/2010/06/announcing-snowflake.html">http://engineering.twitter.com/2010/06/announcing-snowflake.html</a>.</p>
+
+<h1>Post list</h1>
+
+<p>For each user we will store a list of posts he wrote. Initially i thought that we could just pump everything into list. But this is not optimal. This is single point which will grow like crazy and we will be not able to decide how and when to archive parts that are not used. Eg. posts did by user 8 months ago are not really relevant today because if we will make assumption that on average person posts few times a week this 8 month old entry will be way forgotten. We want to archive it, also it will be healthier for memory to store short lists.</p>
+
+<p>I see here two scenarios:</p>
+
+<ul>
+<li>user looks at his last few posts &lt; 100</li>
+<li>user is infinite scrolling through all posts.</li>
+</ul>
+
+
+<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id's. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
+
+<p><code>bash
+  twtr:&lt;user_id&gt;:lists -&gt; list of lits id's only LPUSH id and LRANGE 0 number.
+  twtr:&lt;user_id&gt;:list_next -&gt; auto incr counter for lists id's
+  twtr:&lt;user_id&gt;:list:&lt;list_id&gt; -&gt; list with 100 posts
+</code>
+So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH'ed so should be semi ordered. (we don't really care about order). adding stuff to time line is bit tricky.</p>
+
+<p>we need to do it like this
+<code>LRANGE &lt;key&gt; 0 1</code> current list id, next we need to <code>LLEN &lt;key&gt;</code> to check size and if it is &lt; SIZE ( for our example 100 ) we just <code>LPUSH &lt;key&gt; &lt;value&gt;</code> and job done, if size is > 100 we need to <code>INCR &lt;list counter&gt;</code> and LPUSH its result on list of lists and next we need to <code>LPUSH &lt;key&gt; &lt;value&gt;</code> on the new list.</p>
+
+<p>And all of this in application layer. But this is the hardest bit to do. May seem to be complicated but if this seems to be not optimal you can add one more list</p>
+
+<p><code>bash
+  twtr:&lt;user_id&gt;:list:current -&gt; list of current 100 posts
+</code>
+This list is just the most current posts of particular user. How does this list work ? Algorithm is simple</p>
+
+<ul>
+<li>LPUSH new post id's</li>
+<li>RPOP if SIZE > 100</li>
+</ul>
+
+
+<p>This could be useful to reduce number of hits you get against redis.</p>
+
+<h2>Time line</h2>
+
+<p>Now the time line. Time line is exactly the same as user post list. we will just one "bit" about adding posts.</p>
+
+<p>Algorithm here is when you add a post you have to pick all id's of people who follow you. (example from top if you are adding post as amelia)
+<code>bash
+SMEMBERS twtr:&lt;user_id&gt;:followers
+</code>
+And you need to push your post id into their time line posts list. Thats all. Ofc one thing that we need to add are keys for time line</p>
+
+<p><code>bash
+  twtr:&lt;user_id&gt;:timeline:lists -&gt; list of lits id's only LPUSH id and LRANGE 0 number.
+  twtr:&lt;user_id&gt;:timeline:list_next -&gt; auto incr counter for lists id's
+  twtr:&lt;user_id&gt;:timeline:list:&lt;list_id&gt; -&gt; list with 100 posts
+  twtr:&lt;user_id&gt;:timeline:current -&gt; LPUSH, RPOP &gt; SIZE current list cache
+</code></p>
+
+<h1>Summary</h1>
+
+<p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys <user_id> this could be skiped but in my opinion it is not bad. IF you will use <user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
+
+<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a "lazy way" you can minimize number of hits to around 10.</p>
+
+<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving "sharding" in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>
