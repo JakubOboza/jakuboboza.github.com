@@ -4,7 +4,7 @@
   <title><![CDATA[Category: npm | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/npm/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-08-01T12:43:52+01:00</updated>
+  <updated>2012-09-26T21:26:39+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -47,7 +47,7 @@ Test command: (none) mocha -R landing lib/my_first_module.js      <br/>
 About to write to /private/tmp/my_first_module/package.json</p>
 
 <p>{
-  "author": "Jakub Oboza <a href="&#109;&#97;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#x6a;&#97;&#107;&#117;&#98;&#46;&#111;&#x62;&#x6f;&#122;&#x61;&#64;&#x67;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#x63;&#111;&#109;">&#x6a;&#97;&#107;&#117;&#x62;&#x2e;&#x6f;&#x62;&#111;&#122;&#97;&#64;&#103;&#109;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#x6d;</a> (no-fucking-idea.com)",
+  "author": "Jakub Oboza <a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#106;&#97;&#x6b;&#x75;&#98;&#46;&#x6f;&#x62;&#111;&#122;&#97;&#64;&#103;&#x6d;&#x61;&#x69;&#x6c;&#x2e;&#x63;&#x6f;&#109;">&#106;&#x61;&#107;&#x75;&#98;&#46;&#x6f;&#98;&#x6f;&#122;&#97;&#64;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;&#99;&#x6f;&#x6d;</a> (no-fucking-idea.com)",
   "name": "my_first_module",
   "description": "my first module",
   "version": "0.0.0",

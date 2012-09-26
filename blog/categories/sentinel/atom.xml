@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: sentinel | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/sentinel/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-09-26T21:26:39+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Failover Redis setup with Sentinel]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
+    <updated>2012-09-26T20:54:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own compaby LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#x6c;&#116;&#x6f;&#58;&#107;&#117;&#98;&#x61;&#x40;&#x6c;&#x61;&#109;&#98;&#100;&#97;&#x63;&#x75;&#46;&#x62;&#x65;">&#107;&#x75;&#98;&#97;&#x40;&#x6c;&#97;&#109;&#98;&#x64;&#x61;&#x63;&#x75;&#46;&#x62;&#101;</a> =)</p>
+
+<h1>Auto failover</h1>
+
+<p>Every database wants to have auto failover mechanism. This is a great marketing pitch! haha :) Main thing about is that one of your server can go down and you still are operating as normal and when he will go up again everything is fine.. unless your routing server will go down :D ofc.</p>
+
+<h1>2.4 / 2.6</h1>
+
+<p>Since Redis 2.4 and 2.6 there was this idea of adding it. Antirez wrote a draft spec for it and implemented it as experimental feature. It is really well described here <a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a> so i will just write a short note how did i setup it and how does it feel.</p>
+
+<h1>Setup</h1>
+
+<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start "master" and "replica servers" with this configs
+(ofc turn daemonize to yes in production lol)</p>
+
+<p>Standard Master setup with default script on prot 6379 and replica with</p>
+
+<p>``` bash
+daemonize no
+timeout 0
+loglevel notice
+logfile stdout
+databases 16
+save 900 1
+save 300 10
+save 60 10000
+stop-writes-on-bgsave-error yes
+rdbcompression yes
+rdbchecksum yes
+dbfilename dump.rdb
+dir ./replica_dir
+slave-serve-stale-data yes
+slave-read-only yes
+appendonly no
+appendfsync everysec
+no-appendfsync-on-rewrite no
+auto-aof-rewrite-percentage 100
+auto-aof-rewrite-min-size 64mb
+lua-time-limit 5000</p>
+
+<p>pidfile /var/run/redis-replica-7789.pid
+port 7789</p>
+
+<h1>replication config</h1>
+
+<p>slaveof 127.0.0.1 6379</p>
+
+<p>slowlog-log-slower-than 10000
+slowlog-max-len 1024
+hash-max-ziplist-entries 512
+hash-max-ziplist-value 64
+list-max-ziplist-entries 512
+list-max-ziplist-value 64
+set-max-intset-entries 512
+zset-max-ziplist-entries 128
+zset-max-ziplist-value 64
+activerehashing yes
+client-output-buffer-limit normal 0 0 0
+client-output-buffer-limit slave 256mb 64mb 60
+client-output-buffer-limit pubsub 32mb 8mb 60
+```</p>
+
+<p>So i had master and slave running :) that was cool next thing i did was! configure and turn on the sentinel!</p>
+
+<p>``` bash
+sentinel monitor mymaster 127.0.0.1 6379 1
+sentinel down-after-milliseconds mymaster 60000
+sentinel failover-timeout mymaster 900000
+sentinel can-failover mymaster yes
+sentinel parallel-syncs mymaster 1</p>
+
+<p>sentinel monitor resque 127.0.0.1 7789 1
+sentinel down-after-milliseconds resque 10000
+sentinel failover-timeout resque 900000
+sentinel can-failover resque yes
+sentinel parallel-syncs resque 5
+```</p>
+
+<p>And i turned him on!
+with
+<code>bash
+redis-server sentinel-my.conf --sentinel
+</code>
+And stuff started to work :D</p>
+
+<h1>Carnage!!!</h1>
+
+<p>So i started easy
+<code>bash
+redis 127.0.0.1:6379&gt; get "hello"
+"hello"
+redis 127.0.0.1:6379&gt; set "hello" "lulz"
+OK
+</code></p>
+
+<p>Works! I killed master and connected on 26379 to sentinel master did query</p>
+
+<p><code>bash
+ sentinel masters
+</code>
+and got
+``` bash
+1)  1) "name"</p>
+
+<pre><code>2) "resque"
+3) "ip"
+4) "127.0.0.1"
+5) "port"
+6) "7789"
+...
+</code></pre>
+
+<p>```</p>
+
+<p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
+
+<h1>when you do this...</h1>
+
+<p>You will see beefy
+<code>bash
+[36373] 26 Sep 21:15:03.441 # Error condition on socket for SYNC: Connection refused
+[36373] 26 Sep 21:15:04.521 * Connecting to MASTER...
+[36373] 26 Sep 21:15:04.521 * MASTER &lt;-&gt; SLAVE sync started
+[36373] 26 Sep 21:15:04.521 # Error condition on socket for SYNC: Connection refused
+[36373] 26 Sep 21:15:05.128 * MASTER MODE enabled (user request)
+</code>
+On the initial slave :) things just went from bad to good :D</p>
+
+<h1>Summary</h1>
+
+<p>This is cool new feature that you can have master-slave and autofailover server the only thing that driver have to do is if you get error while connecting / quering is to ask sentinel for new master connect and retry :) It is very basic but...</p>
+
+<p>I like it!</p>
+]]></content>
+  </entry>
+  
+</feed>

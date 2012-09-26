@@ -1,0 +1,532 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Failover Redis setup with Sentinel - No Fucking Idea</title>
+  <meta name="author" content="Jakub Oboza">
+
+  
+  <meta name="description" content="Long time nothing new, recently i started my own compaby LambdaCu.be and I was massively busy. If you want to hire me ping me at &#x6b;&#x75;&#98;&# &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="No Fucking Idea" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-17523816-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">No Fucking Idea</a></h1>
+  
+    <h2>Common answer to everything</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:JakubOboza.github.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/link-lib">LIB!</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Failover Redis Setup With Sentinel</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-26T20:54:00+01:00" pubdate data-updated="true">Sep 26<span>th</span>, 2012</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Long time nothing new, recently i started my own compaby LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#111;&#x3a;&#107;&#117;&#x62;&#x61;&#64;&#x6c;&#97;&#x6d;&#x62;&#x64;&#x61;&#x63;&#117;&#x2e;&#x62;&#x65;">&#x6b;&#x75;&#98;&#97;&#64;&#108;&#x61;&#109;&#98;&#100;&#97;&#x63;&#x75;&#46;&#x62;&#x65;</a> =)</p>
+
+<h1>Auto failover</h1>
+
+<p>Every database wants to have auto failover mechanism. This is a great marketing pitch! haha :) Main thing about is that one of your server can go down and you still are operating as normal and when he will go up again everything is fine.. unless your routing server will go down :D ofc.</p>
+
+<h1>2.4 / 2.6</h1>
+
+<p>Since Redis 2.4 and 2.6 there was this idea of adding it. Antirez wrote a draft spec for it and implemented it as experimental feature. It is really well described here <a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a> so i will just write a short note how did i setup it and how does it feel.</p>
+
+<h1>Setup</h1>
+
+<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &#8220;master&#8221; and &#8220;replica servers&#8221; with this configs
+(ofc turn daemonize to yes in production lol)</p>
+
+<p>Standard Master setup with default script on prot 6379 and replica with</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>daemonize no
+</span><span class='line'>timeout 0
+</span><span class='line'>loglevel notice
+</span><span class='line'>logfile stdout
+</span><span class='line'>databases 16
+</span><span class='line'>save 900 1
+</span><span class='line'>save 300 10
+</span><span class='line'>save 60 10000
+</span><span class='line'>stop-writes-on-bgsave-error yes
+</span><span class='line'>rdbcompression yes
+</span><span class='line'>rdbchecksum yes
+</span><span class='line'>dbfilename dump.rdb
+</span><span class='line'>dir ./replica_dir
+</span><span class='line'>slave-serve-stale-data yes
+</span><span class='line'>slave-read-only yes
+</span><span class='line'>appendonly no
+</span><span class='line'>appendfsync everysec
+</span><span class='line'>no-appendfsync-on-rewrite no
+</span><span class='line'>auto-aof-rewrite-percentage 100
+</span><span class='line'>auto-aof-rewrite-min-size 64mb
+</span><span class='line'>lua-time-limit 5000
+</span><span class='line'>
+</span><span class='line'>pidfile /var/run/redis-replica-7789.pid
+</span><span class='line'>port 7789
+</span><span class='line'><span class="c"># replication config</span>
+</span><span class='line'>slaveof 127.0.0.1 6379
+</span><span class='line'>
+</span><span class='line'>slowlog-log-slower-than 10000
+</span><span class='line'>slowlog-max-len 1024
+</span><span class='line'><span class="nb">hash</span>-max-ziplist-entries 512
+</span><span class='line'><span class="nb">hash</span>-max-ziplist-value 64
+</span><span class='line'>list-max-ziplist-entries 512
+</span><span class='line'>list-max-ziplist-value 64
+</span><span class='line'><span class="nb">set</span>-max-intset-entries 512
+</span><span class='line'>zset-max-ziplist-entries 128
+</span><span class='line'>zset-max-ziplist-value 64
+</span><span class='line'>activerehashing yes
+</span><span class='line'>client-output-buffer-limit normal 0 0 0
+</span><span class='line'>client-output-buffer-limit slave 256mb 64mb 60
+</span><span class='line'>client-output-buffer-limit pubsub 32mb 8mb 60
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So i had master and slave running :) that was cool next thing i did was! configure and turn on the sentinel!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sentinel monitor mymaster 127.0.0.1 6379 1
+</span><span class='line'>sentinel down-after-milliseconds mymaster 60000
+</span><span class='line'>sentinel failover-timeout mymaster 900000
+</span><span class='line'>sentinel can-failover mymaster yes
+</span><span class='line'>sentinel parallel-syncs mymaster 1
+</span><span class='line'>
+</span><span class='line'>sentinel monitor resque 127.0.0.1 7789 1
+</span><span class='line'>sentinel down-after-milliseconds resque 10000
+</span><span class='line'>sentinel failover-timeout resque 900000
+</span><span class='line'>sentinel can-failover resque yes
+</span><span class='line'>sentinel parallel-syncs resque 5
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And i turned him on!
+with</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis-server sentinel-my.conf --sentinel
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And stuff started to work :D</p>
+
+<h1>Carnage!!!</h1>
+
+<p>So i started easy</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; get <span class="s2">&quot;hello&quot;</span>
+</span><span class='line'><span class="s2">&quot;hello&quot;</span>
+</span><span class='line'>redis 127.0.0.1:6379&gt; <span class="nb">set</span> <span class="s2">&quot;hello&quot;</span> <span class="s2">&quot;lulz&quot;</span>
+</span><span class='line'>OK
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Works! I killed master and connected on 26379 to sentinel master did query</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> sentinel masters
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and got</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>1<span class="o">)</span>  1<span class="o">)</span> <span class="s2">&quot;name&quot;</span>
+</span><span class='line'>    2<span class="o">)</span> <span class="s2">&quot;resque&quot;</span>
+</span><span class='line'>    3<span class="o">)</span> <span class="s2">&quot;ip&quot;</span>
+</span><span class='line'>    4<span class="o">)</span> <span class="s2">&quot;127.0.0.1&quot;</span>
+</span><span class='line'>    5<span class="o">)</span> <span class="s2">&quot;port&quot;</span>
+</span><span class='line'>    6<span class="o">)</span> <span class="s2">&quot;7789&quot;</span>
+</span><span class='line'>    ...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
+
+<h1>when you do this&#8230;</h1>
+
+<p>You will see beefy</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:03.441 <span class="c"># Error condition on socket for SYNC: Connection refused</span>
+</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 * Connecting to MASTER...
+</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 * MASTER &lt;-&gt; SLAVE sync started
+</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 <span class="c"># Error condition on socket for SYNC: Connection refused</span>
+</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:05.128 * MASTER MODE enabled <span class="o">(</span>user request<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>On the initial slave :) things just went from bad to good :D</p>
+
+<h1>Summary</h1>
+
+<p>This is cool new feature that you can have master-slave and autofailover server the only thing that driver have to do is if you get error while connecting / quering is to ask sentinel for new master connect and retry :) It is very basic but&#8230;</p>
+
+<p>I like it!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jakub Oboza</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-09-26T20:54:00+01:00" pubdate data-updated="true">Sep 26<span>th</span>, 2012</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/failover/'>failover</a>, <a class='category' href='/blog/categories/redis/'>redis</a>, <a class='category' href='/blog/categories/sentinel/'>sentinel</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/" data-via="JakubOboza" data-counturl="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/07/31/designing-twitter-clone-in-redis/" title="Previous Post: Designing Twitter clone in redis">&laquo; Designing Twitter clone in redis</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2012/09/26/failover-redis-setup-with-sentinel/">Failover Redis setup with Sentinel</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/31/designing-twitter-clone-in-redis/">Designing Twitter clone in redis</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/">Designing todo app backend using redis and mongodb</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/">Api prototyping with Rails respond_with</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/06/07/pong-tests-are-wrong/">Pong tests are wrong</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'JakubOboza',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("JakubOboza", 9000, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/JakubOboza" class="twitter-follow-button" data-show-count="false">Follow @JakubOboza</a>
+  
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/101398174644580064637?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2012 - Jakub Oboza -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'nofuckingidea';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/';
+        var disqus_url = 'http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>
