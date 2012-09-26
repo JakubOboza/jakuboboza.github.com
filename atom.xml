@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-09-26T21:37:25+01:00</updated>
+  <updated>2012-09-26T22:46:32+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -14,11 +14,238 @@
 
   
   <entry>
+    <title type="html"><![CDATA[Redis List internals]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/09/26/redis-list-internals/"/>
+    <updated>2012-09-26T21:59:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/09/26/redis-list-internals</id>
+    <content type="html"><![CDATA[<p>Today i spoted on twitter this:</p>
+
+<p>@antirez: &#8220;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis internals and behaviour, and are * great *.&#8221;</p>
+
+<p>@shanley: &#8220;@antirez I&#8217;ve never met a technical community where 99% of them were familiar with the internals of anything. Did you mean 9%?&#8221;</p>
+
+<p>This sparked in my mind very quick review of the topics that we talk about in work and i realised that we talk about a lot  about internals of redis and a bit about riak but this is different story :).</p>
+
+<h1>Spike</h1>
+
+<p>I just wanted to write a short post about first thing i ever picked when i was looking into internals of Redis. It is List :D i love lists.</p>
+
+<p>So what i did was opening again github and picking up list header file to re-read.</p>
+
+<p><a href="https://github.com/antirez/redis/blob/d310fbedabd3101505b694f5c25a2e48480a3c2b/src/adlist.h">https://github.com/antirez/redis/blob/d310fbedabd3101505b694f5c25a2e48480a3c2b/src/adlist.h</a></p>
+
+<p>First thing that you notice is that code is simple and whole thing is implemented in 93 lines of header and 341 lines .c file.  (with license etc lol).</p>
+
+<h1>Structure of List</h1>
+
+<p>In general List is just degenerated Tree. In Redis structure of it is simple. Whole description of the list is simply</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">listNode</span> <span class="p">{</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">listNode</span> <span class="o">*</span><span class="n">prev</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">listNode</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="o">*</span><span class="n">value</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">listNode</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">list</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">listNode</span> <span class="o">*</span><span class="n">head</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">listNode</span> <span class="o">*</span><span class="n">tail</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="o">*</span><span class="p">(</span><span class="o">*</span><span class="n">dup</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">void</span> <span class="p">(</span><span class="o">*</span><span class="n">free</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="p">(</span><span class="o">*</span><span class="n">match</span><span class="p">)(</span><span class="kt">void</span> <span class="o">*</span><span class="n">ptr</span><span class="p">,</span> <span class="kt">void</span> <span class="o">*</span><span class="n">key</span><span class="p">);</span>
+</span><span class='line'>    <span class="kt">unsigned</span> <span class="kt">long</span> <span class="n">len</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">list</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>this knowledge lets us count how much space this will take on the heap and compare it with eg. set if we really need to. (list is imho most memory effective structure)</p>
+
+<p>List iterator is important so its also worth having a peek at even if this is just internal implementation.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="k">typedef</span> <span class="k">struct</span> <span class="n">listIter</span> <span class="p">{</span>
+</span><span class='line'>    <span class="n">listNode</span> <span class="o">*</span><span class="n">next</span><span class="p">;</span>
+</span><span class='line'>    <span class="kt">int</span> <span class="n">direction</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span> <span class="n">listIter</span><span class="p">;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>with this we can take a peek into .c file and check how you get iterator.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">listIter</span> <span class="o">*</span><span class="n">listGetIterator</span><span class="p">(</span><span class="n">list</span> <span class="o">*</span><span class="n">list</span><span class="p">,</span> <span class="kt">int</span> <span class="n">direction</span><span class="p">){</span>
+</span><span class='line'>    <span class="n">listIter</span> <span class="o">*</span><span class="n">iter</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="n">iter</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">iter</span><span class="p">)))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span> <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">if</span> <span class="p">(</span><span class="n">direction</span> <span class="o">==</span> <span class="n">AL_START_HEAD</span><span class="p">)</span>
+</span><span class='line'>        <span class="n">iter</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">else</span>
+</span><span class='line'>        <span class="n">iter</span><span class="o">-&gt;</span><span class="n">next</span> <span class="o">=</span> <span class="n">list</span><span class="o">-&gt;</span><span class="n">tail</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">iter</span><span class="o">-&gt;</span><span class="n">direction</span> <span class="o">=</span> <span class="n">direction</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">iter</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And see that even if AL_START_HEAD is defined as 0 and AL_START_TAIL as 1 if we will use direction of 5 (lol) we will get tail :D I know that i&#8217;m bikesheding now.</p>
+
+<p>Even without going any deeper you have a feeling how this works. Double linked list with (void<em>) value. First thing i thought today was (this was stupid) &#8220;Wow why this is (void </em>) and not (char <em>) this would let compiler better type check it while compilation&#8221; but antirez wrote to me &#8220;@jakuboboza hint: grep listCreate </em>.c&#8221; and that was the hint i needed. (void *) is more generic but list is used in many places in redis internals and i did not thought about it (lol)</p>
+
+<figure class='code'><figcaption><span>grep listCreate *.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ grep listCreate *.c
+</span><span class='line'>adlist.c:list *listCreate<span class="o">(</span>void<span class="o">)</span>
+</span><span class='line'>adlist.c:    <span class="k">if</span> <span class="o">((</span><span class="nv">copy</span> <span class="o">=</span> listCreate<span class="o">())</span> <span class="o">==</span> NULL<span class="o">)</span>
+</span><span class='line'>aof.c:    server.aof_rewrite_buf_blocks <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>aof.c:    c-&gt;reply <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>aof.c:    c-&gt;watched_keys <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>bio.c:        bio_jobs<span class="o">[</span>j<span class="o">]</span> <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>multi.c:        <span class="nv">clients</span> <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>networking.c:    c-&gt;reply <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>networking.c:    c-&gt;io_keys <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>networking.c:    c-&gt;watched_keys <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>networking.c:    c-&gt;pubsub_patterns <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>object.c:    list *l <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>pubsub.c:            <span class="nv">clients</span> <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>redis-benchmark.c:    config.clients <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>redis.c:    server.clients <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>redis.c:    server.clients_to_close <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>redis.c:    server.slaves <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>redis.c:    server.monitors <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>redis.c:    server.unblocked_clients <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>redis.c:    server.ready_keys <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>redis.c:    server.pubsub_patterns <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>sentinel.c:    sentinel.scripts_queue <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>slowlog.c:    server.slowlog <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>sort.c:    <span class="nv">operations</span> <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>t_list.c:        list *l <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>t_list.c:            <span class="nv">l</span> <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>t_list.c:        server.ready_keys <span class="o">=</span> listCreate<span class="o">()</span>;
+</span><span class='line'>ziplist.c:            <span class="nv">ref</span> <span class="o">=</span> listCreate<span class="o">()</span>;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>A lot of places :) lol.</p>
+
+<p>In adlist.c we can also check how the list is created</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="n">list</span> <span class="o">*</span><span class="nf">listCreate</span><span class="p">(</span><span class="kt">void</span><span class="p">)</span>
+</span><span class='line'><span class="p">{</span>
+</span><span class='line'>    <span class="k">struct</span> <span class="n">list</span> <span class="o">*</span><span class="n">list</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">if</span> <span class="p">((</span><span class="n">list</span> <span class="o">=</span> <span class="n">zmalloc</span><span class="p">(</span><span class="k">sizeof</span><span class="p">(</span><span class="o">*</span><span class="n">list</span><span class="p">)))</span> <span class="o">==</span> <span class="nb">NULL</span><span class="p">)</span>
+</span><span class='line'>        <span class="k">return</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">list</span><span class="o">-&gt;</span><span class="n">head</span> <span class="o">=</span> <span class="n">list</span><span class="o">-&gt;</span><span class="n">tail</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">list</span><span class="o">-&gt;</span><span class="n">len</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">list</span><span class="o">-&gt;</span><span class="n">dup</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">list</span><span class="o">-&gt;</span><span class="n">free</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="n">list</span><span class="o">-&gt;</span><span class="n">match</span> <span class="o">=</span> <span class="nb">NULL</span><span class="p">;</span>
+</span><span class='line'>    <span class="k">return</span> <span class="n">list</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is just academic example :D  I love it. This code is easy to understand and just pleasure to read.</p>
+
+<h1>why to even bother talking about internals ?</h1>
+
+<p>It is important to talk about them because if you read in documentation that</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>lpush is O<span class="o">(</span>1<span class="o">)</span>
+</span><span class='line'>rpush is O<span class="o">(</span>1<span class="o">)</span>
+</span><span class='line'>lpop is O<span class="o">(</span>1<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>you really want to check this out to get better understanding how stuff works under the hood. Even if this is trivial example.</p>
+
+<p>It is worth talking about internals of tools that you use, you learn a lot and i think its truth what antirez said, this community is great!</p>
+
+<h1>Next</h1>
+
+<p>Thing to view is suggested by antires Dict!</p>
+
+<p>antirez: &#8220;@jakuboboza it&#8217;s definitely a very simple implementation! Probably our most &#8220;on steroids&#8221; implementation of data structures is dict.c&#8221;</p>
+
+<p>^_____^</p>
+]]></content>
+  </entry>
+  
+  <entry>
     <title type="html"><![CDATA[Failover Redis setup with Sentinel]]></title>
     <link href="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#x6f;&#58;&#x6b;&#x75;&#98;&#97;&#64;&#108;&#97;&#x6d;&#x62;&#x64;&#x61;&#x63;&#117;&#46;&#x62;&#x65;">&#107;&#x75;&#x62;&#x61;&#x40;&#108;&#97;&#109;&#x62;&#100;&#x61;&#99;&#x75;&#46;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#116;&#x6f;&#58;&#x6b;&#117;&#98;&#97;&#64;&#108;&#97;&#109;&#98;&#100;&#97;&#99;&#117;&#x2e;&#x62;&#101;">&#107;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#x62;&#100;&#x61;&#99;&#117;&#46;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
