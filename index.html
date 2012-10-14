@@ -310,6 +310,8 @@ How much we just cut performance ? &#8220;fsync every time a new command is appe
 
 
 <p>I&#8217;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
+
+<p>Loads of things can be brilliant queue choices eg. Redis, ZeroMQ, RabbitMQ or even named pipes but not serialized array in key-value store.</p>
 </div>
   
   
@@ -603,7 +605,7 @@ How much we just cut performance ? &#8220;fsync every time a new command is appe
   </header>
 
 
-  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#111;&#58;&#x6b;&#117;&#x62;&#x61;&#x40;&#108;&#97;&#x6d;&#98;&#x64;&#x61;&#99;&#117;&#46;&#x62;&#x65;">&#107;&#x75;&#x62;&#x61;&#64;&#108;&#97;&#109;&#x62;&#x64;&#x61;&#99;&#117;&#46;&#x62;&#x65;</a> =)</p>
+  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#108;&#x74;&#111;&#58;&#107;&#117;&#98;&#97;&#64;&#108;&#97;&#x6d;&#98;&#x64;&#x61;&#99;&#117;&#46;&#98;&#101;">&#x6b;&#x75;&#x62;&#97;&#x40;&#108;&#x61;&#109;&#x62;&#100;&#97;&#x63;&#117;&#x2e;&#98;&#101;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 

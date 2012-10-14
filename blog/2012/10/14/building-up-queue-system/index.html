@@ -307,6 +307,8 @@ How much we just cut performance ? &#8220;fsync every time a new command is appe
 
 
 <p>I&#8217;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
+
+<p>Loads of things can be brilliant queue choices eg. Redis, ZeroMQ, RabbitMQ or even named pipes but not serialized array in key-value store.</p>
 </div>
 
 

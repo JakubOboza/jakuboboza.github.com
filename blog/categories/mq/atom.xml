@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mq | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/mq/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-10-14T22:17:32+01:00</updated>
+  <updated>2012-10-14T22:18:53+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -186,6 +186,8 @@ select * jobs where done = false
 
 
 <p>I'm 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
+
+<p>Loads of things can be brilliant queue choices eg. Redis, ZeroMQ, RabbitMQ or even named pipes but not serialized array in key-value store.</p>
 ]]></content>
   </entry>
   
