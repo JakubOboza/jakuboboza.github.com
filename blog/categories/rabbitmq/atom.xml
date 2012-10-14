@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rabbitmq | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/rabbitmq/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-10-14T22:18:53+01:00</updated>
+  <updated>2012-10-14T22:34:09+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -136,6 +136,11 @@ select * jobs where done = false
 <p>next you have to clean redis queue and push new data. Is this safe ? No you don't know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
 
 <p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
+
+<h1>Why not MongoDB</h1>
+
+<p>You can't atomically pop stuff. Don't think about pop/push/pushall on array in document!
+If you will have this idea check my gist https://gist.github.com/2071805 run it and see what happens :) what you get back.</p>
 
 <h1>RabbitMQ / ZeroMQ</h1>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: redis | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/redis/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-10-14T22:18:53+01:00</updated>
+  <updated>2012-10-14T22:34:09+01:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -137,6 +137,11 @@ select * jobs where done = false
 
 <p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
 
+<h1>Why not MongoDB</h1>
+
+<p>You can't atomically pop stuff. Don't think about pop/push/pushall on array in document!
+If you will have this idea check my gist https://gist.github.com/2071805 run it and see what happens :) what you get back.</p>
+
 <h1>RabbitMQ / ZeroMQ</h1>
 
 <p>When you will visit ZeroMQ page you will see</p>
@@ -196,7 +201,7 @@ select * jobs where done = false
     <link href="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#111;&#x3a;&#x6b;&#117;&#x62;&#97;&#64;&#x6c;&#97;&#109;&#x62;&#x64;&#x61;&#x63;&#117;&#x2e;&#x62;&#101;">&#x6b;&#x75;&#x62;&#97;&#64;&#x6c;&#97;&#109;&#x62;&#x64;&#x61;&#99;&#117;&#x2e;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#x6f;&#x3a;&#107;&#x75;&#x62;&#97;&#64;&#108;&#x61;&#109;&#x62;&#100;&#97;&#99;&#117;&#x2e;&#x62;&#x65;">&#107;&#117;&#x62;&#x61;&#64;&#x6c;&#97;&#109;&#x62;&#x64;&#97;&#99;&#x75;&#x2e;&#x62;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can't find time to finish this stuff ;/.</p>
 

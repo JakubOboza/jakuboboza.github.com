@@ -248,6 +248,11 @@ How much we just cut performance ? &#8220;fsync every time a new command is appe
 
 <p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
 
+<h1>Why not MongoDB</h1>
+
+<p>You can&#8217;t atomically pop stuff. Don&#8217;t think about pop/push/pushall on array in document!
+If you will have this idea check my gist https://gist.github.com/2071805 run it and see what happens :) what you get back.</p>
+
 <h1>RabbitMQ / ZeroMQ</h1>
 
 <p>When you will visit ZeroMQ page you will see</p>
