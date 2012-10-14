@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="redis cluster in currently unstable, i used todays master HEAD (93a74949d7bb5d0c4115d1bf45f856c368badf31) commit to build my redis server and client &hellip;">
+  <meta name="description" content="I have spend a bit time to find out how to build modules, where to put dependencies and how to form package.json so i decided to create this post to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,351 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/04/23/building-node-dot-js-module-using-npm/">Building node.js Module Using Npm</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-04-23T21:28:00+01:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2012</time>
+        
+         | <a href="/blog/2012/04/23/building-node-dot-js-module-using-npm/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I have spend a bit time to find out how to build modules, where to put dependencies and how to form <code>package.json</code> so i decided to create this post to gather some of this info in one place. This <code>modules</code> are more like ruby <code>gems</code> than parts of language grouping functions also called modules (eg. Erlang). I was recently on conference and i want to post something about module i was working on at airport but before next post i need to add this so i will have something to reference to.</p>
+
+<h1>npm</h1>
+
+<p>Npm stands for node package manager and it is something like gems in ruby, eggs in python or apt in debian. It lets you search, install and update your node or application modules. You can create node.js modules without <code>npm</code> but if you want to publish your module its better to do it this way. If you have node.js <code>&gt;0.6.10</code> you should have npm bundled with your instalation if not go to <a href="http://npmjs.org/">http://npmjs.org/</a> and follow the instructions. (for normal platforms all you have to do i run <code>http://npmjs.org/install.sh</code>)</p>
+
+<h1>scaffold</h1>
+
+<p>First thing to do is to initialize our module, to do this we need to create a directory for it and run npm init like this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ mkdir my_first_module <span class="o">&amp;&amp;</span> <span class="nb">cd </span>my_first_module
+</span><span class='line'>λ npm init
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next he will ask us few questions, we should answer ;).
+example output:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>Package name: <span class="o">(</span>my_first_module<span class="o">)</span>
+</span><span class='line'>Description: my first module
+</span><span class='line'>Package version: <span class="o">(</span>0.0.0<span class="o">)</span>
+</span><span class='line'>Project homepage: <span class="o">(</span>none<span class="o">)</span> no-fucking-idea.com
+</span><span class='line'>Project git repository: <span class="o">(</span>none<span class="o">)</span>
+</span><span class='line'>Author name: Jakub Oboza
+</span><span class='line'>Author email: <span class="o">(</span>none<span class="o">)</span> jakub.oboza@gmail.com
+</span><span class='line'>Author url: <span class="o">(</span>none<span class="o">)</span> no-fucking-idea.com
+</span><span class='line'>Main module/entry point: <span class="o">(</span>none<span class="o">)</span>
+</span><span class='line'>Test <span class="nb">command</span>: <span class="o">(</span>none<span class="o">)</span> mocha -R landing lib/my_first_module.js
+</span><span class='line'>About to write to /private/tmp/my_first_module/package.json
+</span><span class='line'>
+</span><span class='line'><span class="o">{</span>
+</span><span class='line'>  <span class="s2">&quot;author&quot;</span>: <span class="s2">&quot;Jakub Oboza &lt;jakub.oboza@gmail.com&gt; (no-fucking-idea.com)&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;name&quot;</span>: <span class="s2">&quot;my_first_module&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;description&quot;</span>: <span class="s2">&quot;my first module&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;version&quot;</span>: <span class="s2">&quot;0.0.0&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;homepage&quot;</span>: <span class="s2">&quot;no-fucking-idea.com&quot;</span>,
+</span><span class='line'>  <span class="s2">&quot;scripts&quot;</span>: <span class="o">{</span>
+</span><span class='line'>    <span class="s2">&quot;test&quot;</span>: <span class="s2">&quot;mocha -R landing lib/my_first_module.js&quot;</span>
+</span><span class='line'>  <span class="o">}</span>,
+</span><span class='line'>  <span class="s2">&quot;dependencies&quot;</span>: <span class="o">{}</span>,
+</span><span class='line'>  <span class="s2">&quot;devDependencies&quot;</span>: <span class="o">{}</span>,
+</span><span class='line'>  <span class="s2">&quot;optionalDependencies&quot;</span>: <span class="o">{}</span>,
+</span><span class='line'>  <span class="s2">&quot;engines&quot;</span>: <span class="o">{</span>
+</span><span class='line'>    <span class="s2">&quot;node&quot;</span>: <span class="s2">&quot;*&quot;</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>Is this ok? <span class="o">(</span>yes<span class="o">)</span> yes
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will create for us <code>package.json</code>. Now we have fully functional module and we could stop now&#8230;. but</p>
+
+<h1>package.json</h1>
+
+<p>This file is description of our package. It is in form of json so it should be easy to read and change.
+Most of this fields don&#8217;t need a lot of description because keys are self explaining but things that we should look at is <code>"scripts"</code> where we defined <code>"test"</code> key. If we will now run <code>npm test</code> he will execute this command that is very useful.</p>
+
+<p>Engines defined on what version of <code>node.js</code> our code will work leaving it to <code>*</code> is a bit hazard. You can set it to something specific if you want.</p>
+
+<p>Important thing! If we will not specify entry point to our module by default it will be looking for <code>index.js</code> so for now lets leave it this way.</p>
+
+<h1>tests with mocha</h1>
+
+<p>If we want to write reasonable code that we want to rely on we should be doing massive testing. I think <code>mocha</code> is a very good library for this purpose! I strongly suggest installing it with flag <code>-g</code> so it will be accessible in global scope of <code>npm</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ npm install -g mocha
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h1>Code</h1>
+
+<p>Ok but we don&#8217;t have any code yet ;/. Yes lets start coding.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ mkdir lib
+</span><span class='line'>λ touch index.js
+</span><span class='line'>λ touch lib/my_first_module.js
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok so we created <code>lib</code> directory with out module code, empty module file and index file. Now lets run the tests and see what happened.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ npm <span class="nb">test</span>
+</span><span class='line'>
+</span><span class='line'>&gt; my_first_module@0.0.0 <span class="nb">test</span> /private/my_first_module
+</span><span class='line'>&gt; mocha -R landing lib/my_first_module.js
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  ✔ 0 tests <span class="nb">complete</span> <span class="o">(</span>1ms<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Everything passed, that is expected because we don&#8217;t have any tests :) Now lets add to <code>package.json</code> one more thing development dependency for <code>should.js</code> it will enable us to use mocha in a bit <code>rspec</code> bdd style. Like this:</p>
+
+<figure class='code'><figcaption><span>package.json</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'>  <span class="s2">&quot;devDependencies&quot;</span><span class="o">:</span> <span class="p">{</span>
+</span><span class='line'>    <span class="s2">&quot;should&quot;</span><span class="o">:</span> <span class="s2">&quot;&gt;= 0.0.0&quot;</span>
+</span><span class='line'>  <span class="p">},</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And again <code>npm install -l</code> to get everything installed locally.</p>
+
+<h2>First test</h2>
+
+<p>Initial mocha test for our module</p>
+
+<figure class='code'><figcaption><span>lib/my_first_module.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">MyFirstFoo</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">MyFirstFoo</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;should&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;MyFirstFoo&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should be able to add&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">MyFirstFoo</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">).</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First we define empty body of function next we have <code>module.exports =</code> this is to mark which functions will be visible outside this module when other clients will <code>require</code> this module.  If you need more info about writing specs in mocha please read my earlier post <a href="http://no-fucking-idea.com/blog/2012/04/05/testing-handlebars-with-mocha/">http://no-fucking-idea.com/blog/2012/04/05/testing-handlebars-with-mocha/</a>. Now lets run <code>npm test</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> λ npm <span class="nb">test</span>
+</span><span class='line'>
+</span><span class='line'>&gt; my_first_module@0.0.0 <span class="nb">test</span> /private/tmp/my_first_module
+</span><span class='line'>&gt; mocha -R landing lib/my_first_module.js
+</span><span class='line'>  -----------------------------------------------------------------------------------------------------------------------------------------------
+</span><span class='line'>  ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅✈
+</span><span class='line'>  -----------------------------------------------------------------------------------------------------------------------------------------------
+</span><span class='line'>
+</span><span class='line'>  ✖ 1 of 1 tests failed:
+</span><span class='line'>
+</span><span class='line'>  1<span class="o">)</span> MyFirstFoo should be able to add:
+</span><span class='line'>     TypeError: Cannot <span class="nb">read </span>property <span class="s1">&#39;should&#39;</span> of undefined
+</span><span class='line'>      at Context.&lt;anonymous&gt; <span class="o">(</span>/private/tmp/lol/my_first_module/lib/my_first_module.js:13:21<span class="o">)</span>
+</span><span class='line'>      at Test.run <span class="o">(</span>/opt/local/lib/node_modules/mocha/lib/runnable.js:156:32<span class="o">)</span>
+</span><span class='line'>      at Runner.runTest <span class="o">(</span>/opt/local/lib/node_modules/mocha/lib/runner.js:272:10<span class="o">)</span>
+</span><span class='line'>      at /opt/local/lib/node_modules/mocha/lib/runner.js:316:12
+</span><span class='line'>      at next <span class="o">(</span>/opt/local/lib/node_modules/mocha/lib/runner.js:199:14<span class="o">)</span>
+</span><span class='line'>      at /opt/local/lib/node_modules/mocha/lib/runner.js:208:7
+</span><span class='line'>      at next <span class="o">(</span>/opt/local/lib/node_modules/mocha/lib/runner.js:157:23<span class="o">)</span>
+</span><span class='line'>      at Array.0 <span class="o">(</span>/opt/local/lib/node_modules/mocha/lib/runner.js:176:5<span class="o">)</span>
+</span><span class='line'>      at EventEmitter._tickCallback <span class="o">(</span>node.js:192:40<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>...
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Fails as expected so lets ad implementation to our function.</p>
+
+<figure class='code'><figcaption><span>lib/my_first_module.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">MyFirstFoo</span><span class="p">(</span><span class="nx">a</span><span class="p">,</span> <span class="nx">b</span><span class="p">){</span>
+</span><span class='line'>  <span class="k">return</span> <span class="nx">a</span> <span class="o">+</span> <span class="nx">b</span><span class="p">;</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nx">module</span><span class="p">.</span><span class="nx">exports</span> <span class="o">=</span> <span class="nx">MyFirstFoo</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">require</span><span class="p">(</span><span class="s1">&#39;should&#39;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;MyFirstFoo&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>  <span class="nx">it</span><span class="p">(</span><span class="s2">&quot;should be able to add&quot;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
+</span><span class='line'>    <span class="nx">MyFirstFoo</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">3</span><span class="p">).</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">[</span><span class="mi">5</span><span class="p">];</span>
+</span><span class='line'>  <span class="p">});</span>
+</span><span class='line'><span class="p">});</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And run <code>npm test</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ npm <span class="nb">test</span>
+</span><span class='line'>
+</span><span class='line'>&gt; my_first_module@0.0.0 <span class="nb">test</span> /private/tmp/lol/my_first_module
+</span><span class='line'>&gt; mocha -R landing lib/my_first_module.js
+</span><span class='line'>  -----------------------------------------------------------------------------------------------------------------------------------------------
+</span><span class='line'>  ⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅⋅✈
+</span><span class='line'>  -----------------------------------------------------------------------------------------------------------------------------------------------
+</span><span class='line'>
+</span><span class='line'>  ✔ 1 tests <span class="nb">complete</span> <span class="o">(</span>2ms<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We have landed safely ;) Now we are ready for development!</p>
+
+<h1>Summary</h1>
+
+<p>Creating good quality of code requires testing in node.js thats why i decided to join this two things and explain how to marry them both fast. More info can be found here <a href="http://howtonode.org/how-to-module">http://howtonode.org/how-to-module</a>.</p>
+
+<p>I hope it helped a bit.
+Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2807,6 +3152,10 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/10/14/building-up-queue-system/">Building up Queue system</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/09/26/redis-list-internals/">Redis List internals</a>
       </li>
     
@@ -2820,10 +3169,6 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
     
       <li class="post">
         <a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/">Designing todo app backend using redis and mongodb</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/">Api prototyping with Rails respond_with</a>
       </li>
     
   </ul>

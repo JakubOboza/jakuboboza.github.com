@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mq | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/mq/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-10-14T22:17:32+01:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Building up Queue system]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/10/14/building-up-queue-system/"/>
+    <updated>2012-10-14T21:16:00+01:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/10/14/building-up-queue-system</id>
+    <content type="html"><![CDATA[<p>Queue = FIFO, First in, First Out.</p>
+
+<p>Many people use adds queue system to their products. Some of them do legendary things with it to make it extremely unreliable products :). Most of this solutions may seem trolling but they actually exists in some products.</p>
+
+<h1>Rolling out own queue system</h1>
+
+<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don't have constraint that data can never be lost!</p>
+
+<h2>Can lose data in queue</h2>
+
+<p>If you use queue just to communicate between processes you can use something like unix name pipe. In reality this is just a file. Actually in Unix everything is a file and this is best ever design (if you neglect it you should die!).</p>
+
+<p><code>bash name_pipe
+mkfifo oldschool_pipe
+gzip -9 -c &lt; oldschool_pipe &gt; out.gz &amp;
+</code></p>
+
+<p>And next you can use it to push stuff into it eg.</p>
+
+<p><code>bash example
+eacho "oldschoolllzzzz!!!!" &gt; oldschool_pipe
+</code>
+but this is shell example, you could create it and just read/write it in your processes.</p>
+
+<p>That is cool. And this is the last point where we will not see problems :)))</p>
+
+<h2>But we are programmers!</h2>
+
+<p>Yes we are programmers and most of us are young and full of energy nobody remembers 70' i was born in 85 so i technically would be quite mad if i would remember 70'.</p>
+
+<p>So how we approach problems so of us would create inside of their code queue.</p>
+
+<p>In C it would be simply array wrapped with mutex'es but this is unreliable and its long to write and and and...</p>
+
+<p>So what people do ? They try use READY products.</p>
+
+<h2>First big mistake</h2>
+
+<p>Use key-value store as queue.
+- Lets serialize array into XYZ and set it into key.
+- That's good idea! Only one thing will write to it!</p>
+
+<p>WRONG!</p>
+
+<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know "agile says XYZ now"... actually "agile" don't say "take drugs an yolo because tomorrow you can die" but "TAKE RISKY THINGS FIRST" and this is risky thing. Should be implemented well.</p>
+
+<p>What happens in this case ? Someone gets a great idea that product should scale adds another daemon and this f*cks up queue you lose messages.</p>
+
+<p>Some dbms can handle this problem, but wrapping it into transaction will not solve the problem.</p>
+
+<p>Scenario is:
+Process a)</p>
+
+<ul>
+<li>reads queue</li>
+<li>process is (makes a pop or push)</li>
+<li>saves the serialised queue</li>
+</ul>
+
+
+<p>Now imagine process b) does the same. Everything is blazing fast and you get f*cked.</p>
+
+<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don't know how to resolve this issue but at least you would know... but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
+
+<h2>Redis list as queue</h2>
+
+<p>Redis is great tool to build a lot of stuff. And it has built in data structures. I think this is ground breaking because previous solutions like RDBMS most commonly use or other NoSQL solutions. Redis is great how to make queue within redis ?</p>
+
+<p><code>bash queue
+lpush queue_name value -&gt; push
+rpop queue_name -&gt; pop
+</code></p>
+
+<p>example like this</p>
+
+<p><code>bash redis_example
+redis 127.0.0.1:6379&gt; lpush queue 1
+(integer) 1
+redis 127.0.0.1:6379&gt; lpush queue 2
+(integer) 2
+redis 127.0.0.1:6379&gt; lpush queue 7
+(integer) 3
+redis 127.0.0.1:6379&gt; rpop queue
+"1"
+redis 127.0.0.1:6379&gt; rpop queue
+"2"
+redis 127.0.0.1:6379&gt; rpop queue
+"7"
+redis 127.0.0.1:6379&gt; rpop queue
+(nil)
+</code></p>
+
+<p>Cool ! Works great and any process can access it in atomic way isn't it great ? best thing ever ?!</p>
+
+<p>Actually it is very good. But there is one thing you just missed! Redis do a flush of keys every 60 sec if 10k keys did change by default. What does it mean ? You can get screwed if redis will instantly die!</p>
+
+<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section "Append-only file"</p>
+
+<p><code>bash redis_config.fix
+- appendonly no
++ appendonly yes
+</code></p>
+
+<p>Man you just did it, you lost some performance but you did it. Who would knew ? You just saved the world.
+How much we just cut performance ? "fsync every time a new command is appended to the AOF. Very very slow, very safe." that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
+
+<h2>Can't lose any data! Redis plus Mysql/Postgres</h2>
+
+<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on "appendonly yes". Also it makes things hell more complicated and forces you to do updates in both system.</p>
+
+<p>Is this system cure for cancer ? No! You have to have very good queue fail recovery / startup system. Simply empty list and make query
+<code>bash startup
+select * jobs where done = false
+</code></p>
+
+<p>next you have to clean redis queue and push new data. Is this safe ? No you don't know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
+
+<p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
+
+<h1>RabbitMQ / ZeroMQ</h1>
+
+<p>When you will visit ZeroMQ page you will see</p>
+
+<p><code>bash intro
+ØMQ \zeromq\:
+ Ø  The socket library that acts as a concurrency framework.
+ Ø  Faster than TCP, for clustered products and supercomputing.
+ Ø  Carries messages across inproc, IPC, TCP, and multicast.
+ Ø  Connect N-to-N via fanout, pubsub, pipeline, request-reply.
+ Ø  Asynch I/O for scalable multicore message-passing apps.
+ Ø  Large and active open source community.
+ Ø  30+ languages including C, C++, Java, .NET, Python.
+ Ø  Most OSes including Linux, Windows, OS X.
+ Ø  LGPL free software with full commercial support from iMatix.
+</code></p>
+
+<p>Nothing about consistency FASTERN THAN (this has to be good) TCP but can use TCP (i wonder if it can be faster than TCP even using TCP /trollface). Anyway you see a lot of stuff. I started some search on zeromq losing data and what i found <a href="http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver">http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver</a> a nice image.</p>
+
+<p><a href="https://github.com/imatix/zguide/raw/master/images/fig9.png">Problem resolution diagram</a></p>
+
+<p>Big thing :)</p>
+
+<p>If you will visit rabbitmq page <a href="http://www.rabbitmq.com/">http://www.rabbitmq.com/</a> you will see a lot of nice things like tutorial etc. Page is nice and has useful knowledge. Both solutions have client in Erlang (massive plus) and other languages. And even while setting up whole thing may be a pain i think this is a solid option both ZeromMQ and RabbitMQ.</p>
+
+<h1>Why do we use Queues ?</h1>
+
+<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain't doing our job properly.</p>
+
+<p>What makes things hard.</p>
+
+<ul>
+<li>Locks if we use them, they will bite you back</li>
+<li>Many points where we store same data in different way</li>
+<li>Yes, locks will bite you back</li>
+</ul>
+
+
+<h1>So what is the best way to go ?</h1>
+
+<p>I think the best way to go is just to start a new movement called Unix Archeology because we seems to be reinventing the wheel too many times. But really</p>
+
+<ul>
+<li>Make a list of solution</li>
+<li>Ask your self if your idea is really good</li>
+</ul>
+
+
+<p>I'm 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
+]]></content>
+  </entry>
+  
+</feed>
