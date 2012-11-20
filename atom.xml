@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-10-14T22:35:51+01:00</updated>
+  <updated>2012-11-20T20:01:42+00:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,139 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Erlang: digraph]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/11/20/erlang-digraph/"/>
+    <updated>2012-11-20T19:20:00+00:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/11/20/erlang-digraph</id>
+    <content type="html"><![CDATA[<ul>
+<li>This is more &#8220;note to self&#8221; type of post rather than tutorial thing.</li>
+<li>It&#8217;s hard to write blog posts when you are trying to take over the world :)</li>
+</ul>
+
+
+<h1>Why ?</h1>
+
+<p>Recently in &#8220;professor Toons&#8221; :)  computer club was a task that was ideal to solve as graph. It was one of this &#8220;find path&#8221; tasks. Yesterday just before going to bed I thought &#8220;Why not solve it in Erlang&#8221;.  And this are my thoughts about erlang digraph: library.</p>
+
+<h2>Task</h2>
+
+<p>First of all <a href="http://erldocs.com/">http://erldocs.com/</a> is the way to go when working with documentation.</p>
+
+<p>Second &#8220;the Task&#8221;. It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
+
+<p>example.</p>
+
+<p>if you have song list:
+ABC
+CBA
+BAC
+ACB
+BBA</p>
+
+<p>And you want to find playlist from ABC to BAC you will get ABC -> CBA -> ACB -> BAC. Easy</p>
+
+<h2>Digraph</h2>
+
+<p>Digraph API is quite nice but there are few things you have to have in mind.</p>
+
+<ul>
+<li>Digraph is imperative graph!</li>
+<li>You need to pass vertices to get_path!</li>
+<li>Graph with loads of edges can be quite big :D</li>
+</ul>
+
+
+<p>To create empty graph you call :new/0</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Graph</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">new</span><span class="p">().</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To add node to graph you call :add_vertex/2</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Data</span> <span class="o">=</span> <span class="p">{</span><span class="nv">Value1</span><span class="p">,</span> <span class="nv">Value2</span><span class="p">,</span> <span class="nv">Value3</span><span class="p">},</span>
+</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">Graph</span><span class="p">,</span> <span class="nv">Data</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To add edge to graph you call :add_edge/3</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">Graph</span><span class="p">,</span> <span class="nv">VertexStart</span><span class="p">,</span> <span class="nv">VertexEnd</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>To get all vertices from graph (random order) :vertices/1</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Vertices</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">vertices</span><span class="p">(</span><span class="nv">Graph</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And finally to get path you just call :get_path/3</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Path</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">get_path</span><span class="p">(</span><span class="nv">Graph</span><span class="p">,</span> <span class="nv">VertexStart</span><span class="p">,</span> <span class="nv">VertexEnd</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This path is a list of vertices in order.  This API is just to remind me essential things about using the digraph from erlang stdlib. This graph is quite simple.</p>
+
+<p>And for me for about 5000 vertices and a lot of edges it consumed 1.5 GB of ram. But when it was created it was super fast to use.</p>
+
+<p>It was fun to play with.</p>
+
+<h2>Quick summary</h2>
+
+<p>I will make quick summary in form of short code sample!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">G</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">new</span><span class="p">(),</span>
+</span><span class='line'><span class="nv">V1</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;Andrychow&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="nv">V2</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;Krakow&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="nv">V3</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;London&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="nv">V4</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;Warsaw&quot;</span><span class="p">),</span>
+</span><span class='line'><span class="nv">V5</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;Paris&quot;</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V1</span><span class="p">,</span> <span class="nv">V2</span><span class="p">),</span>
+</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V2</span><span class="p">,</span> <span class="nv">V4</span><span class="p">),</span>
+</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V2</span><span class="p">,</span> <span class="nv">V5</span><span class="p">),</span>
+</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V2</span><span class="p">,</span> <span class="nv">V3</span><span class="p">),</span>
+</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V3</span><span class="p">,</span> <span class="nv">V4</span><span class="p">),</span>
+</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V3</span><span class="p">,</span> <span class="nv">V2</span><span class="p">),</span>
+</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V2</span><span class="p">,</span> <span class="nv">V1</span><span class="p">),</span>
+</span><span class='line'>
+</span><span class='line'><span class="nv">PathHome</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">get_path</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V3</span><span class="p">,</span> <span class="nv">V1</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This gives you back <code>["London","Krakow","Andrychow"]</code> so Win! we are at home!</p>
+
+<h1>Summary</h1>
+
+<p>It was fun to play a bit with digraph before going to bed. There is a tone of things i did not use and also look into digraph_utils for even more things :)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Building up Queue system]]></title>
@@ -462,7 +595,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#107;&#117;&#x62;&#97;&#x40;&#108;&#x61;&#109;&#x62;&#100;&#x61;&#x63;&#117;&#46;&#x62;&#x65;">&#107;&#x75;&#x62;&#97;&#64;&#108;&#x61;&#109;&#x62;&#100;&#x61;&#99;&#x75;&#46;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#107;&#x75;&#98;&#x61;&#64;&#108;&#97;&#109;&#98;&#x64;&#97;&#x63;&#117;&#46;&#x62;&#x65;">&#107;&#x75;&#x62;&#97;&#64;&#x6c;&#x61;&#x6d;&#x62;&#100;&#97;&#x63;&#x75;&#x2e;&#x62;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 

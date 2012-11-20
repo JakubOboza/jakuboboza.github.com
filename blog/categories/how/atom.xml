@@ -1,0 +1,125 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: how | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/how/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-11-20T20:01:42+00:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Erlang: digraph]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/11/20/erlang-digraph/"/>
+    <updated>2012-11-20T19:20:00+00:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/11/20/erlang-digraph</id>
+    <content type="html"><![CDATA[<ul>
+<li>This is more "note to self" type of post rather than tutorial thing.</li>
+<li>It's hard to write blog posts when you are trying to take over the world :)</li>
+</ul>
+
+
+<h1>Why ?</h1>
+
+<p>Recently in "professor Toons" :)  computer club was a task that was ideal to solve as graph. It was one of this "find path" tasks. Yesterday just before going to bed I thought "Why not solve it in Erlang".  And this are my thoughts about erlang digraph: library.</p>
+
+<h2>Task</h2>
+
+<p>First of all <a href="http://erldocs.com/">http://erldocs.com/</a> is the way to go when working with documentation.</p>
+
+<p>Second "the Task". It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
+
+<p>example.</p>
+
+<p>if you have song list:
+ABC
+CBA
+BAC
+ACB
+BBA</p>
+
+<p>And you want to find playlist from ABC to BAC you will get ABC -> CBA -> ACB -> BAC. Easy</p>
+
+<h2>Digraph</h2>
+
+<p>Digraph API is quite nice but there are few things you have to have in mind.</p>
+
+<ul>
+<li>Digraph is imperative graph!</li>
+<li>You need to pass vertices to get_path!</li>
+<li>Graph with loads of edges can be quite big :D</li>
+</ul>
+
+
+<p>To create empty graph you call :new/0</p>
+
+<p><code>erlang
+Graph = digraph:new().
+</code></p>
+
+<p>To add node to graph you call :add_vertex/2</p>
+
+<p><code>erlang
+Data = {Value1, Value2, Value3},
+digraph:add_vertex(Graph, Data).
+</code></p>
+
+<p>To add edge to graph you call :add_edge/3</p>
+
+<p><code>erlang
+digraph:add_edge(Graph, VertexStart, VertexEnd).
+</code></p>
+
+<p>To get all vertices from graph (random order) :vertices/1
+<code>erlang
+Vertices = digraph:vertices(Graph).
+</code></p>
+
+<p>And finally to get path you just call :get_path/3</p>
+
+<p><code>erlang
+Path = digraph:get_path(Graph, VertexStart, VertexEnd).
+</code></p>
+
+<p>This path is a list of vertices in order.  This API is just to remind me essential things about using the digraph from erlang stdlib. This graph is quite simple.</p>
+
+<p>And for me for about 5000 vertices and a lot of edges it consumed 1.5 GB of ram. But when it was created it was super fast to use.</p>
+
+<p>It was fun to play with.</p>
+
+<h2>Quick summary</h2>
+
+<p>I will make quick summary in form of short code sample!</p>
+
+<p>``` erlang
+G = digraph:new(),
+V1 = digraph:add_vertex(G, "Andrychow"),
+V2 = digraph:add_vertex(G, "Krakow"),
+V3 = digraph:add_vertex(G, "London"),
+V4 = digraph:add_vertex(G, "Warsaw"),
+V5 = digraph:add_vertex(G, "Paris"),</p>
+
+<p>digraph:add_edge(G, V1, V2),
+digraph:add_edge(G, V2, V4),
+digraph:add_edge(G, V2, V5),
+digraph:add_edge(G, V2, V3),
+digraph:add_edge(G, V3, V4),
+digraph:add_edge(G, V3, V2),
+digraph:add_edge(G, V2, V1),</p>
+
+<p>PathHome = digraph:get_path(G, V3, V1).
+<code>``
+This gives you back</code>["London","Krakow","Andrychow"]` so Win! we are at home!</p>
+
+<h1>Summary</h1>
+
+<p>It was fun to play a bit with digraph before going to bed. There is a tone of things i did not use and also look into digraph_utils for even more things :)</p>
+]]></content>
+  </entry>
+  
+</feed>
