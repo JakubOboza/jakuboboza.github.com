@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: usage | No Fucking Idea]]></title>
+  <link href="http://JakubOboza.github.com/blog/categories/usage/atom.xml" rel="self"/>
+  <link href="http://JakubOboza.github.com/"/>
+  <updated>2012-12-11T22:09:53+00:00</updated>
+  <id>http://JakubOboza.github.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Using tcpdump]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/12/11/using-tcpdump/"/>
+    <updated>2012-12-11T21:02:00+00:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/12/11/using-tcpdump</id>
+    <content type="html"><![CDATA[<p>We all love <code>tcpdump</code> :D So i found this tool useful while i was working on many things. Guess what ? it if very useful when working with network related stuff :D but its uneasy to grasp. This is my list of commands and options I use.</p>
+
+<h2>Mac, Linux</h2>
+
+<p>In this text i use <code>en0</code>, <code>en1</code> naming convention from OSX if you are linux user you should change it to eth0, eth1 w... check your network config using <code>ifconfig</code>. Basic knowledge required! =)</p>
+
+<h1>Tcpdump</h1>
+
+<p>Tcpdump is a tool that lets you dump network packets. This helps to debug networking issues, apis, communication or other stuff.</p>
+
+<h2>Basic options</h2>
+
+<p>Tcpdump basic options are</p>
+
+<ul>
+<li>-i 'interface'  option lets you specify on which interface you will listen</li>
+<li>-nS lets you see basic information about packets</li>
+<li>-v, -vv, -vvv verbose mode</li>
+<li>-s 1514 lets you specify how much data from packet is displayed. In this case you see whole packet</li>
+<li>src, dst listening on specific things for source or destination</li>
+<li>net eg. 192.168.0.1/24 listening on all stuff in some network.</li>
+<li>port eg. port 3000 lets you listen on port</li>
+</ul>
+
+
+<h2>First example, getting info</h2>
+
+<p>First thing that people do often is to listen to everything that bounces en1 like this:</p>
+
+<p><code>bash
+sudo tcpdump -nS -i en1
+</code>
+This is obviously bad idea, only good thing about its that i lets you see that "something is on" so you will be able to say that this device is actually working.</p>
+
+<h2>Example two, targeting host!</h2>
+
+<p>If you want to see all traffic that goes to some host, so something that is useful you should add <code>host</code> option.
+<code>bash
+sudo tcpdump -nS -i en1 host www.facebook.com
+</code>
+This will let you see if there are some packets going to and from &lt;www.facebook.com>.</p>
+
+<h2>Example three, give me stuff targeting some port!</h2>
+
+<p>Lets say you want to see what generates curl to your own machine
+<code>bash
+sudo tcpdump -vvnS -i lo0 port 4000
+</code>
+and in other shell just type
+<code>bash
+curl http://localhost:4000
+</code>
+port is most fun option because it lets you see stuff that you are interested in.</p>
+
+<h1>Summary</h1>
+
+<p>Tcpdump is useful tool and i hope this text will let me not constantly forget its options.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

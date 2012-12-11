@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-11-20T20:01:42+00:00</updated>
+  <updated>2012-12-11T22:09:53+00:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,84 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Using tcpdump]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/12/11/using-tcpdump/"/>
+    <updated>2012-12-11T21:02:00+00:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/12/11/using-tcpdump</id>
+    <content type="html"><![CDATA[<p>We all love <code>tcpdump</code> :D So i found this tool useful while i was working on many things. Guess what ? it if very useful when working with network related stuff :D but its uneasy to grasp. This is my list of commands and options I use.</p>
+
+<h2>Mac, Linux</h2>
+
+<p>In this text i use <code>en0</code>, <code>en1</code> naming convention from OSX if you are linux user you should change it to eth0, eth1 w&#8230; check your network config using <code>ifconfig</code>. Basic knowledge required! =)</p>
+
+<h1>Tcpdump</h1>
+
+<p>Tcpdump is a tool that lets you dump network packets. This helps to debug networking issues, apis, communication or other stuff.</p>
+
+<h2>Basic options</h2>
+
+<p>Tcpdump basic options are</p>
+
+<ul>
+<li>-i &#8216;interface&#8217;  option lets you specify on which interface you will listen</li>
+<li>-nS lets you see basic information about packets</li>
+<li>-v, -vv, -vvv verbose mode</li>
+<li>-s 1514 lets you specify how much data from packet is displayed. In this case you see whole packet</li>
+<li>src, dst listening on specific things for source or destination</li>
+<li>net eg. 192.168.0.1/24 listening on all stuff in some network.</li>
+<li>port eg. port 3000 lets you listen on port</li>
+</ul>
+
+
+<h2>First example, getting info</h2>
+
+<p>First thing that people do often is to listen to everything that bounces en1 like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo tcpdump -nS -i en1
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is obviously bad idea, only good thing about its that i lets you see that &#8220;something is on&#8221; so you will be able to say that this device is actually working.</p>
+
+<h2>Example two, targeting host!</h2>
+
+<p>If you want to see all traffic that goes to some host, so something that is useful you should add <code>host</code> option.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo tcpdump -nS -i en1 host www.facebook.com
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will let you see if there are some packets going to and from &lt;www.facebook.com>.</p>
+
+<h2>Example three, give me stuff targeting some port!</h2>
+
+<p>Lets say you want to see what generates curl to your own machine</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>sudo tcpdump -vvnS -i lo0 port 4000
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and in other shell just type</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>curl http://localhost:4000
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>port is most fun option because it lets you see stuff that you are interested in.</p>
+
+<h1>Summary</h1>
+
+<p>Tcpdump is useful tool and i hope this text will let me not constantly forget its options.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Erlang: digraph]]></title>
@@ -595,7 +673,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#107;&#x75;&#98;&#x61;&#64;&#108;&#97;&#109;&#98;&#x64;&#97;&#x63;&#117;&#46;&#x62;&#x65;">&#107;&#x75;&#x62;&#97;&#64;&#x6c;&#x61;&#x6d;&#x62;&#100;&#97;&#x63;&#x75;&#x2e;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#x6f;&#x3a;&#107;&#x75;&#98;&#x61;&#64;&#108;&#97;&#x6d;&#x62;&#x64;&#x61;&#99;&#117;&#x2e;&#x62;&#x65;">&#x6b;&#x75;&#98;&#x61;&#x40;&#108;&#97;&#x6d;&#x62;&#x64;&#x61;&#99;&#117;&#x2e;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
@@ -4361,436 +4439,6 @@ to compile it just run <code>rebar compile</code></p>
 <h1>Summary</h1>
 
 <p>I love this tool, it makes learning and development in <code>Erlang</code> much easier and more rewarding experience. I hope this help you a bit :). Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Using eredis, redis with erlang]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang/"/>
-    <updated>2012-03-23T23:28:00+00:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/03/23/using-eredis-in-erlang</id>
-    <content type="html"><![CDATA[<p>Recently i decided to move my blog from <code>tumblr.com</code> to <code>octopress engine</code> because it is just easier for me to maintain it and it looks nicer. The old blog is under <a href="http://no-fucking-idea.tumblr.com">http://no-fucking-idea.tumblr.com</a>. My first post on new blog is dedicated to using redis with erlang.</p>
-
-<h1>Eredis</h1>
-
-<p>Wooga created a really nice (performance driven) redis driver for erlang. You can get it here <a href="https://github.com/wooga/eredis">https://github.com/wooga/eredis</a>. It is really easy and nice.</p>
-
-<h1>Initial sample</h1>
-
-<p>On project page you can find simple examples how to use eredis. Examples there are all you need (but i need something for front page of my new blog so i will rewrite them and explain them :) ).</p>
-
-<h2>First you need to start your eredis application</h2>
-
-<figure class='code'><figcaption><span>initialization</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Client</span><span class="p">}</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">start_link</span><span class="p">().</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>
-Client is the &#8220;connection / state&#8221; we will be using with rest of queries.</p>
-
-<p>To query things with redis we will use <code>q</code> method from eredis module which takes &#8220;Connection / Client&#8221; state and list with params.
-This api is very simple here are two most basic examples of get and set.
-GET:</p>
-
-<figure class='code'><figcaption><span>get</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;OK&quot;</span><span class="o">&gt;&gt;</span><span class="p">}</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">q</span><span class="p">(</span><span class="nv">Client</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;SET&quot;</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">,</span> <span class="s">&quot;kuba&quot;</span><span class="p">]).</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and SET:</p>
-
-<figure class='code'><figcaption><span>set</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;kuba&quot;</span><span class="o">&gt;&gt;</span><span class="p">}</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">q</span><span class="p">(</span><span class="nv">Client</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="s">&quot;name&quot;</span><span class="p">]).</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass &#8220;Connection / Client&#8221; as state and also we will build some &#8220;key&#8221; serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
-
-<h1>Free Api wrapper</h1>
-
-<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server&#8217;s and applications.</p>
-
-<figure class='code'><figcaption><span>example_db.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">example_db</span><span class="p">).</span>
-</span><span class='line'><span class="p">-</span><span class="ni">behaviour</span><span class="p">(</span><span class="n">gen_server</span><span class="p">).</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">-</span><span class="ni">author</span><span class="p">(</span><span class="s">&quot;jakub.oboza@gmail.com&quot;</span><span class="p">).</span>
-</span><span class='line'><span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">Prefix</span><span class="p">,</span> <span class="s">&quot;example&quot;</span><span class="p">).</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">start_link</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
-</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">init</span><span class="o">/</span><span class="mi">1</span><span class="p">,</span> <span class="n">handle_call</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="n">handle_cast</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">terminate</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">handle_info</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">code_change</span><span class="o">/</span><span class="mi">3</span><span class="p">,</span> <span class="n">stop</span><span class="o">/</span><span class="mi">1</span><span class="p">]).</span>
-</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">get_script</span><span class="o">/</span><span class="mi">2</span><span class="p">,</span> <span class="n">save_script</span><span class="o">/</span><span class="mi">3</span><span class="p">]).</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">% public api</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">start_link</span><span class="p">()</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="nn">gen_server</span><span class="p">:</span><span class="n">start_link</span><span class="p">({</span><span class="n">local</span><span class="p">,</span> <span class="no">?MODULE</span><span class="p">},</span> <span class="no">?MODULE</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[]).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">init</span><span class="p">([])</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">}</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">start_link</span><span class="p">(),</span>
-</span><span class='line'>  <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">}.</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">stop</span><span class="p">(_</span><span class="nv">Pid</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="n">stop</span><span class="p">().</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">stop</span><span class="p">()</span> <span class="o">-&gt;</span>
-</span><span class='line'>    <span class="nn">gen_server</span><span class="p">:</span><span class="n">cast</span><span class="p">(</span><span class="no">?MODULE</span><span class="p">,</span> <span class="n">stop</span><span class="p">).</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">%% public client api</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">get_script</span><span class="p">(</span><span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="nn">gen_server</span><span class="p">:</span><span class="n">call</span><span class="p">(</span><span class="no">?MODULE</span><span class="p">,</span> <span class="p">{</span><span class="n">get_script</span><span class="p">,</span> <span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">}).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">save_script</span><span class="p">(</span><span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">,</span> <span class="nv">Script</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="nn">gen_server</span><span class="p">:</span><span class="n">call</span><span class="p">(</span><span class="no">?MODULE</span><span class="p">,</span> <span class="p">{</span><span class="n">save_script</span><span class="p">,</span> <span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">,</span> <span class="nv">Script</span><span class="p">}).</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">%% genserver handles</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">handle_call</span><span class="p">({</span><span class="n">get_script</span><span class="p">,</span> <span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">},</span> <span class="p">_</span><span class="nv">From</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="nv">Response</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">q</span><span class="p">(</span><span class="nv">Redis</span><span class="p">,</span> <span class="p">[</span> <span class="s">&quot;GET&quot;</span><span class="p">,</span> <span class="n">get_key</span><span class="p">(</span><span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">)</span> <span class="p">]),</span>
-</span><span class='line'>  <span class="p">{</span><span class="n">reply</span><span class="p">,</span> <span class="nv">Response</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">handle_call</span><span class="p">({</span><span class="n">save_script</span><span class="p">,</span> <span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">,</span> <span class="nv">Script</span><span class="p">},</span> <span class="p">_</span><span class="nv">From</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="nv">Response</span> <span class="o">=</span> <span class="nn">eredis</span><span class="p">:</span><span class="n">q</span><span class="p">(</span><span class="nv">Redis</span><span class="p">,</span> <span class="p">[</span><span class="s">&quot;SET&quot;</span><span class="p">,</span> <span class="n">get_key</span><span class="p">(</span><span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">),</span> <span class="nv">Script</span><span class="p">]),</span>
-</span><span class='line'>  <span class="p">{</span><span class="n">reply</span><span class="p">,</span> <span class="nv">Response</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">};</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">handle_call</span><span class="p">(_</span><span class="nv">Message</span><span class="p">,</span> <span class="p">_</span><span class="nv">From</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="p">{</span><span class="n">reply</span><span class="p">,</span> <span class="n">error</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">}.</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">handle_cast</span><span class="p">(_</span><span class="nv">Message</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">noreply</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">}.</span>
-</span><span class='line'><span class="nf">handle_info</span><span class="p">(_</span><span class="nv">Message</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">noreply</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">}.</span>
-</span><span class='line'><span class="nf">terminate</span><span class="p">(_</span><span class="nv">Reason</span><span class="p">,</span> <span class="p">_</span><span class="nv">Redis</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">ok</span><span class="p">.</span>
-</span><span class='line'><span class="nf">code_change</span><span class="p">(_</span><span class="nv">OldVersion</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">,</span> <span class="p">_</span><span class="nv">Extra</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">Redis</span><span class="p">}.</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">%% helper methods</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">get_key</span><span class="p">(</span><span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="n">generate_key</span><span class="p">([</span><span class="nv">Api</span><span class="p">,</span> <span class="nv">Method</span><span class="p">]).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">generate_key</span><span class="p">(</span><span class="nv">KeysList</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="nn">lists</span><span class="p">:</span><span class="n">foldl</span><span class="p">(</span><span class="k">fun</span><span class="p">(</span><span class="nv">Key</span><span class="p">,</span> <span class="nv">Acc</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Acc</span> <span class="o">++</span> <span class="s">&quot;:&quot;</span> <span class="o">++</span> <span class="nv">Key</span> <span class="k">end</span><span class="p">,</span> <span class="no">?Prefix</span><span class="p">,</span> <span class="nv">KeysList</span><span class="p">).</span>
-</span><span class='line'>
-</span><span class='line'><span class="c">% tests</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">-</span><span class="ni">ifdef</span><span class="p">(</span><span class="nv">TEST</span><span class="p">).</span>
-</span><span class='line'><span class="p">-</span><span class="ni">include_lib</span><span class="p">(</span><span class="s">&quot;eunit/include/eunit.hrl&quot;</span><span class="p">).</span>
-</span><span class='line'><span class="p">-</span><span class="ni">endif</span><span class="p">.</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="p">-</span><span class="ni">ifdef</span><span class="p">(</span><span class="nv">TEST</span><span class="p">).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">generate_key_test</span><span class="p">()</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="nv">Key</span> <span class="o">=</span> <span class="n">generate_key</span><span class="p">([</span><span class="s">&quot;one&quot;</span><span class="p">,</span> <span class="s">&quot;two&quot;</span><span class="p">,</span> <span class="s">&quot;three&quot;</span><span class="p">]),</span>
-</span><span class='line'>  <span class="no">?assertEqual</span><span class="p">(</span><span class="s">&quot;example:one:two:three&quot;</span><span class="p">,</span> <span class="nv">Key</span><span class="p">).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">server_test_</span><span class="p">()</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="p">{</span><span class="n">setup</span><span class="p">,</span> <span class="k">fun</span><span class="p">()</span> <span class="o">-&gt;</span> <span class="nn">example_db</span><span class="p">:</span><span class="n">start_link</span><span class="p">()</span> <span class="k">end</span><span class="p">,</span>
-</span><span class='line'>   <span class="k">fun</span><span class="p">(_</span><span class="nv">Pid</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nn">example_db</span><span class="p">:</span><span class="n">stop</span><span class="p">(_</span><span class="nv">Pid</span><span class="p">)</span> <span class="k">end</span><span class="p">,</span>
-</span><span class='line'>   <span class="k">fun</span> <span class="n">generate_example_db_tests</span><span class="o">/</span><span class="mi">1</span><span class="p">}.</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">generate_example_db_tests</span><span class="p">(_</span><span class="nv">Pid</span><span class="p">)</span> <span class="o">-&gt;</span>
-</span><span class='line'>  <span class="p">[</span>
-</span><span class='line'>    <span class="no">?_assertEqual</span><span class="p">({</span><span class="n">ok</span><span class="p">,</span><span class="o">&lt;&lt;</span><span class="s">&quot;OK&quot;</span><span class="o">&gt;&gt;</span><span class="p">},</span> <span class="nn">example_db</span><span class="p">:</span><span class="n">save_script</span><span class="p">(</span><span class="s">&quot;jakub&quot;</span><span class="p">,</span> <span class="s">&quot;oboza&quot;</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;yo dwang&quot;</span><span class="o">&gt;&gt;</span><span class="p">)</span> <span class="p">),</span>
-</span><span class='line'>    <span class="no">?_assertEqual</span><span class="p">({</span><span class="n">ok</span><span class="p">,</span><span class="o">&lt;&lt;</span><span class="s">&quot;yo dwang&quot;</span><span class="o">&gt;&gt;</span><span class="p">},</span> <span class="nn">example_db</span><span class="p">:</span><span class="n">get_script</span><span class="p">(</span><span class="s">&quot;jakub&quot;</span><span class="p">,</span> <span class="s">&quot;oboza&quot;</span><span class="p">)</span> <span class="p">)</span>
-</span><span class='line'>  <span class="p">].</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">-</span><span class="ni">endif</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h2>Public Api</h2>
-
-<p>This code listing has two important parts first at top it starts at line 26.
-This is the public API which will be used by developer. This is this free api. Later on i will explain how to change redis to mongodb and probably to other db engines without doing changes in rest of our app. From my perspective this is awesome feature.
-In most cases when i had to make app scale problem of having code that was glues to one db engine was heavy.</p>
-
-<h2>eunit tests</h2>
-
-<p>At line 60. starts the declaration of tests, using <code>rebar</code> and <code>eunit</code> is very easy and it is always good to have test coverage in case of refactoring. I&#8217;m a fan of test driven development so i like to cover in tests first things that i will use or i think they might be error prone. Here is used &#8220;test generators&#8221; to just to show how to write tests for gen_server.</p>
-
-<h1>Rebar</h1>
-
-<p>Before i will explain more i need to say little about <code>rebar</code>. It is a command line tool that was developed by <code>basho</code> to help create app. it is by far the best thing i found learning erlang to help me do boring stuff and eliminate a lot of rage writing <code>app.src</code> files. To get rebar simply do (you can always go to <a href="https://github.com/basho/rebar">https://github.com/basho/rebar</a> to get most up to date informations about building it)</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ  git clone git://github.com/basho/rebar.git
-</span><span class='line'>λ  <span class="nb">cd </span>rebar
-</span><span class='line'>λ  ./bootstrap
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I use my own set of zsh scripts so all i did to add it to my path was to edit <code>.furby</code> file in my home dir. I strongly suggest also adding it to <code>$PATH</code> just to make your life easier.</p>
-
-<h1>Back to example_db!</h1>
-
-<p>To create app using rebar you just need to</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ mkdir example_db
-</span><span class='line'>λ rebar create-app <span class="nv">appid</span><span class="o">=</span><span class="nv">example_db</span>
-</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>create-app<span class="o">)</span>
-</span><span class='line'>Writing src/example_db.app.src
-</span><span class='line'>Writing src/example_db_app.erl
-</span><span class='line'>Writing src/example_db_sup.erl
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This command created <code>src</code> folder with scaffold of <code>application</code> OTP pattern and <code>supervisor</code> thats almost all we need :).
-Now you can compile it using <code>rebar compile</code> and run tests using <code>rebar compile eunit</code> in out app currently we will see</p>
-
-<figure class='code'><figcaption><span>rebar compile eunit</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ rebar compile <span class="nv">eunit</span>
-</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>compile<span class="o">)</span>
-</span><span class='line'>Compiled src/example_db_app.erl
-</span><span class='line'>Compiled src/example_db_sup.erl
-</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>eunit<span class="o">)</span>
-</span><span class='line'>Compiled src/example_db_app.erl
-</span><span class='line'>Compiled src/example_db_sup.erl
-</span><span class='line'>  There were no tests to run.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nothing to do because its empty. Lets add our db module.
-But before this we need to add dependencies for eredis module. Lets create <code>rebar.config</code> file and add it.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ emacs rebar.config
-</span><span class='line'>λ cat rebar.config
-</span><span class='line'>%%-*- mode: erlang -*-
-</span><span class='line'>
-</span><span class='line'><span class="o">{</span>erl_opts, <span class="o">[]}</span>.
-</span><span class='line'><span class="o">{</span>cover_enabled, <span class="nb">true</span><span class="o">}</span>.
-</span><span class='line'>
-</span><span class='line'><span class="o">{</span>deps,
-</span><span class='line'>  <span class="o">[</span>
-</span><span class='line'>    <span class="o">{</span>eredis, <span class="s2">&quot;.*&quot;</span>, <span class="o">{</span>git, <span class="s2">&quot;https://github.com/wooga/eredis.git&quot;</span>, <span class="s2">&quot;HEAD&quot;</span><span class="o">}}</span>
-</span><span class='line'>  <span class="o">]</span>
-</span><span class='line'><span class="o">}</span>.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now just run <code>rebar get-deps</code> to get all dependencies downloaded.
-After adding our <code>example_db.erl</code> into <code>src</code> directory we can run <code>rebar compile eunit</code> to compile and run tests. We have added <code>{cover_enabled, true}</code> in rebar.conf so also test code coverage will be generated for us.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ rebar compile <span class="nv">eunit</span>
-</span><span class='line'><span class="o">==</span>&gt; eredis <span class="o">(</span>compile<span class="o">)</span>
-</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>compile<span class="o">)</span>
-</span><span class='line'>Compiled src/example_db.erl
-</span><span class='line'><span class="o">==</span>&gt; eredis <span class="o">(</span>eunit<span class="o">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="o">=</span>ERROR <span class="nv">REPORT</span><span class="o">====</span> 28-Mar-2012::22:19:35 <span class="o">===</span>
-</span><span class='line'>** Generic server &lt;0.263.0&gt; terminating
-</span><span class='line'>** Last message in was <span class="o">{</span>tcp,#Port&lt;0.4516&gt;,
-</span><span class='line'>                            &lt;&lt;<span class="s2">&quot;*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$2\r\n12\r\n&quot;</span>&gt;&gt;<span class="o">}</span>
-</span><span class='line'>** When Server <span class="nv">state</span> <span class="o">==</span> <span class="o">{</span>state,<span class="s2">&quot;127.0.0.1&quot;</span>,6379,&lt;&lt;&gt;&gt;,100,#Port&lt;0.4516&gt;,
-</span><span class='line'>                               <span class="o">{</span>pstate,undefined,undefined<span class="o">}</span>,
-</span><span class='line'>                               <span class="o">[</span>&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;<span class="o">]</span>,
-</span><span class='line'>                               <span class="o">{</span><span class="c">#Ref&lt;0.0.0.4058&gt;,&lt;0.180.0&gt;},</span>
-</span><span class='line'>                               <span class="o">{[{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;11&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
-</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;10&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
-</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;9&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
-</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;8&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
-</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;7&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
-</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;6&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
-</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;5&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
-</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;4&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}</span>,
-</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;3&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}]</span>,
-</span><span class='line'>                                <span class="o">[{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;2&quot;</span>&gt;&gt;,&lt;0.263.0&gt;<span class="o">}]}</span>,
-</span><span class='line'>                               10,exit,need_ack<span class="o">}</span>
-</span><span class='line'>** Reason <span class="k">for </span><span class="nv">termination</span> <span class="o">==</span>
-</span><span class='line'>** max_queue_size
-</span><span class='line'>  All 53 tests passed.
-</span><span class='line'>Cover analysis: /private/tmp/example_db/deps/eredis/.eunit/index.html
-</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>eunit<span class="o">)</span>
-</span><span class='line'>Compiled src/example_db.erl
-</span><span class='line'>  All 3 tests passed.
-</span><span class='line'>Cover analysis: /private/tmp/example_db/.eunit/index.html
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>All seems to be fine! lets create file called  <code>start.sh</code> to test it out</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ cat start.sh
-</span><span class='line'>erl -pa ebin -pa deps/*/ebin
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and make it executable with <code>chmod +x start.sh</code></p>
-
-<p>And lets rock &#8216;n&#8217; roll</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> λ ./start.sh
-</span><span class='line'>Erlang R15B <span class="o">(</span>erts-5.9<span class="o">)</span> <span class="o">[</span><span class="nb">source</span><span class="o">]</span> <span class="o">[</span>64-bit<span class="o">]</span> <span class="o">[</span>smp:4:4<span class="o">]</span> <span class="o">[</span>async-threads:0<span class="o">]</span> <span class="o">[</span>hipe<span class="o">]</span> <span class="o">[</span>kernel-poll:false<span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>Eshell V5.9  <span class="o">(</span>abort with ^G<span class="o">)</span>
-</span><span class='line'>1&gt; example_db:start_link<span class="o">()</span>.
-</span><span class='line'><span class="o">{</span>ok,&lt;0.33.0&gt;<span class="o">}</span>
-</span><span class='line'>2&gt; example_db:save_script<span class="o">(</span><span class="s2">&quot;example&quot;</span>, <span class="s2">&quot;script&quot;</span>, <span class="s2">&quot;puts &#39;2+2&#39;&quot;</span><span class="o">)</span>.
-</span><span class='line'><span class="o">{</span>ok,&lt;&lt;<span class="s2">&quot;OK&quot;</span>&gt;&gt;<span class="o">}</span>
-</span><span class='line'>3&gt; example_db:get_script<span class="o">(</span><span class="s2">&quot;example&quot;</span>, <span class="s2">&quot;script&quot;</span><span class="o">)</span>.
-</span><span class='line'><span class="o">{</span>ok,&lt;&lt;<span class="s2">&quot;puts &#39;2+2&#39;&quot;</span>&gt;&gt;<span class="o">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Have fun :) Hope it was useful. You can download code for this blog post here <a href="https://github.com/JakubOboza/example_db-code">https://github.com/JakubOboza/example_db-code</a></p>
-
-<h3>Huh ^___^</h3>
-
-<p>that was my first post on new blog ;)</p>
 ]]></content>
   </entry>
   
