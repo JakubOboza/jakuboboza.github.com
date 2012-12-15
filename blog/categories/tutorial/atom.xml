@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tutorial | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/tutorial/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-11T22:09:53+00:00</updated>
+  <updated>2012-12-15T22:26:24+00:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,287 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Getting some Clojure]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/12/15/getting-some-clojure/"/>
+    <updated>2012-12-15T20:07:00+00:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/12/15/getting-some-clojure</id>
+    <content type="html"><![CDATA[<p>After long chat with my friend who is Ocaml ( Objective Caml ) fanatic on topic of Lisp. I decided to get my hands on Clojure. Is there a better idea to learn language other than to write a crapy language learning tutorial ? Sure! but i will go with this one :D.</p>
+
+<h2>Lisp</h2>
+
+<p>Before i tried Clojure i had few "trips" to Lisp world but i was always stroked by amount of half finished vm's and implementations that are far from being production ready. For example chicken, scsh, sketchy, mit-scheme, bigloo. Some of them are more some less production ready but none of them is ready for anything real. The most production ready lisp thing i saw in my life was <code>elisp</code> YES f*cking <code>EMACS</code> lisp.
+But I'm not any expert in lisp world!</p>
+
+<h2>Scheme</h2>
+
+<p>Scheme is a dialect of Lisp that implements subset of language, in scheme code and data has same form which is a massive game changer. Scheme has super duper hiper mega MACRO building capabilities. And it is probably its biggest problems...</p>
+
+<h2>Lisp Hacker's</h2>
+
+<p>I remember when my friend was hacking in lisp, i remember when i was trying to hack stuff in scheme. So scheme is a trap!
+First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when he finishes this he tries to implement scheme interpreter in his interpreter... Second trap is when he realizes that he wrote enough amount of scheme interpreters and he moves to implementing new features into his interpreter in interpreter in interpreter ( and yes 'ready' means that 8/10 runs stuff passes, some crash and half of features don't even exits so called "junk features" ). So his dialect gets better than Haskell lazy evaluation, better etc... at this stage he has self bootstraping half working interpreter of his language that had no docs and nobody except his can use it and even if he can he must be on drags to make the lazy evaluation happen. Next stage of course is starting to do AI in scheme. So the point is that no shit gets done, its all conceptual work. If Da'vinci would program in Lisp he would not cut of his ear, he would cut of his head.</p>
+
+<h2>Life of ()</h2>
+
+<p>I wrote some borderline rant on lisp hackers and this was supposed to be micro tutorial on scheme. Well i took the Lisp way of "getting shit done" :D. If you don't know that lisp bread and butter are <code>(</code> and <code>)</code> you should probably run away.</p>
+
+<p>Naow!</p>
+
+<h2>So why Clojure ?</h2>
+
+<p>Clojure seems to be production ready stuff that can "get shit done". It support concurrency (with STM - Software Transactional Memory) it is Scheme'y / Lispy and I have read that its hip in Open Source magazine. Thats enough to start learning yeah ?</p>
+
+<p>No! But i want to learn it and write some stuff about it. It seems to be so different from other languages, RP notation and the whole community of Stallman like people.</p>
+
+<p>Clojure runs on JVM ( Java Virtual Machine ) and beside Java being biggest troll language next to C++ ever! JVM is really good. It makes stuff really portable and its good for building stuff like backends for servers. Same goes with Scala using JVM, actually JVM is solid! ( coming from me Java hater ). Its not like some f*cktard writing in "Open Source Magazine" that C++ enables you to write portable code. No, writing os portable code in C++ is not easy, its hard and full of pain.</p>
+
+<h1>Getting s*it on your box</h1>
+
+<p>First thing you have to do is to install Clojure. This is the easy step. Just visit <a href="http://clojure.org/">http://clojure.org/</a>. I installed it using macports by running <code>sudo port install clojure</code> but for more into i would suggest going to:</p>
+
+<ul>
+<li>Minimum jar needed to start REPL <a href="http://clojure.org/getting_started">http://clojure.org/getting_started</a></li>
+<li>Downloads for latest version <a href="http://clojure.org/downloads">http://clojure.org/downloads</a></li>
+<li>Brew / Macports search "clojure"</li>
+<li>In case that nothing else work, go to <a href="https://github.com/clojure/clojure">https://github.com/clojure/clojure</a> and look for "build from source instructions"</li>
+</ul>
+
+
+<p>Next you will want to install <code>leiningen</code> this is a build tool for Clojure. same procedure. either <code>sudo port install leiningen</code> or <a href="http://leiningen.org/">http://leiningen.org/</a> for more instructions.</p>
+
+<h1>Running repl and first code!</h1>
+
+<p>Enough of this sh*t lets do some stuff. First to run repl you need to do following.</p>
+
+<p><code>bash
+clj
+</code>
+I mix it with <code>cjl</code>  but thats because i'm a noob.
+This should prompt you with something like this
+<code>bash
+20:59 kuba@kuba:~ λ clj
+Clojure 1.4.0
+user=&gt;
+</code>
+Success!!!
+We can now try to evaluate some simple stuff.</p>
+
+<p>So now normal person would try to type something like <code>2 + 6</code> bad idea! Expressions in Lisp starts and ends with <code>()</code> so if you see things like <code>(((((((((((((((((((((((((((((</code>  or <code>)))))))))))))))))))))))</code> you know something is happening :D (second one more commonly)</p>
+
+<p>``` scheme
+user=> 2 + 6
+2</p>
+
+<h1>&lt;core$<em>PLUS</em> clojure.core$<em>PLUS</em>@9d686c1></h1>
+
+<p>6
+user=> (+ 2 6)
+8
+```</p>
+
+<p>RPN now i should quote link to wikipedia on Reverse Polish Notation. (I'm Polish so it is kind'a like looking at my back and trying to read sign on t-shirt). Here you go <a href="http://en.wikipedia.org/wiki/Reverse_Polish_notation">http://en.wikipedia.org/wiki/Reverse_Polish_notation</a> Reverse polish notation simple words is a stack notation. Where you put operator on stack and then arguments. Or so called prefix notation. C, Java, Ruby are all infix notation eg. <code>2 + 6</code> while lisp / scheme is prefix notation aka <code>(+ 2 6)</code> on reality its so cool that you don't have to repeat your self and you put operator, function only  once and a list of arguments eg. <code>(+ 1 2 3 4 5)</code>. So lets try it out.</p>
+
+<p><code>scheme
+user=&gt; (+ 1 2 3 4 5 6)
+21
+user=&gt; (- 10 7)
+3
+user=&gt; (- 10 7 1)
+2
+user=&gt; (* 6 7)
+42
+user=&gt; (* 6 7 2)
+84
+user=&gt; (/ 4 5)
+4/5
+user=&gt; (/ 4 5.0)
+0.8
+user=&gt; (/ 4 5.0 2)
+</code></p>
+
+<p>We can see that those examples work in REPL nice!. But wait there is something different between <code>(/ 4 5)</code> and <code>(/ 4 5.0)</code>. Yes! Clojure has built in support for rational numbers so 4/5 is a rational 4/5 not rounded estimate of 4/5 while result of evaluating 4/5.0 is a floating point number. Lets see what happens if we will try to do 1/3</p>
+
+<p><code>scheme
+user=&gt; (/ 1 3)
+1/3
+user=&gt; (/ 1 3.0)
+0.3333333333333333
+</code></p>
+
+<p>Yeah the second one is not really accurate. Or is it ?</p>
+
+<p><code>scheme
+user=&gt; (+ (/ 1 3) (/ 1 3))
+2/3
+user=&gt; (+ (/ 1 3.0) (/ 1 3.0))
+0.6666666666666666
+</code></p>
+
+<p>Not really.... it should be something like 0.(6) :)</p>
+
+<p>So this is how you invoke functions, built in functions. But what if you would want to comment something out ? because its a useful info about new scheme dialect you are building?</p>
+
+<h2>Comments</h2>
+
+<p>You do comments using <code>;</code> everything after  ; is getting ignored!
+For example:</p>
+
+<p><code>scheme
+user=&gt; (* 1 1) ; most useful thing Clojure has to offer
+1
+user=&gt; (/ 1 1)
+1
+user=&gt;  ; comment about lisp being full of ((((
+</code></p>
+
+<h2>defn</h2>
+
+<p>First thing that makes people happy usually while learning new language is the moment when guy that tries to explain whole concept helps them write first function! Yes thats what i will do now.</p>
+
+<p>To define a function we use <code>defn</code> (old lisp grinders will connect it with <code>def</code> yes!) that defines a function for us, so to it we need to supply name of function, or the symbol that this function will be bind to, arguments and body like this.</p>
+
+<p>``` scheme
+user=> (defn multiply-by [base amount] (* base amount))</p>
+
+<h1>'user/multiply-by</h1>
+
+<p>user=> (multiply-by 5 6)
+30
+```</p>
+
+<p>Next we can invoke it eg. <code>(multiply-by 3 4)</code> its worth mentioning that you can use <code>-</code> in function names. But what is really happening ? this is two part thing. First we have <code>def</code> and second we have <code>fn</code> def binds symbol name with expression or value and <code>fn</code> return a function. So it is "like lambda" in fact it is lambda.</p>
+
+<p>Lets go with example.</p>
+
+<p>``` scheme
+user=> (fn [base] (+ base 1) )</p>
+
+<h1>&lt;user$eval33$fn<strong>34 user$eval33$fn</strong>34@f5bfdbd></h1>
+
+<p>user=> ((fn [base] (+ base 1) ) 5)
+6
+user=> (def troll-symbol 7)</p>
+
+<h1>'user/troll-symbol</h1>
+
+<p>user=> (troll-symbol)
+ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn  user/eval41 (NO_SOURCE_FILE:25)
+user=> (+ troll-symbol ((fn [base] (+ base 1) ) 5) )
+13
+```</p>
+
+<p>This is slightly more complex but also should be easy. In first line we use <code>fn</code> to define function with one parameter called base this returns a function. In line two we do the same but this function is returned and passed and argument of 5 and evaluated to 6. In line three we define symbol troll-symbol with value of 7 we obviously can't evaluate a value so we get exception! It's all fine because its value. But we can use it like in last line, where we add to value of troll-symbol effect of evaluation of function that we defined passed with argument of 5.</p>
+
+<p>Don't be afraid :D. All we did here is explained what <code>defn</code> do, basically defn is just composition of def and fn. Lets you specify symbol that function returned by fn is bound to.</p>
+
+<p>Defn simply saves us key strokes :) Like using Emacs :D this can lead to RSI. =)</p>
+
+<p>``` scheme
+user=> (def troll-symbol 8)</p>
+
+<h1>'user/troll-symbol</h1>
+
+<p>user=> troll-symbol
+8
+user=> (def troll-foo (fn [base] (+ base 1)))</p>
+
+<h1>'user/troll-foo</h1>
+
+<p>user=> (troll-foo 7)
+8
+```</p>
+
+<p>This exactly shows what happens when you use defn, you get function from fn and bind it to some symbol. That's it. Its good to have some play with all this brackets :) its fun! try defining something on your own :D</p>
+
+<h2>Hello world</h2>
+
+<p>So every tutorial has to have something like hello world program!
+In my tutorial there is space for Hello World also :D</p>
+
+<p>All you need to do is to create a file called <code>hello.clj</code> and type this in!</p>
+
+<p><code>scheme
+(println "Hello World")
+</code></p>
+
+<p>When you will run it using <code>clj hello.clj</code> you will see something like this</p>
+
+<p><code>bash
+λ clj hello.clj
+Hello World
+</code></p>
+
+<h2>Lambdas!</h2>
+
+<p>So i mentioned something called <code>fn</code> for creating functions. But sometime you need a function ad'hoc eg. when you pass it to <code>map</code> function this is done by using different syntax.</p>
+
+<p><code>scheme
+user=&gt; (#(+ 1 %1) 9)
+10
+</code></p>
+
+<p>You can still use old syntax but this is just faster to type. Remember that %1, %2 ... refer to arguments that are passed to this lambda.</p>
+
+<h1>Lists and Vectors</h1>
+
+<p>Like in all programming languages we have lists and vectors. Those are built in. Syntax for List is simply <code>'()</code> eg. <code>'(1 2 3 4)</code> and for vector aka "array" its <code>[]</code> eg. <code>[1 2 3]</code>. NO COMAS!</p>
+
+<p><code>scheme
+user=&gt; [1 2 3 4 5]
+[1 2 3 4 5]
+user=&gt; '(1 2 3 4)
+(1 2 3 4)
+</code></p>
+
+<p>Lets do something useful with them! print them out naow!</p>
+
+<p><code>scheme
+user=&gt; (map #(println %1) '(1 2 3 4 5))
+(1
+2
+nil 3
+nil 4
+nil 5
+nil nil)
+user=&gt; (map #(println %1) [1 2 3 4 5])
+(1
+2
+3
+4
+5
+nil nil nil nil nil)
+</code></p>
+
+<p>It is map... so it is ugly because result from <code>println</code> is nil so we printed out contents of vector and list but its ugly.
+Map is a high order function that takes function and list/array/sequance of arguments, applyies and evaluates funtion on each argument and stores results of this in a list that is returned at the end :) eg. <code>(map (+ %1 1) (1 2 3))</code> will give <code>[2 3 4]</code>.</p>
+
+<p>Lets try to do it with doseq.</p>
+
+<p><code>scheme
+user=&gt; (doseq [i [1 2 3]] (println i))
+1
+2
+3
+nil
+</code></p>
+
+<p>Works!</p>
+
+<h3>Glossary</h3>
+
+<p>REPL - Read Eval Print Loop. Simply language console in which you can run code and see results without typing code into file and running interpreter on it.</p>
+
+<p>Lisp - On of the biggest language trolls or only language worth learning. Still can't decide</p>
+
+<p>Jar - Java archive that contains code, can contain also jam. I like jam.</p>
+
+<h1>Summary</h1>
+
+<p>This is just the first part of the tutorial i hope you liked it, just covers the very basic of defining and evaluation functions.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using tcpdump]]></title>

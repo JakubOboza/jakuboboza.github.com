@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="We all love tcpdump :D So i found this tool useful while i was working on many things. Guess what ? it if very useful when working with network &hellip;">
+  <meta name="description" content="After long chat with my friend who is Ocaml ( Objective Caml ) fanatic on topic of Lisp. I decided to get my hands on Clojure. Is there a better idea &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,395 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/15/getting-some-clojure/">Getting Some Clojure</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-15T20:07:00+00:00" pubdate data-updated="true">Dec 15<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/15/getting-some-clojure/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>After long chat with my friend who is Ocaml ( Objective Caml ) fanatic on topic of Lisp. I decided to get my hands on Clojure. Is there a better idea to learn language other than to write a crapy language learning tutorial ? Sure! but i will go with this one :D.</p>
+
+<h2>Lisp</h2>
+
+<p>Before i tried Clojure i had few &#8220;trips&#8221; to Lisp world but i was always stroked by amount of half finished vm&#8217;s and implementations that are far from being production ready. For example chicken, scsh, sketchy, mit-scheme, bigloo. Some of them are more some less production ready but none of them is ready for anything real. The most production ready lisp thing i saw in my life was <code>elisp</code> YES f*cking <code>EMACS</code> lisp.
+But I&#8217;m not any expert in lisp world!</p>
+
+<h2>Scheme</h2>
+
+<p>Scheme is a dialect of Lisp that implements subset of language, in scheme code and data has same form which is a massive game changer. Scheme has super duper hiper mega MACRO building capabilities. And it is probably its biggest problems&#8230;</p>
+
+<h2>Lisp Hacker&#8217;s</h2>
+
+<p>I remember when my friend was hacking in lisp, i remember when i was trying to hack stuff in scheme. So scheme is a trap!
+First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when he finishes this he tries to implement scheme interpreter in his interpreter&#8230; Second trap is when he realizes that he wrote enough amount of scheme interpreters and he moves to implementing new features into his interpreter in interpreter in interpreter ( and yes &#8216;ready&#8217; means that 8/10 runs stuff passes, some crash and half of features don&#8217;t even exits so called &#8220;junk features&#8221; ). So his dialect gets better than Haskell lazy evaluation, better etc&#8230; at this stage he has self bootstraping half working interpreter of his language that had no docs and nobody except his can use it and even if he can he must be on drags to make the lazy evaluation happen. Next stage of course is starting to do AI in scheme. So the point is that no shit gets done, its all conceptual work. If Da&#8217;vinci would program in Lisp he would not cut of his ear, he would cut of his head.</p>
+
+<h2>Life of ()</h2>
+
+<p>I wrote some borderline rant on lisp hackers and this was supposed to be micro tutorial on scheme. Well i took the Lisp way of &#8220;getting shit done&#8221; :D. If you don&#8217;t know that lisp bread and butter are <code>(</code> and <code>)</code> you should probably run away.</p>
+
+<p>Naow!</p>
+
+<h2>So why Clojure ?</h2>
+
+<p>Clojure seems to be production ready stuff that can &#8220;get shit done&#8221;. It support concurrency (with STM - Software Transactional Memory) it is Scheme&#8217;y / Lispy and I have read that its hip in Open Source magazine. Thats enough to start learning yeah ?</p>
+
+<p>No! But i want to learn it and write some stuff about it. It seems to be so different from other languages, RP notation and the whole community of Stallman like people.</p>
+
+<p>Clojure runs on JVM ( Java Virtual Machine ) and beside Java being biggest troll language next to C++ ever! JVM is really good. It makes stuff really portable and its good for building stuff like backends for servers. Same goes with Scala using JVM, actually JVM is solid! ( coming from me Java hater ). Its not like some f*cktard writing in &#8220;Open Source Magazine&#8221; that C++ enables you to write portable code. No, writing os portable code in C++ is not easy, its hard and full of pain.</p>
+
+<h1>Getting s*it on your box</h1>
+
+<p>First thing you have to do is to install Clojure. This is the easy step. Just visit <a href="http://clojure.org/">http://clojure.org/</a>. I installed it using macports by running <code>sudo port install clojure</code> but for more into i would suggest going to:</p>
+
+<ul>
+<li>Minimum jar needed to start REPL <a href="http://clojure.org/getting_started">http://clojure.org/getting_started</a></li>
+<li>Downloads for latest version <a href="http://clojure.org/downloads">http://clojure.org/downloads</a></li>
+<li>Brew / Macports search &#8220;clojure&#8221;</li>
+<li>In case that nothing else work, go to <a href="https://github.com/clojure/clojure">https://github.com/clojure/clojure</a> and look for &#8220;build from source instructions&#8221;</li>
+</ul>
+
+
+<p>Next you will want to install <code>leiningen</code> this is a build tool for Clojure. same procedure. either <code>sudo port install leiningen</code> or <a href="http://leiningen.org/">http://leiningen.org/</a> for more instructions.</p>
+
+<h1>Running repl and first code!</h1>
+
+<p>Enough of this sh*t lets do some stuff. First to run repl you need to do following.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>clj
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>I mix it with <code>cjl</code>  but thats because i&#8217;m a noob.
+This should prompt you with something like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>20:59 kuba@kuba:~ λ clj
+</span><span class='line'>Clojure 1.4.0
+</span><span class='line'><span class="nv">user</span><span class="o">=</span>&gt;
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Success!!!
+We can now try to evaluate some simple stuff.</p>
+
+<p>So now normal person would try to type something like <code>2 + 6</code> bad idea! Expressions in Lisp starts and ends with <code>()</code> so if you see things like <code>(((((((((((((((((((((((((((((</code>  or <code>)))))))))))))))))))))))</code> you know something is happening :D (second one more commonly)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="mi">2</span> <span class="nv">+</span> <span class="mi">6</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="o">#</span><span class="nv">&lt;core$_PLUS_</span> <span class="nv">clojure</span><span class="o">.</span><span class="nv">core$_PLUS_@9d686c1&gt;</span>
+</span><span class='line'><span class="mi">6</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">+ </span><span class="mi">2</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'><span class="mi">8</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>RPN now i should quote link to wikipedia on Reverse Polish Notation. (I&#8217;m Polish so it is kind&#8217;a like looking at my back and trying to read sign on t-shirt). Here you go <a href="http://en.wikipedia.org/wiki/Reverse_Polish_notation">http://en.wikipedia.org/wiki/Reverse_Polish_notation</a> Reverse polish notation simple words is a stack notation. Where you put operator on stack and then arguments. Or so called prefix notation. C, Java, Ruby are all infix notation eg. <code>2 + 6</code> while lisp / scheme is prefix notation aka <code>(+ 2 6)</code> on reality its so cool that you don&#8217;t have to repeat your self and you put operator, function only  once and a list of arguments eg. <code>(+ 1 2 3 4 5)</code>. So lets try it out.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">+ </span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'><span class="mi">21</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">- </span><span class="mi">10</span> <span class="mi">7</span><span class="p">)</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">- </span><span class="mi">10</span> <span class="mi">7</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">* </span><span class="mi">6</span> <span class="mi">7</span><span class="p">)</span>
+</span><span class='line'><span class="mi">42</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">* </span><span class="mi">6</span> <span class="mi">7</span> <span class="mi">2</span><span class="p">)</span>
+</span><span class='line'><span class="mi">84</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">4</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="mi">4</span><span class="nv">/5</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">4</span> <span class="mf">5.0</span><span class="p">)</span>
+</span><span class='line'><span class="mf">0.8</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">4</span> <span class="mf">5.0</span> <span class="mi">2</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>We can see that those examples work in REPL nice!. But wait there is something different between <code>(/ 4 5)</code> and <code>(/ 4 5.0)</code>. Yes! Clojure has built in support for rational numbers so 4/5 is a rational 4/5 not rounded estimate of 4/5 while result of evaluating 4/5.0 is a floating point number. Lets see what happens if we will try to do 1/3</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">1</span> <span class="mi">3</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span><span class="nv">/3</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">1</span> <span class="mf">3.0</span><span class="p">)</span>
+</span><span class='line'><span class="mf">0.3333333333333333</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yeah the second one is not really accurate. Or is it ?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nb">/ </span><span class="mi">1</span> <span class="mi">3</span><span class="p">)</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">1</span> <span class="mi">3</span><span class="p">))</span>
+</span><span class='line'><span class="mi">2</span><span class="nv">/3</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">+ </span><span class="p">(</span><span class="nb">/ </span><span class="mi">1</span> <span class="mf">3.0</span><span class="p">)</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">1</span> <span class="mf">3.0</span><span class="p">))</span>
+</span><span class='line'><span class="mf">0.6666666666666666</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Not really&#8230;. it should be something like 0.(6) :)</p>
+
+<p>So this is how you invoke functions, built in functions. But what if you would want to comment something out ? because its a useful info about new scheme dialect you are building?</p>
+
+<h2>Comments</h2>
+
+<p>You do comments using <code>;</code> everything after  ; is getting ignored!
+For example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">* </span><span class="mi">1</span> <span class="mi">1</span><span class="p">)</span> <span class="c1">; most useful thing Clojure has to offer </span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">/ </span><span class="mi">1</span> <span class="mi">1</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="nv">user=&gt;</span>  <span class="c1">; comment about lisp being full of ((((</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>defn</h2>
+
+<p>First thing that makes people happy usually while learning new language is the moment when guy that tries to explain whole concept helps them write first function! Yes thats what i will do now.</p>
+
+<p>To define a function we use <code>defn</code> (old lisp grinders will connect it with <code>def</code> yes!) that defines a function for us, so to it we need to supply name of function, or the symbol that this function will be bind to, arguments and body like this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">defn</span> <span class="nv">multiply-by</span> <span class="err">[</span><span class="nv">base</span> <span class="nv">amount</span><span class="err">]</span> <span class="p">(</span><span class="nb">* </span><span class="nv">base</span> <span class="nv">amount</span><span class="p">))</span>
+</span><span class='line'><span class="o">#</span><span class="ss">&#39;user/multiply-by</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">multiply-by</span> <span class="mi">5</span> <span class="mi">6</span><span class="p">)</span>
+</span><span class='line'><span class="mi">30</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Next we can invoke it eg. <code>(multiply-by 3 4)</code> its worth mentioning that you can use <code>-</code> in function names. But what is really happening ? this is two part thing. First we have <code>def</code> and second we have <code>fn</code> def binds symbol name with expression or value and <code>fn</code> return a function. So it is &#8220;like lambda&#8221; in fact it is lambda.</p>
+
+<p>Lets go with example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">fn</span> <span class="err">[</span><span class="nv">base</span><span class="err">]</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">base</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'><span class="o">#</span><span class="nv">&lt;user$eval33$fn__34</span> <span class="nv">user$eval33$fn__34@f5bfdbd&gt;</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">((</span><span class="nf">fn</span> <span class="err">[</span><span class="nv">base</span><span class="err">]</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">base</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span> <span class="mi">5</span><span class="p">)</span>
+</span><span class='line'><span class="mi">6</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">def</span> <span class="nv">troll-symbol</span> <span class="mi">7</span><span class="p">)</span>
+</span><span class='line'><span class="o">#</span><span class="ss">&#39;user/troll-symbol</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">troll-symbol</span><span class="p">)</span>
+</span><span class='line'><span class="nv">ClassCastException</span> <span class="nv">java</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">Long</span> <span class="nv">cannot</span> <span class="nv">be</span> <span class="nv">cast</span> <span class="nv">to</span> <span class="nv">clojure</span><span class="o">.</span><span class="nv">lang</span><span class="o">.</span><span class="nv">IFn</span>  <span class="nv">user/eval41</span> <span class="p">(</span><span class="nf">NO_SOURCE_FILE:25</span><span class="p">)</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">troll-symbol</span> <span class="p">((</span><span class="nf">fn</span> <span class="err">[</span><span class="nv">base</span><span class="err">]</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">base</span> <span class="mi">1</span><span class="p">)</span> <span class="p">)</span> <span class="mi">5</span><span class="p">)</span> <span class="p">)</span>
+</span><span class='line'><span class="mi">13</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is slightly more complex but also should be easy. In first line we use <code>fn</code> to define function with one parameter called base this returns a function. In line two we do the same but this function is returned and passed and argument of 5 and evaluated to 6. In line three we define symbol troll-symbol with value of 7 we obviously can&#8217;t evaluate a value so we get exception! It&#8217;s all fine because its value. But we can use it like in last line, where we add to value of troll-symbol effect of evaluation of function that we defined passed with argument of 5.</p>
+
+<p>Don&#8217;t be afraid :D. All we did here is explained what <code>defn</code> do, basically defn is just composition of def and fn. Lets you specify symbol that function returned by fn is bound to.</p>
+
+<p>Defn simply saves us key strokes :) Like using Emacs :D this can lead to RSI. =)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">def</span> <span class="nv">troll-symbol</span> <span class="mi">8</span><span class="p">)</span>
+</span><span class='line'><span class="o">#</span><span class="ss">&#39;user/troll-symbol</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="nv">troll-symbol</span>
+</span><span class='line'><span class="mi">8</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">def</span> <span class="nv">troll-foo</span> <span class="p">(</span><span class="nf">fn</span> <span class="err">[</span><span class="nv">base</span><span class="err">]</span> <span class="p">(</span><span class="nb">+ </span><span class="nv">base</span> <span class="mi">1</span><span class="p">)))</span>
+</span><span class='line'><span class="o">#</span><span class="ss">&#39;user/troll-foo</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">troll-foo</span> <span class="mi">7</span><span class="p">)</span>
+</span><span class='line'><span class="mi">8</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This exactly shows what happens when you use defn, you get function from fn and bind it to some symbol. That&#8217;s it. Its good to have some play with all this brackets :) its fun! try defining something on your own :D</p>
+
+<h2>Hello world</h2>
+
+<p>So every tutorial has to have something like hello world program!
+In my tutorial there is space for Hello World also :D</p>
+
+<p>All you need to do is to create a file called <code>hello.clj</code> and type this in!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="p">(</span><span class="nf">println</span> <span class="s">&quot;Hello World&quot;</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>When you will run it using <code>clj hello.clj</code> you will see something like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ clj hello.clj
+</span><span class='line'>Hello World
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h2>Lambdas!</h2>
+
+<p>So i mentioned something called <code>fn</code> for creating functions. But sometime you need a function ad&#8217;hoc eg. when you pass it to <code>map</code> function this is done by using different syntax.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="o">#</span><span class="p">(</span><span class="nv">+</span> <span class="mi">1</span> <span class="nv">%1</span><span class="p">)</span> <span class="mi">9</span><span class="p">)</span>
+</span><span class='line'><span class="mi">10</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You can still use old syntax but this is just faster to type. Remember that %1, %2 &#8230; refer to arguments that are passed to this lambda.</p>
+
+<h1>Lists and Vectors</h1>
+
+<p>Like in all programming languages we have lists and vectors. Those are built in. Syntax for List is simply <code>'()</code> eg. <code>'(1 2 3 4)</code> and for vector aka &#8220;array&#8221; its <code>[]</code> eg. <code>[1 2 3]</code>. NO COMAS!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="err">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span><span class="err">]</span>
+</span><span class='line'><span class="err">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span><span class="err">]</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Lets do something useful with them! print them out naow!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">map </span><span class="o">#</span><span class="p">(</span><span class="nv">println</span> <span class="nv">%1</span><span class="p">)</span> <span class="o">&#39;</span><span class="p">(</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span><span class="p">))</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="nv">nil</span> <span class="mi">3</span>
+</span><span class='line'><span class="nv">nil</span> <span class="mi">4</span>
+</span><span class='line'><span class="nv">nil</span> <span class="mi">5</span>
+</span><span class='line'><span class="nv">nil</span> <span class="nv">nil</span><span class="p">)</span>
+</span><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nb">map </span><span class="o">#</span><span class="p">(</span><span class="nv">println</span> <span class="nv">%1</span><span class="p">)</span> <span class="err">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span> <span class="mi">4</span> <span class="mi">5</span><span class="err">]</span><span class="p">)</span>
+</span><span class='line'><span class="p">(</span><span class="mi">1</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="mi">4</span>
+</span><span class='line'><span class="mi">5</span>
+</span><span class='line'><span class="nv">nil</span> <span class="nv">nil</span> <span class="nv">nil</span> <span class="nv">nil</span> <span class="nv">nil</span><span class="p">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It is map&#8230; so it is ugly because result from <code>println</code> is nil so we printed out contents of vector and list but its ugly.
+Map is a high order function that takes function and list/array/sequance of arguments, applyies and evaluates funtion on each argument and stores results of this in a list that is returned at the end :) eg. <code>(map (+ %1 1) (1 2 3))</code> will give <code>[2 3 4]</code>.</p>
+
+<p>Lets try to do it with doseq.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='scheme'><span class='line'><span class="nv">user=&gt;</span> <span class="p">(</span><span class="nf">doseq</span> <span class="err">[</span><span class="nv">i</span> <span class="err">[</span><span class="mi">1</span> <span class="mi">2</span> <span class="mi">3</span><span class="err">]]</span> <span class="p">(</span><span class="nf">println</span> <span class="nv">i</span><span class="p">))</span>
+</span><span class='line'><span class="mi">1</span>
+</span><span class='line'><span class="mi">2</span>
+</span><span class='line'><span class="mi">3</span>
+</span><span class='line'><span class="nv">nil</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Works!</p>
+
+<h3>Glossary</h3>
+
+<p>REPL - Read Eval Print Loop. Simply language console in which you can run code and see results without typing code into file and running interpreter on it.</p>
+
+<p>Lisp - On of the biggest language trolls or only language worth learning. Still can&#8217;t decide</p>
+
+<p>Jar - Java archive that contains code, can contain also jam. I like jam.</p>
+
+<h1>Summary</h1>
+
+<p>This is just the first part of the tutorial i hope you liked it, just covers the very basic of defining and evaluation functions.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -879,7 +1268,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
   </header>
 
 
-  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#x6f;&#x3a;&#107;&#x75;&#98;&#x61;&#64;&#108;&#97;&#x6d;&#x62;&#x64;&#x61;&#99;&#117;&#x2e;&#x62;&#x65;">&#x6b;&#x75;&#98;&#x61;&#x40;&#108;&#97;&#x6d;&#x62;&#x64;&#x61;&#99;&#117;&#x2e;&#98;&#x65;</a> =)</p>
+  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#58;&#107;&#117;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#101;">&#107;&#117;&#98;&#97;&#x40;&#x6c;&#x61;&#x6d;&#98;&#100;&#97;&#x63;&#117;&#46;&#98;&#101;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
@@ -1945,187 +2334,6 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/05/29/rebar-templates/">Rebar Templates</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-05-29T21:38:00+01:00" pubdate data-updated="true">May 29<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/05/29/rebar-templates/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>First question when i need to add new blog to my code I ask is, do i remember all the boilerplate and how many times i will make a mistake this time. No more :). Rebar has a nice thing built in it is templating language that lets us build our own templates.</p>
-
-<h1>Custom template ?</h1>
-
-<p>I always end up looking at old projects and copying parts like <code>gen_server</code> and reusing them. I always knew rebar has option to write them but never had time to look at it. Today lol, i wanted to do some cleaning at home so every thing seems to be a good excuse to not do any cleaning :D.</p>
-
-<h2>What i need to know</h2>
-
-<p>Basic template is made from one or many <code>.erl</code> files written with <code>mustache</code> style <code>{ { } }</code> code and <code>.template</code> file describing what to do with files.</p>
-
-<h2>Let&#8217;s build gen_server template</h2>
-
-<p>So my first file will be <code>gen_server.erl</code></p>
-
-<figure class='code'><figcaption><span>gen_server.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>%%% @author  <span class="o">{</span> <span class="o">{</span>author_name <span class="o">}</span> <span class="o">}</span> &lt;<span class="o">{</span> <span class="o">{</span>author_email<span class="o">}</span> <span class="o">}</span>&gt;
-</span><span class='line'>%%% @copyright  <span class="o">{</span> <span class="o">{</span>copyright_year <span class="o">}</span> <span class="o">}</span>  <span class="o">{</span> <span class="o">{</span>author_name<span class="o">}</span> <span class="o">}</span>.
-</span><span class='line'>%%% @doc  <span class="o">{</span> <span class="o">{</span>description <span class="o">}</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>-module<span class="o">(</span> <span class="o">{</span> <span class="o">{</span>name <span class="o">}</span> <span class="o">})</span>.
-</span><span class='line'>-behaviour<span class="o">(</span>gen_server<span class="o">)</span>.
-</span><span class='line'>
-</span><span class='line'>-author<span class="o">(</span><span class="s1">&#39; { {author_name } } &lt;{ {author_email } }&gt;&#39;</span><span class="o">)</span>.
-</span><span class='line'>
-</span><span class='line'>-export<span class="o">([</span>start_link/1<span class="o">])</span>.
-</span><span class='line'>-export<span class="o">([</span>init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1<span class="o">])</span>.
-</span><span class='line'>
-</span><span class='line'>% public api
-</span><span class='line'>
-</span><span class='line'>start_link<span class="o">(</span>_Args<span class="o">)</span> -&gt;
-</span><span class='line'>  gen_server:start_link<span class="o">({</span><span class="nb">local</span>, ?MODULE<span class="o">}</span>, ?MODULE, <span class="o">[]</span>, <span class="o">[])</span>.
-</span><span class='line'>
-</span><span class='line'>% state should be change with State that you will pass
-</span><span class='line'>init<span class="o">([])</span> -&gt;
-</span><span class='line'>  <span class="o">{</span>ok, state<span class="o">}</span>.
-</span><span class='line'>
-</span><span class='line'>stop<span class="o">(</span>_Pid<span class="o">)</span> -&gt;
-</span><span class='line'>  stop<span class="o">()</span>.
-</span><span class='line'>
-</span><span class='line'>stop<span class="o">()</span> -&gt;
-</span><span class='line'>  gen_server:cast<span class="o">(</span>?MODULE, stop<span class="o">)</span>.
-</span><span class='line'>
-</span><span class='line'>handle_call<span class="o">({</span>method_name_and_params<span class="o">}</span>, _From, State<span class="o">)</span> -&gt;
-</span><span class='line'>  <span class="nv">Response</span> <span class="o">=</span> ok,
-</span><span class='line'>  <span class="o">{</span>reply, Response, State<span class="o">}</span>;
-</span><span class='line'>
-</span><span class='line'>handle_call<span class="o">(</span>_Message, _From, State<span class="o">)</span> -&gt;
-</span><span class='line'>  <span class="o">{</span>reply, error, State<span class="o">}</span>.
-</span><span class='line'>
-</span><span class='line'>handle_cast<span class="o">(</span>_Message, State<span class="o">)</span> -&gt; <span class="o">{</span>noreply, State<span class="o">}</span>.
-</span><span class='line'>handle_info<span class="o">(</span>_Message, State<span class="o">)</span> -&gt; <span class="o">{</span>noreply, State<span class="o">}</span>.
-</span><span class='line'>terminate<span class="o">(</span>_Reason, _State<span class="o">)</span> -&gt; ok.
-</span><span class='line'>code_change<span class="o">(</span>_OldVersion, State, _Extra<span class="o">)</span> -&gt; <span class="o">{</span>ok, State<span class="o">}</span>.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This is the template, i know a bit long i tried to cut out all comments, euint etc and narrow it to minimum. I posted it to show how much you can save :). Now you will need the <code>transformation file</code>. All this things in { { something } } will be replaced by things we will type in command line or defaults from template file.</p>
-
-<figure class='code'><figcaption><span>gen_server.template</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>variables, <span class="o">[</span>
-</span><span class='line'>  <span class="o">{</span>name, <span class="s2">&quot;template&quot;</span><span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span>copyright_year, <span class="s2">&quot;2012&quot;</span><span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span>author_name, <span class="s2">&quot;jakub Oboza&quot;</span><span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span>author_email, <span class="s2">&quot;jakub.oboza@gmail.com&quot;</span><span class="o">}</span>
-</span><span class='line'><span class="o">]}</span>.
-</span><span class='line'><span class="o">{</span>template, <span class="s2">&quot;gen_server.erl&quot;</span>, <span class="s2">&quot;src/{ {name} }.erl&quot;</span><span class="o">}</span>.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For me it looks like this, we have few default definitions and at the bottom. template! This is important part it says which file he has to copy where and what will be the name of new file. Now everything should be clear!</p>
-
-<h2>Injet it into rebar!</h2>
-
-<p>All you need now to do is symlink your template folders to <code>~/.rebar/templates</code> and you can use them!
-(you can symlink your folder or just create one there :) )</p>
-
-<h2>Use!</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ rebar create <span class="nv">template</span><span class="o">=</span>gen_server <span class="nv">name</span><span class="o">=</span><span class="nv">example</span>
-</span><span class='line'><span class="o">==</span>&gt; tmp <span class="o">(</span>create<span class="o">)</span>
-</span><span class='line'>Writing src/example.erl
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Viola!</p>
-
-<h1>important</h1>
-
-<p>When i was looking at this post i saw that {{ is converted in a wrong way by octopress so i added spaces between them! check repo for correct code!</p>
-
-<h1>My own templates</h1>
-
-<p>Today i started adding my own templates initially i have only <code>gen_server</code> and <code>webmachine_resource</code> but i will add more :). It is fun it is like building your own anti-boiler plate framework.</p>
-
-<p>My templates repo: <a href="https://github.com/JakubOboza/rebar-templates">https://github.com/JakubOboza/rebar-templates</a></p>
-
-<p>Hope this helps!
-Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2141,6 +2349,10 @@ Cheers!</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/12/15/getting-some-clojure/">Getting some Clojure</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/12/11/using-tcpdump/">Using tcpdump</a>
       </li>
     
@@ -2154,10 +2366,6 @@ Cheers!</p>
     
       <li class="post">
         <a href="/blog/2012/09/26/redis-list-internals/">Redis List internals</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/09/26/failover-redis-setup-with-sentinel/">Failover Redis setup with Sentinel</a>
       </li>
     
   </ul>
