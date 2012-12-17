@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-15T22:26:24+00:00</updated>
+  <updated>2012-12-17T22:15:24+00:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,148 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Gems hidden in the past]]></title>
+    <link href="http://JakubOboza.github.com/blog/2012/12/17/gems-hidden-in-the-past/"/>
+    <updated>2012-12-17T20:52:00+00:00</updated>
+    <id>http://JakubOboza.github.com/blog/2012/12/17/gems-hidden-in-the-past</id>
+    <content type="html"><![CDATA[<p>I&#8217;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with &#8220;hacker&#8221; effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are &#8220;new&#8221; today like nodejs &#8220;the new black&#8221; are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment&#8230;  That is the things i would like to rant about today.</p>
+
+<h1>New Discoveries</h1>
+
+<p>&#8220;Theory is the thing we all skip and later on regret skipping&#8221; (Yes i quoted my self, I heard someone did it before so its not hip). We learn a lot of stuff and some of the things simply slip through and gets forgotten. That is opening for &#8220;new discoveries&#8221; or &#8220;rediscoveries&#8221; of some solutions. I have a thesis that &#8220;if something is simple it will get its niche&#8221; (did it again). This would explain new hipe for Nodejs &lt;nodejs.org>. I don&#8217;t want to judge technologies I did some stuff in node and i have small portion of experience but this text is not about this, its about technology behind stuff people think it&#8217;s brilliant and new nowadays.</p>
+
+<h2>Event loop | Evented solutions</h2>
+
+<p>Event loops exists long long and are nothing new. When someone says event loop first thing i think about is not nodejs or eventmachine or twistted but WinAPI. Yes old WinAPI and suddenly everybody realize that every GUI (Graphical User Interface) solution is evented. QT, WinAPI and many other even older solutions. This is nothing new,  so lets take a trip through the cards of history to find other gems that we can rediscover and become new rocket scientists&#8230;or first tech archeologists.</p>
+
+<h3>Step One: Alternatives to sequencing</h3>
+
+<p>So most common thing people do is sequencing and even if we use brain in other way it is easy to us to think about and form sequences because it is something we understand. This is basic unit of work we think about. So most of people write small function that sequence some action and they build programs from small functions calling small functions in a really big sequence.</p>
+
+<p>Alternative solution to do this is event machine, this solution will enable us to generate a lot of small event and if we will manage to force programmer to make them as small as possible and as fast as possible we can achieve a feeling of multitasking. How does it work ? we have one loop that picks events from event queue and process them and as long as nobody will make event that is blocking everything this will work like charm. Key to this solution is &#8220;non blocking&#8221;.</p>
+
+<h4>Achieving Non-blocking</h4>
+
+<p>To do this we need to have a way of &#8220;wait until will happen and if it happen&#8217;ed trigger event&#8221; thing. This can be done by many different solutions. For example for file descriptors (everything is a file) we have stuff like <code>select</code>, <code>poll</code>, <code>epoll</code>, <code>kqueue</code>. and this is not new its the 80&#8217;. Later on POSIX first official POSIX thing 1997. 15 years ago! Previously mentioned nodejs is representing this category (ofc from the fresh news!). Does it have flaws ? Yes! People call this async&#8230; its not async, not real async. Real async was also implemented in 80&#8217;s :D</p>
+
+<h4>Signals</h4>
+
+<p>Signals are also very old, basically this is similar concept (every concept is similar) You have a slot that handles signal and something that emits signals. It&#8217;s very handy and was implemented with big success in QT library. Does it has flaws ? basically same as event loop solutions. It&#8217;s a way of doing &#8220;message passing&#8221; pattern.</p>
+
+<h4>Message passing</h4>
+
+<p>Message passing really well implemented in Erlang is another way of achieving same result, imho  most clean and good solution in the industry right now. Simply you cast messages and other entities receive them and react. YES THIS IS HOW PEOPLE WORK.
+Most of thins seems to be inspired by nature&#8230; but lets not go this route and start religious war.</p>
+
+<h4>Async</h4>
+
+<p>The real unix async calls. Yes unix has this built in.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;aio.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">aio_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">aiocb</span> <span class="o">*</span><span class="n">aiocbp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">aio_read</span><span class="p">(</span><span class="k">struct</span> <span class="n">aiocb</span> <span class="o">*</span><span class="n">aiocbp</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You call <code>aio_write</code> and write to a file will happen, sometime in future&#8230; BEFORE END OF THE WORLD, maybe!</p>
+
+<p>Wow! This is fresh! nobody is using it nowadays! you should make new nodejs on it and call it modejs. Or wait ? Can you ? nobody really know how to use them and not be cluster f@cked after five seconds.  Real async syscalls in unix. That is awesome and its older than your son! Lets dig more&#8230;</p>
+
+<h4>Reactive programming</h4>
+
+<p>This is the sh*t, real event programming, you have real reactor nothing is faked like in eventloop! But its nothing new&#8230; also implemented in 80&#8217;s.  But what is the difference between reactive programming and event loop ? Not much because this is more conceptual thing around building your reactor. In reactor concept we think about data flows and reacting to changes in them.</p>
+
+<p>We don&#8217;t have to research things that are found!</p>
+
+<h2>Map Reduce, Google, Smart people</h2>
+
+<p>So how mega smart people in Google work ? I don&#8217;t know I don&#8217;t work for google and I&#8217;m not smart but I assume they want to get sh*t done. And after reading Amazon Dynamo Paper <a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf</a> , Google Big Table paper <a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf">http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf</a> and many other i think they developed it in kitchen. Yes in a kitchen.</p>
+
+<p>They sat down, people from google and amazon i imagine 6 engineers took 1 apple (Steve Jobs was serving) and asked them self how to how to cut it into 6 parts so they can eat it. They took knife and sliced into 6 parts and split it to each other. Suddenly one stood up (Amazon guy with headphones in avatar) and said. Each part of apple is exclusive (patent trolls have everything exclusive nowadays) to each of us so we can eat them on our own. LETS MAKE DB USING THIS TECH AND WRITE A PAPER ON IT. Next guy said.. yeah we have limited number of apple parts so it is predictable and we form a RING from it&#8230; and thats how Big Table and Amazon dynamo was born. The Google cook who was slicing apple said, i sliced apple in parts one by one with one knife&#8230; AND HE WROTE MAP REDUCE PAPER.</p>
+
+<p>They did not invented anything really new, they just approached problem simple. We can&#8217;t split and scale complex solutions so we will make everything simple. And it happens that most of things can be turned into linear or near linear problem.</p>
+
+<h3>Is Map Reduce really something new ?</h3>
+
+<p>In my opinion not. Map existed in lisp world probably since 70&#8217;s. Now someone took map and sequence of data that is exclusive and don&#8217;t depend on each other and said &#8220;What will happen if i will split this list into two parts and run map on each in two or more threads and then just sum results ?&#8221; and map reduce was born. Concept is dead simple. But its nothing new! I&#8217;m not taking here credit from google engineers. I think guys there are very smart and by using simple things in my eyes they are ^2 smart. But is it something ground breaking new ? No.</p>
+
+<p>So maybe we should more often look into past. Maybe we can find more gems like this&#8230; i bet google has technology archeology department :D</p>
+
+<h3>Step Two: Type writer</h3>
+
+<p>I&#8217;m 80&#8217; kid. I remember type writers and the sound so for me understanding how files in OS (Unix or in general) works was simple, but when recently i was explaining it to friend who is 90&#8217; kid he did not got the concept of that well. Why ? Because he is from age where type writers did not exist. For me it was a bit shocking because i thought everybody knows exactly how they work. And when i said why we have \r and what it is i was for a moment happy that I&#8217;m very very old :D.</p>
+
+<h3>Queues, Interpreters and other stuff.</h3>
+
+<p>Technology archeologiest must be open to new things, read about everything and most of all, never stop thinking &#8220;this had to be already invented&#8221;.  When I first suggested Queue as a solution to a problem some people looked at me like i would be snake. FIFO queues, something so basic&#8230; still some people don&#8217;t even think about them. This is dull example but basic data structures should be well known by everybody still&#8230; things that freezes blood in your veins happens.</p>
+
+<p>Building DSL and interpreters is good fun, its not easy often I&#8217;m still learning a lot but this should not be &#8220;devil&#8221; to other programmers.</p>
+
+<h1>Old manuscripts</h1>
+
+<p>There are books that contains tones of cool knowledge, you can be technology archeologist like me! just venture into them and discover &#8220;Stuff&#8221;. First book i would recall here is Richard Stevens.</p>
+
+<ul>
+<li>1990 – UNIX Network Programming – ISBN 0-13-949876-1</li>
+<li>1992 – Advanced Programming in the UNIX Environment – ISBN 0-201-56317-7</li>
+<li>1994 – TCP/IP Illustrated, Volume 1: The Protocols – ISBN 0-201-63346-9</li>
+<li>1995 – TCP/IP Illustrated, Volume 2: The Implementation (z Garym R. Wrightem) – ISBN 0-201-63354-X</li>
+<li>1996 – TCP/IP Illustrated, Volume 3: TCP for Transactions, HTTP, NNTP, and the UNIX Domain Protocols – ISBN 0-201-63495-3</li>
+<li>1998 – UNIX Network Programming, Volume 1, Second Edition: Networking APIs: Sockets and XTI – ISBN 0-13-490012-X</li>
+<li>1999 – UNIX Network Programming, Volume 2, Second Edition: Interprocess Communications – ISBN 0-13-081081-9</li>
+</ul>
+
+
+<p>This guy is amazing, books are very good quality talking about topics that today are more than active in our community. 22 year old books!</p>
+
+<ul>
+<li>1989 - Genetic Algorithms in Search, Optimization, and Machine Learning</li>
+</ul>
+
+
+<p>Amazing book, I never was big fan of A.I. (maybe i should, that would give me chance to actually have some of I&#8230;) but this book opened my eyes on how simple this stuff is. How easy and how powerful. When i was at uni this was one of the books i enjoed the most.</p>
+
+<ul>
+<li>1976 - Algorithms + Data Structures = Programs (Prentice-Hall Series in Automatic Computation) by Wirth.</li>
+</ul>
+
+
+<p>Classic this guy guides you through Pascal and shows you how to program and at the end of book implements subset of language. I say 76&#8217; FFS that good books will not be printed after 2006. 44 years ago published. C&#8217;mon!</p>
+
+<ul>
+<li>1988 - C Programming Language (2nd Edition)</li>
+</ul>
+
+
+<p>Next classic, especially section about making your own malloc(). C&#8217;mon 1988&#8217; 24 years ago. Brilliant book.</p>
+
+<p>And something fresh</p>
+
+<ul>
+<li>2004 - The Art of C++  by Herbert Schildt</li>
+</ul>
+
+
+<p>Really good book, also common pattern in books that i read&#8230; guy is implementing language at the end ( subset of C )</p>
+
+<p>Yes this is good stuff. Old books containing knowledge that industry will discover in 6-10 years.</p>
+
+<h2>But what about current research ?</h2>
+
+<p>Current stuff like dependent types&#8230; i recon we will hear about them in industry after our deaths ;/ next week apocalypse ;/. Yes there are tones of things to rediscover&#8230; and it&#8217;s fun! lets do it!</p>
+
+<h1>Summary</h1>
+
+<p>I love when i hear about new stuff and suddenly  after inspection it becomes clear it is just old thing on new cogs. I love this. I love technology archeology and i want to bring more examples of this and write about it on my blog.</p>
+
+<p>Sorry for ranting that much :D&#8230; anyway nobody read this :D.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Getting some Clojure]]></title>
@@ -1033,7 +1175,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#58;&#107;&#117;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#101;">&#107;&#117;&#98;&#97;&#x40;&#x6c;&#x61;&#x6d;&#98;&#100;&#97;&#x63;&#117;&#46;&#98;&#101;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#x6f;&#58;&#x6b;&#x75;&#x62;&#97;&#64;&#x6c;&#x61;&#109;&#x62;&#100;&#x61;&#99;&#117;&#x2e;&#98;&#x65;">&#107;&#x75;&#98;&#97;&#64;&#108;&#x61;&#109;&#98;&#100;&#97;&#x63;&#x75;&#46;&#x62;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
@@ -4278,274 +4420,6 @@ adding values for the same key so this way we will know how many occurrences of 
 <h1>Docs</h1>
 
 <p>More information on map reduce interface you can find in documentation for mongodb <a href="http://www.mongodb.org/display/DOCS/MapReduce">http://www.mongodb.org/display/DOCS/MapReduce</a></p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Caching and serving stale content with nginx]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/"/>
-    <updated>2012-03-31T20:18:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx</id>
-    <content type="html"><![CDATA[<h1>Caching</h1>
-
-<p>With ruby and rails we often want to have caching of static content so we will try to reduce requests that has to come through rails stack when possible. Nginx in front is a great tool and we can use its abilities to add caching easy.</p>
-
-<h2>App</h2>
-
-<p>lets imagine we have a simple <code>sinatra</code> app. For purpose of this post we will have app with one method <code>/ohhai</code> that shows current time. This is a great way to test if out caching is working fine. Code of the app is really simple:</p>
-
-<figure class='code'><figcaption><span>app.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ExampleStaleApp</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Base</span>
-</span><span class='line'>  <span class="n">get</span> <span class="s2">&quot;/ohhai&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="nb">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</span><span class='line'>    <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Also to start it easy i have created a config.ru <code>rackup</code> file describing how to start app (in repo there is start.sh script ;)</p>
-
-<figure class='code'><figcaption><span>config.ru</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;bundler&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;./app&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">run</span> <span class="no">ExampleStaleApp</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you are using code from my repo <a href="https://github.com/JakubOboza/003-nginx-cache-stale-example">https://github.com/JakubOboza/003-nginx-cache-stale-example</a> to start it all you need to do is</p>
-
-<figure class='code'><figcaption><span>config.ru</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">λ</span> <span class="n">git</span> <span class="nb">clone</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="no">JakubOboza</span><span class="o">/</span><span class="mo">003</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="n">stale</span><span class="o">-</span><span class="n">example</span>
-</span><span class='line'><span class="err">λ</span> <span class="n">cd</span> <span class="mo">003</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="n">stale</span><span class="o">-</span><span class="n">example</span>
-</span><span class='line'><span class="err">λ</span> <span class="n">bundle</span> <span class="n">install</span>
-</span><span class='line'><span class="err">λ</span> <span class="o">.</span><span class="n">/start</span><span class="o">.</span><span class="n">sh</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>
-I configured the app with my own path/uri and to look for upstream server on port 6677 so you need to change it if you are using different settings.</p>
-
-<h1>Caching</h1>
-
-<p> Our app is running now. Lets add caching, for this we will need to add nginx frontend config. In most cases i create a single nginx config for each server in sites-available directory and symlink it in sites-enabled (like apache do by default). I like this setting, it helps a lot to maintain more then one site which is common in development environment and also common on shared applications servers.</p>
-
-<h2>Nginx config file</h2>
-
-<p>I will show complete nginx config file for this example and explain each bit one by one.</p>
-
-<figure class='code'><figcaption><span>nginx.example.caching.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">upstream</span> <span class="s">sinatra_rackup</span><span class="p">{</span>
-</span><span class='line'>  <span class="kn">server</span> <span class="n">0.0.0.0</span><span class="p">:</span><span class="mi">6677</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">proxy_cache_path</span>  <span class="s">/tmp/cache</span> <span class="s">levels=1:2</span> <span class="s">keys_zone=my-test-cache:8m</span> <span class="s">max_size=5000m</span> <span class="s">inactive=300m</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">server</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">server_name</span> <span class="s">example_stale.local</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">root</span> <span class="s">/Users/kuba/Workspace/Ruby/example_stale/public</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kn">access_log</span>  <span class="s">/var/log/nginx/example.stale.access.log</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$http_host</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">200</span> <span class="mi">302</span>  <span class="mi">1m</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">404</span>      <span class="mi">60m</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_use_stale</span>   <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kn">if</span> <span class="s">(-f</span> <span class="nv">$request_filename/index.html</span><span class="s">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kn">rewrite</span> <span class="s">(.*)</span> <span class="nv">$1/index.html</span> <span class="s">break</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="kn">if</span> <span class="s">(-f</span> <span class="nv">$request_filename.html</span><span class="s">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kn">rewrite</span> <span class="s">(.*)</span> <span class="nv">$1.html</span> <span class="s">break</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="kn">if</span> <span class="s">(!-f</span> <span class="nv">$request_filename</span><span class="s">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kn">proxy_pass</span> <span class="s">http://sinatra_rackup</span><span class="p">;</span>
-</span><span class='line'>        <span class="kn">break</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kn">error_page</span> <span class="mi">500</span> <span class="mi">502</span> <span class="mi">503</span> <span class="mi">504</span> <span class="s">/50x.html</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">location</span> <span class="p">=</span> <span class="s">/50x.html</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kn">root</span> <span class="s">html</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It isn&#8217;t even so long ;)</p>
-
-<h3>upstream</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">upstream</span> <span class="s">sinatra_rackup</span><span class="p">{</span>
-</span><span class='line'>  <span class="kn">server</span> <span class="n">0.0.0.0</span><span class="p">:</span><span class="mi">6677</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>in this part we create description of our upstream. In other words where our application server will be listening. It is easy to just use port but you can configure it to use unix.socket if you want to gain on performance.</p>
-
-<h3>global cache config</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache_path</span>  <span class="s">/tmp/cache</span> <span class="s">levels=1:2</span> <span class="s">keys_zone=my-test-cache:8m</span> <span class="s">max_size=5000m</span> <span class="s">inactive=300m</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This directive sets the place where cache is stored and sets the zone name and how big it can be. We will refer tot his zone later on in proxy pass cache config.</p>
-
-<h3>app cache config</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">server</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">server_name</span> <span class="s">example_stale.local</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">root</span> <span class="s">/Users/kuba/Workspace/Ruby/example_stale/public</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$http_host</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">200</span> <span class="mi">302</span>  <span class="mi">1m</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">404</span>      <span class="mi">60m</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_use_stale</span>   <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kn">proxy_pass</span> <span class="s">http://sinatra_rackup</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here we configure server name for out application, port to listen on for it and root directory (this is fixed with my mac so you should change it). Whole magic happens in location description. here you have few important things for us.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Sets which cache zone we will use. We use same cache zone we defined in <code>proxy_cache_path</code> with keys_zone.
-Next we are setting for how long it should be cached. I used 1 minute for 200 and 302 status. this lets us see on our example app how this works each minute we see new time :). This is awesome! Next you can set different caching time expiry for other status. Here we are refreshing 404 status cache each hour (it could be days :) ).</p>
-
-<p>Last but not the least is serving stale content if upstream is dead.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache_use_stale</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This sets up for us config that will enable serving stale content if upstream is dead. This is nice if you want to provide some content in case when your backend is dead.</p>
-
-<h1>Test</h1>
-
-<p>You can test it now. Or wait&#8230; with my config you have to add entry to <code>/etc/hosts</code></p>
-
-<figure class='code'><figcaption><span>hosts</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>127.0.0.1 example_stale.local
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now you can go to <code>example_stale.local/ohhai</code> (or just <code>curl example_stale.local/ohhai</code>) and see how our cache works. Even more now you can kill your app server and still see cache being served correctly.</p>
-
-<h2>Results</h2>
-
-<p>First request
-<img src="http://img820.imageshack.us/img820/1484/screenshot20120331at211.png" alt="10 sec before" />
-Next requests
-<img src="http://img4.imageshack.us/img4/1484/screenshot20120331at211.png" alt="few ms after" /></p>
-
-<p>-> <a href="http://www.youtube.com/watch?v=lgoXUzIwXk0">http://www.youtube.com/watch?v=lgoXUzIwXk0</a></p>
-
-<h1>Cheers</h1>
-
-<p>How you can use it? Depends on your app architecture, but for every bit of content that you create which is &#8220;static&#8221; it is great thing to have. I like this feature of nginx and i hope this post will help you ;).</p>
 ]]></content>
   </entry>
   

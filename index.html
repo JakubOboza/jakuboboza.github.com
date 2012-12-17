@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="After long chat with my friend who is Ocaml ( Objective Caml ) fanatic on topic of Lisp. I decided to get my hands on Clojure. Is there a better idea &hellip;">
+  <meta name="description" content="I&#8217;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,177 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/12/17/gems-hidden-in-the-past/">Gems Hidden in the Past</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-17T20:52:00+00:00" pubdate data-updated="true">Dec 17<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/12/17/gems-hidden-in-the-past/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&#8217;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with &#8220;hacker&#8221; effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are &#8220;new&#8221; today like nodejs &#8220;the new black&#8221; are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment&#8230;  That is the things i would like to rant about today.</p>
+
+<h1>New Discoveries</h1>
+
+<p>&#8220;Theory is the thing we all skip and later on regret skipping&#8221; (Yes i quoted my self, I heard someone did it before so its not hip). We learn a lot of stuff and some of the things simply slip through and gets forgotten. That is opening for &#8220;new discoveries&#8221; or &#8220;rediscoveries&#8221; of some solutions. I have a thesis that &#8220;if something is simple it will get its niche&#8221; (did it again). This would explain new hipe for Nodejs &lt;nodejs.org>. I don&#8217;t want to judge technologies I did some stuff in node and i have small portion of experience but this text is not about this, its about technology behind stuff people think it&#8217;s brilliant and new nowadays.</p>
+
+<h2>Event loop | Evented solutions</h2>
+
+<p>Event loops exists long long and are nothing new. When someone says event loop first thing i think about is not nodejs or eventmachine or twistted but WinAPI. Yes old WinAPI and suddenly everybody realize that every GUI (Graphical User Interface) solution is evented. QT, WinAPI and many other even older solutions. This is nothing new,  so lets take a trip through the cards of history to find other gems that we can rediscover and become new rocket scientists&#8230;or first tech archeologists.</p>
+
+<h3>Step One: Alternatives to sequencing</h3>
+
+<p>So most common thing people do is sequencing and even if we use brain in other way it is easy to us to think about and form sequences because it is something we understand. This is basic unit of work we think about. So most of people write small function that sequence some action and they build programs from small functions calling small functions in a really big sequence.</p>
+
+<p>Alternative solution to do this is event machine, this solution will enable us to generate a lot of small event and if we will manage to force programmer to make them as small as possible and as fast as possible we can achieve a feeling of multitasking. How does it work ? we have one loop that picks events from event queue and process them and as long as nobody will make event that is blocking everything this will work like charm. Key to this solution is &#8220;non blocking&#8221;.</p>
+
+<h4>Achieving Non-blocking</h4>
+
+<p>To do this we need to have a way of &#8220;wait until will happen and if it happen&#8217;ed trigger event&#8221; thing. This can be done by many different solutions. For example for file descriptors (everything is a file) we have stuff like <code>select</code>, <code>poll</code>, <code>epoll</code>, <code>kqueue</code>. and this is not new its the 80&#8217;. Later on POSIX first official POSIX thing 1997. 15 years ago! Previously mentioned nodejs is representing this category (ofc from the fresh news!). Does it have flaws ? Yes! People call this async&#8230; its not async, not real async. Real async was also implemented in 80&#8217;s :D</p>
+
+<h4>Signals</h4>
+
+<p>Signals are also very old, basically this is similar concept (every concept is similar) You have a slot that handles signal and something that emits signals. It&#8217;s very handy and was implemented with big success in QT library. Does it has flaws ? basically same as event loop solutions. It&#8217;s a way of doing &#8220;message passing&#8221; pattern.</p>
+
+<h4>Message passing</h4>
+
+<p>Message passing really well implemented in Erlang is another way of achieving same result, imho  most clean and good solution in the industry right now. Simply you cast messages and other entities receive them and react. YES THIS IS HOW PEOPLE WORK.
+Most of thins seems to be inspired by nature&#8230; but lets not go this route and start religious war.</p>
+
+<h4>Async</h4>
+
+<p>The real unix async calls. Yes unix has this built in.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;aio.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">aio_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">aiocb</span> <span class="o">*</span><span class="n">aiocbp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">aio_read</span><span class="p">(</span><span class="k">struct</span> <span class="n">aiocb</span> <span class="o">*</span><span class="n">aiocbp</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You call <code>aio_write</code> and write to a file will happen, sometime in future&#8230; BEFORE END OF THE WORLD, maybe!</p>
+
+<p>Wow! This is fresh! nobody is using it nowadays! you should make new nodejs on it and call it modejs. Or wait ? Can you ? nobody really know how to use them and not be cluster f@cked after five seconds.  Real async syscalls in unix. That is awesome and its older than your son! Lets dig more&#8230;</p>
+
+<h4>Reactive programming</h4>
+
+<p>This is the sh*t, real event programming, you have real reactor nothing is faked like in eventloop! But its nothing new&#8230; also implemented in 80&#8217;s.  But what is the difference between reactive programming and event loop ? Not much because this is more conceptual thing around building your reactor. In reactor concept we think about data flows and reacting to changes in them.</p>
+
+<p>We don&#8217;t have to research things that are found!</p>
+
+<h2>Map Reduce, Google, Smart people</h2>
+
+<p>So how mega smart people in Google work ? I don&#8217;t know I don&#8217;t work for google and I&#8217;m not smart but I assume they want to get sh*t done. And after reading Amazon Dynamo Paper <a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf</a> , Google Big Table paper <a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf">http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf</a> and many other i think they developed it in kitchen. Yes in a kitchen.</p>
+
+<p>They sat down, people from google and amazon i imagine 6 engineers took 1 apple (Steve Jobs was serving) and asked them self how to how to cut it into 6 parts so they can eat it. They took knife and sliced into 6 parts and split it to each other. Suddenly one stood up (Amazon guy with headphones in avatar) and said. Each part of apple is exclusive (patent trolls have everything exclusive nowadays) to each of us so we can eat them on our own. LETS MAKE DB USING THIS TECH AND WRITE A PAPER ON IT. Next guy said.. yeah we have limited number of apple parts so it is predictable and we form a RING from it&#8230; and thats how Big Table and Amazon dynamo was born. The Google cook who was slicing apple said, i sliced apple in parts one by one with one knife&#8230; AND HE WROTE MAP REDUCE PAPER.</p>
+
+<p>They did not invented anything really new, they just approached problem simple. We can&#8217;t split and scale complex solutions so we will make everything simple. And it happens that most of things can be turned into linear or near linear problem.</p>
+
+<h3>Is Map Reduce really something new ?</h3>
+
+<p>In my opinion not. Map existed in lisp world probably since 70&#8217;s. Now someone took map and sequence of data that is exclusive and don&#8217;t depend on each other and said &#8220;What will happen if i will split this list into two parts and run map on each in two or more threads and then just sum results ?&#8221; and map reduce was born. Concept is dead simple. But its nothing new! I&#8217;m not taking here credit from google engineers. I think guys there are very smart and by using simple things in my eyes they are ^2 smart. But is it something ground breaking new ? No.</p>
+
+<p>So maybe we should more often look into past. Maybe we can find more gems like this&#8230; i bet google has technology archeology department :D</p>
+
+<h3>Step Two: Type writer</h3>
+
+<p>I&#8217;m 80&#8217; kid. I remember type writers and the sound so for me understanding how files in OS (Unix or in general) works was simple, but when recently i was explaining it to friend who is 90&#8217; kid he did not got the concept of that well. Why ? Because he is from age where type writers did not exist. For me it was a bit shocking because i thought everybody knows exactly how they work. And when i said why we have \r and what it is i was for a moment happy that I&#8217;m very very old :D.</p>
+
+<h3>Queues, Interpreters and other stuff.</h3>
+
+<p>Technology archeologiest must be open to new things, read about everything and most of all, never stop thinking &#8220;this had to be already invented&#8221;.  When I first suggested Queue as a solution to a problem some people looked at me like i would be snake. FIFO queues, something so basic&#8230; still some people don&#8217;t even think about them. This is dull example but basic data structures should be well known by everybody still&#8230; things that freezes blood in your veins happens.</p>
+
+<p>Building DSL and interpreters is good fun, its not easy often I&#8217;m still learning a lot but this should not be &#8220;devil&#8221; to other programmers.</p>
+
+<h1>Old manuscripts</h1>
+
+<p>There are books that contains tones of cool knowledge, you can be technology archeologist like me! just venture into them and discover &#8220;Stuff&#8221;. First book i would recall here is Richard Stevens.</p>
+
+<ul>
+<li>1990 – UNIX Network Programming – ISBN 0-13-949876-1</li>
+<li>1992 – Advanced Programming in the UNIX Environment – ISBN 0-201-56317-7</li>
+<li>1994 – TCP/IP Illustrated, Volume 1: The Protocols – ISBN 0-201-63346-9</li>
+<li>1995 – TCP/IP Illustrated, Volume 2: The Implementation (z Garym R. Wrightem) – ISBN 0-201-63354-X</li>
+<li>1996 – TCP/IP Illustrated, Volume 3: TCP for Transactions, HTTP, NNTP, and the UNIX Domain Protocols – ISBN 0-201-63495-3</li>
+<li>1998 – UNIX Network Programming, Volume 1, Second Edition: Networking APIs: Sockets and XTI – ISBN 0-13-490012-X</li>
+<li>1999 – UNIX Network Programming, Volume 2, Second Edition: Interprocess Communications – ISBN 0-13-081081-9</li>
+</ul>
+
+
+<p>This guy is amazing, books are very good quality talking about topics that today are more than active in our community. 22 year old books!</p>
+
+<ul>
+<li>1989 - Genetic Algorithms in Search, Optimization, and Machine Learning</li>
+</ul>
+
+
+<p>Amazing book, I never was big fan of A.I. (maybe i should, that would give me chance to actually have some of I&#8230;) but this book opened my eyes on how simple this stuff is. How easy and how powerful. When i was at uni this was one of the books i enjoed the most.</p>
+
+<ul>
+<li>1976 - Algorithms + Data Structures = Programs (Prentice-Hall Series in Automatic Computation) by Wirth.</li>
+</ul>
+
+
+<p>Classic this guy guides you through Pascal and shows you how to program and at the end of book implements subset of language. I say 76&#8217; FFS that good books will not be printed after 2006. 44 years ago published. C&#8217;mon!</p>
+
+<ul>
+<li>1988 - C Programming Language (2nd Edition)</li>
+</ul>
+
+
+<p>Next classic, especially section about making your own malloc(). C&#8217;mon 1988&#8217; 24 years ago. Brilliant book.</p>
+
+<p>And something fresh</p>
+
+<ul>
+<li>2004 - The Art of C++  by Herbert Schildt</li>
+</ul>
+
+
+<p>Really good book, also common pattern in books that i read&#8230; guy is implementing language at the end ( subset of C )</p>
+
+<p>Yes this is good stuff. Old books containing knowledge that industry will discover in 6-10 years.</p>
+
+<h2>But what about current research ?</h2>
+
+<p>Current stuff like dependent types&#8230; i recon we will hear about them in industry after our deaths ;/ next week apocalypse ;/. Yes there are tones of things to rediscover&#8230; and it&#8217;s fun! lets do it!</p>
+
+<h1>Summary</h1>
+
+<p>I love when i hear about new stuff and suddenly  after inspection it becomes clear it is just old thing on new cogs. I love this. I love technology archeology and i want to bring more examples of this and write about it on my blog.</p>
+
+<p>Sorry for ranting that much :D&#8230; anyway nobody read this :D.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1268,7 +1439,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
   </header>
 
 
-  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#111;&#58;&#107;&#117;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#101;">&#107;&#117;&#98;&#97;&#x40;&#x6c;&#x61;&#x6d;&#98;&#100;&#97;&#x63;&#117;&#46;&#98;&#101;</a> =)</p>
+  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#x6f;&#58;&#x6b;&#x75;&#x62;&#97;&#64;&#x6c;&#x61;&#109;&#x62;&#100;&#x61;&#99;&#117;&#x2e;&#98;&#x65;">&#107;&#x75;&#98;&#97;&#64;&#108;&#x61;&#109;&#98;&#100;&#97;&#x63;&#x75;&#46;&#x62;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
@@ -2209,131 +2380,6 @@ With structure like this</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/07/pong-tests-are-wrong/">Pong Tests Are Wrong</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-07T19:09:00+01:00" pubdate data-updated="true">Jun 7<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/06/07/pong-tests-are-wrong/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
-In my opinion pong tests are wrong and do not show real &#8220;performance&#8221;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
-
-<p>From this gist we can see that his vibe.d benchmark set pong test at 8425.85 req/sec (He used ab and i used httperf).</p>
-
-<h1>Warp</h1>
-
-<p>My first candidate in this competition of pong tests is haskell warp handler.</p>
-
-<p>code:</p>
-
-<figure class='code'><figcaption><span>pingpong.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="cm">{-# LANGUAGE OverloadedStrings #-}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Network.Wai</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Network.Wai.Handler.Warp</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Network.HTTP.Types</span> <span class="p">(</span><span class="nf">status200</span><span class="p">)</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Blaze.ByteString.Builder</span> <span class="p">(</span><span class="nf">copyByteString</span><span class="p">)</span>
-</span><span class='line'><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Data.ByteString.UTF8</span> <span class="k">as</span> <span class="n">BU</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Monoid</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Enumerator</span> <span class="p">(</span><span class="nf">run_</span><span class="p">,</span> <span class="nf">enumList</span><span class="p">,</span> <span class="p">(</span><span class="o">$$</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>    <span class="kr">let</span> <span class="n">port</span> <span class="ow">=</span> <span class="mi">8000</span>
-</span><span class='line'>    <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;Listening on port &quot;</span> <span class="o">++</span> <span class="n">show</span> <span class="n">port</span>
-</span><span class='line'>    <span class="n">run</span> <span class="n">port</span> <span class="n">app</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">app</span> <span class="n">req</span> <span class="ow">=</span> <span class="n">return</span> <span class="o">$</span>
-</span><span class='line'>    <span class="kr">case</span> <span class="n">pathInfo</span> <span class="n">req</span> <span class="kr">of</span>
-</span><span class='line'>        <span class="p">[</span><span class="s">&quot;pong&quot;</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">pong</span>
-</span><span class='line'>        <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">index</span> <span class="n">x</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">pong</span> <span class="ow">=</span> <span class="kt">ResponseBuilder</span> <span class="n">status200</span> <span class="p">[</span> <span class="p">(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/plain&quot;</span><span class="p">)</span> <span class="p">]</span> <span class="o">$</span> <span class="n">mconcat</span> <span class="o">$</span> <span class="n">map</span> <span class="n">copyByteString</span>
-</span><span class='line'>    <span class="p">[</span> <span class="s">&quot;pong&quot;</span> <span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">index</span> <span class="n">x</span> <span class="ow">=</span> <span class="kt">ResponseBuilder</span> <span class="n">status200</span> <span class="p">[(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span><span class="p">)]</span> <span class="o">$</span> <span class="n">mconcat</span> <span class="o">$</span> <span class="n">map</span> <span class="n">copyByteString</span>
-</span><span class='line'>    <span class="p">[</span> <span class="s">&quot;&lt;p&gt;Hello from &quot;</span><span class="p">,</span> <span class="kt">BU</span><span class="o">.</span><span class="n">fromString</span> <span class="o">$</span> <span class="n">show</span> <span class="n">x</span><span class="p">,</span> <span class="s">&quot;!&lt;/p&gt;&quot;</span>
-</span><span class='line'>    <span class="p">,</span> <span class="s">&quot;&lt;p&gt;&lt;a href=&#39;/pong&#39;&gt;pong&lt;/a&gt;&lt;/p&gt;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>it is semi rack like syntax ;)</p>
-
-<h1>Benchmark results</h1>
-
-<p>I prepared results to show how big lie is pong test. Because in this type of test / showoff all you test is how fast really you can accept connections. Single thread will always win :). But lets look at results:</p>
-
-<ul>
-<li>Multi threaded - 50 threads   - Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
-<li>Multi threaded - 4 threads ( on for each core ) - Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
-<li>Single threaded - default compilation  - Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
-</ul>
-
-
-<p>Tested with <code>httperf --uri=/ --port=8000 --num-calls=10000 --num-conns=20</code> httperf command.</p>
-
-<h1>Summary</h1>
-
-<p>You can test it on your own, i did it on latest 7.4.1 Ghc from haskell platform on OSX 10.7. And post reply with your results :) maybe i missed something. Code, scripts to build and run are in repository <a href="https://github.com/JakubOboza/haskell-warp-pong-test">https://github.com/JakubOboza/haskell-warp-pong-test</a>.</p>
-
-<h2>So how to test ?!</h2>
-
-<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&#8230; users are really testing performance of our db ;>&#8230; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2349,6 +2395,10 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2012/12/17/gems-hidden-in-the-past/">Gems hidden in the past</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/12/15/getting-some-clojure/">Getting some Clojure</a>
       </li>
     
@@ -2362,10 +2412,6 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
     
       <li class="post">
         <a href="/blog/2012/10/14/building-up-queue-system/">Building up Queue system</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/09/26/redis-list-internals/">Redis List internals</a>
       </li>
     
   </ul>
