@@ -4,7 +4,7 @@
   <title><![CDATA[Category: past | No Fucking Idea]]></title>
   <link href="http://JakubOboza.github.com/blog/categories/past/atom.xml" rel="self"/>
   <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-17T22:15:24+00:00</updated>
+  <updated>2012-12-17T22:17:26+00:00</updated>
   <id>http://JakubOboza.github.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -148,6 +148,8 @@ You call</code>aio_write` and write to a file will happen, sometime in future...
 <h1>Summary</h1>
 
 <p>I love when i hear about new stuff and suddenly  after inspection it becomes clear it is just old thing on new cogs. I love this. I love technology archeology and i want to bring more examples of this and write about it on my blog.</p>
+
+<p>Yes sending satelite in space is something new.... another event loop implementation is not.</p>
 
 <p>Sorry for ranting that much :D... anyway nobody read this :D.</p>
 ]]></content>
