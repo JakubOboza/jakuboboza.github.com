@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: cache | No Fucking Idea]]></title>
-  <link href="http://JakubOboza.github.com/blog/categories/cache/atom.xml" rel="self"/>
-  <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-17T22:17:26+00:00</updated>
-  <id>http://JakubOboza.github.com/</id>
+  <link href="http://no-fucking-idea.com/blog/categories/cache/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-01-21T19:29:07+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
     <email><![CDATA[jakub.oboza@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Caching and serving stale content with nginx]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/"/>
     <updated>2012-03-31T20:18:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx</id>
+    <id>http://no-fucking-idea.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx</id>
     <content type="html"><![CDATA[<h1>Caching</h1>
 
 <p>With ruby and rails we often want to have caching of static content so we will try to reduce requests that has to come through rails stack when possible. Nginx in front is a great tool and we can use its abilities to add caching easy.</p>

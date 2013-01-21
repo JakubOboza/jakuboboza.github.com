@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[No Fucking Idea]]></title>
-  <link href="http://JakubOboza.github.com/atom.xml" rel="self"/>
-  <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-17T22:17:26+00:00</updated>
-  <id>http://JakubOboza.github.com/</id>
+  <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-01-21T19:29:07+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
     <email><![CDATA[jakub.oboza@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Gems hidden in the past]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/12/17/gems-hidden-in-the-past/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/12/17/gems-hidden-in-the-past/"/>
     <updated>2012-12-17T20:52:00+00:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/12/17/gems-hidden-in-the-past</id>
+    <id>http://no-fucking-idea.com/blog/2012/12/17/gems-hidden-in-the-past</id>
     <content type="html"><![CDATA[<p>I&#8217;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with &#8220;hacker&#8221; effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are &#8220;new&#8221; today like nodejs &#8220;the new black&#8221; are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment&#8230;  That is the things i would like to rant about today.</p>
 
 <h1>New Discoveries</h1>
@@ -159,9 +159,9 @@ Most of thins seems to be inspired by nature&#8230; but lets not go this route a
   
   <entry>
     <title type="html"><![CDATA[Getting some Clojure]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/12/15/getting-some-clojure/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/12/15/getting-some-clojure/"/>
     <updated>2012-12-15T20:07:00+00:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/12/15/getting-some-clojure</id>
+    <id>http://no-fucking-idea.com/blog/2012/12/15/getting-some-clojure</id>
     <content type="html"><![CDATA[<p>After long chat with my friend who is Ocaml ( Objective Caml ) fanatic on topic of Lisp. I decided to get my hands on Clojure. Is there a better idea to learn language other than to write a crapy language learning tutorial ? Sure! but i will go with this one :D.</p>
 
 <h2>Lisp</h2>
@@ -519,9 +519,9 @@ Map is a high order function that takes function and list/array/sequance of argu
   
   <entry>
     <title type="html"><![CDATA[Using tcpdump]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/12/11/using-tcpdump/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/12/11/using-tcpdump/"/>
     <updated>2012-12-11T21:02:00+00:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/12/11/using-tcpdump</id>
+    <id>http://no-fucking-idea.com/blog/2012/12/11/using-tcpdump</id>
     <content type="html"><![CDATA[<p>We all love <code>tcpdump</code> :D So i found this tool useful while i was working on many things. Guess what ? it if very useful when working with network related stuff :D but its uneasy to grasp. This is my list of commands and options I use.</p>
 
 <h2>Mac, Linux</h2>
@@ -597,9 +597,9 @@ Map is a high order function that takes function and list/array/sequance of argu
   
   <entry>
     <title type="html"><![CDATA[Erlang: digraph]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/11/20/erlang-digraph/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/11/20/erlang-digraph/"/>
     <updated>2012-11-20T19:20:00+00:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/11/20/erlang-digraph</id>
+    <id>http://no-fucking-idea.com/blog/2012/11/20/erlang-digraph</id>
     <content type="html"><![CDATA[<ul>
 <li>This is more &#8220;note to self&#8221; type of post rather than tutorial thing.</li>
 <li>It&#8217;s hard to write blog posts when you are trying to take over the world :)</li>
@@ -730,9 +730,9 @@ BBA</p>
   
   <entry>
     <title type="html"><![CDATA[Building up Queue system]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/10/14/building-up-queue-system/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/10/14/building-up-queue-system/"/>
     <updated>2012-10-14T21:16:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/10/14/building-up-queue-system</id>
+    <id>http://no-fucking-idea.com/blog/2012/10/14/building-up-queue-system</id>
     <content type="html"><![CDATA[<p>Queue = FIFO, First in, First Out.</p>
 
 <p>Many people use adds queue system to their products. Some of them do legendary things with it to make it extremely unreliable products :). Most of this solutions may seem trolling but they actually exists in some products.</p>
@@ -947,9 +947,9 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
   
   <entry>
     <title type="html"><![CDATA[Redis List internals]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/09/26/redis-list-internals/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/09/26/redis-list-internals/"/>
     <updated>2012-09-26T21:59:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/09/26/redis-list-internals</id>
+    <id>http://no-fucking-idea.com/blog/2012/09/26/redis-list-internals</id>
     <content type="html"><![CDATA[<p>Today i spoted on twitter this:</p>
 
 <p>@antirez: &#8220;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis internals and behaviour, and are * great *.&#8221;</p>
@@ -1174,10 +1174,10 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
   
   <entry>
     <title type="html"><![CDATA[Failover Redis setup with Sentinel]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#x6c;&#116;&#x6f;&#58;&#107;&#117;&#98;&#x61;&#64;&#108;&#x61;&#x6d;&#98;&#x64;&#x61;&#x63;&#x75;&#x2e;&#x62;&#x65;">&#107;&#x75;&#98;&#x61;&#64;&#108;&#x61;&#109;&#x62;&#x64;&#97;&#99;&#x75;&#46;&#x62;&#x65;</a> =)</p>
+    <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#111;&#58;&#x6b;&#x75;&#x62;&#97;&#64;&#x6c;&#97;&#109;&#x62;&#x64;&#x61;&#99;&#x75;&#x2e;&#98;&#x65;">&#107;&#x75;&#x62;&#x61;&#x40;&#x6c;&#x61;&#109;&#x62;&#100;&#97;&#x63;&#117;&#46;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
@@ -1390,9 +1390,9 @@ with</p>
   
   <entry>
     <title type="html"><![CDATA[Designing Twitter clone in redis]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/07/31/designing-twitter-clone-in-redis/"/>
     <updated>2012-07-31T14:02:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis</id>
+    <id>http://no-fucking-idea.com/blog/2012/07/31/designing-twitter-clone-in-redis</id>
     <content type="html"><![CDATA[<p>Ont he official redis site <a href="http://redis.io">http://redis.io</a>  you can find this <a href="http://redis.io/topics/twitter-clone/">http://redis.io/topics/twitter-clone/</a> post about building twitter clone in redis. I based my design post partially on it but i would like to go more deep into building timeline and posts.</p>
 
 <h1>Quick review</h1>
@@ -1572,9 +1572,9 @@ with</p>
   
   <entry>
     <title type="html"><![CDATA[Designing todo app backend using redis and mongodb]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/"/>
     <updated>2012-07-26T18:06:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb</id>
+    <id>http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb</id>
     <content type="html"><![CDATA[<h2>side note</h2>
 
 <p>Upgrading octopress is a @!#!@pain! :></p>
@@ -1922,9 +1922,9 @@ With structure like this</p>
   
   <entry>
     <title type="html"><![CDATA[Api prototyping with Rails respond_with]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/"/>
     <updated>2012-06-15T23:11:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/06/15/api-prototyping-with-rails-respond-with</id>
+    <id>http://no-fucking-idea.com/blog/2012/06/15/api-prototyping-with-rails-respond-with</id>
     <content type="html"><![CDATA[<p>Prototyping json / xml RESTfull api with rails is easy. Before we will want to rewrite it to something like erlang webmachine or node.js! For purpose of this we can use syntax introduced in rails 3. (ages ago) with <code>respond_to/respond_with</code> it is very cool.</p>
 
 <h1>Example controller</h1>
@@ -2029,9 +2029,9 @@ With structure like this</p>
   
   <entry>
     <title type="html"><![CDATA[Pong tests are wrong]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/06/07/pong-tests-are-wrong/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/06/07/pong-tests-are-wrong/"/>
     <updated>2012-06-07T19:09:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/06/07/pong-tests-are-wrong</id>
+    <id>http://no-fucking-idea.com/blog/2012/06/07/pong-tests-are-wrong</id>
     <content type="html"><![CDATA[<p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
 In my opinion pong tests are wrong and do not show real &#8220;performance&#8221;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
 
@@ -2125,9 +2125,9 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
   
   <entry>
     <title type="html"><![CDATA[Rebar templates]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/05/29/rebar-templates/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/05/29/rebar-templates/"/>
     <updated>2012-05-29T21:38:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/05/29/rebar-templates</id>
+    <id>http://no-fucking-idea.com/blog/2012/05/29/rebar-templates</id>
     <content type="html"><![CDATA[<p>First question when i need to add new blog to my code I ask is, do i remember all the boilerplate and how many times i will make a mistake this time. No more :). Rebar has a nice thing built in it is templating language that lets us build our own templates.</p>
 
 <h1>Custom template ?</h1>
@@ -2277,9 +2277,9 @@ Cheers!</p>
   
   <entry>
     <title type="html"><![CDATA[Future toons processing logs with node.js]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
     <updated>2012-04-29T20:41:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
     <content type="html"><![CDATA[<p>I&#8217;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
 just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
 
@@ -2426,9 +2426,9 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
   
   <entry>
     <title type="html"><![CDATA[Setting up replication with Redis]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/29/setting-up-replication-with-redis/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/29/setting-up-replication-with-redis/"/>
     <updated>2012-04-29T20:16:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/29/setting-up-replication-with-redis</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/29/setting-up-replication-with-redis</id>
     <content type="html"><![CDATA[<p>Everyone who wants to feel safe about his data wants to have some sort of backup :). Redis have a support for replication.
 And it is very easy to setup.</p>
 
@@ -2580,9 +2580,9 @@ Sounds easy :). Lets think about most basic scenario.</p>
   
   <entry>
     <title type="html"><![CDATA[Building node.js module using npm]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/23/building-node-dot-js-module-using-npm/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/23/building-node-dot-js-module-using-npm/"/>
     <updated>2012-04-23T21:28:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/23/building-node-dot-js-module-using-npm</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/23/building-node-dot-js-module-using-npm</id>
     <content type="html"><![CDATA[<p>I have spend a bit time to find out how to build modules, where to put dependencies and how to form <code>package.json</code> so i decided to create this post to gather some of this info in one place. This <code>modules</code> are more like ruby <code>gems</code> than parts of language grouping functions also called modules (eg. Erlang). I was recently on conference and i want to post something about module i was working on at airport but before next post i need to add this so i will have something to reference to.</p>
 
 <h1>npm</h1>
@@ -2896,9 +2896,9 @@ Cheers!</p>
   
   <entry>
     <title type="html"><![CDATA[Setting up redis cluster]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/16/setting-up-redis-cluster/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/16/setting-up-redis-cluster/"/>
     <updated>2012-04-16T19:54:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/16/setting-up-redis-cluster</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/16/setting-up-redis-cluster</id>
     <content type="html"><![CDATA[<p>redis cluster in currently unstable, i used todays master HEAD (93a74949d7bb5d0c4115d1bf45f856c368badf31) commit to build my redis server and client. Setting redis cluster requires only few settings to go! :)</p>
 
 <p>Here is link to overview how redis cluster works <a href="http://redis.io/presentation/Redis_Cluster.pdf">http://redis.io/presentation/Redis_Cluster.pdf</a></p>
@@ -3124,9 +3124,9 @@ Here is my sample config</p>
   
   <entry>
     <title type="html"><![CDATA[Building ORM/ODM using virtus for MongoDB part 1]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/"/>
     <updated>2012-04-12T21:07:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1</id>
     <content type="html"><![CDATA[<p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&#8217;s really worth reading) and i thought &#8220;it&#8217;s nice&#8221;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&#8217;s ORM&#8217;s is not so common topic across web.</p>
 
 <h1>Aim</h1>
@@ -3581,9 +3581,9 @@ You can find code for this blog post here <a href="https://github.com/JakubOboza
   
   <entry>
     <title type="html"><![CDATA[Building Gem with Bundler]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/11/building-gem-with-bundler/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/11/building-gem-with-bundler/"/>
     <updated>2012-04-11T20:09:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/11/building-gem-with-bundler</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/11/building-gem-with-bundler</id>
     <content type="html"><![CDATA[<p>Building a new gem ( ruby library ) with bundler is easy task. I found a lot of tutorial on this topic in the web but none of them was covering more then just generating scaffold and packing up the gem. I will try to uncover a bit more. So at the end of this post you will be able to generate new gem, build it and it will have ready support for rspec.</p>
 
 <p>First of all you need bundler. To install bundler just type <code>gem install bundler</code>. Probably most of you guys have it already :) but just in case.</p>
@@ -4093,9 +4093,9 @@ Fingers crossed :)</p>
   
   <entry>
     <title type="html"><![CDATA[Testing Handlebars with Mocha]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/05/testing-handlebars-with-mocha/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/05/testing-handlebars-with-mocha/"/>
     <updated>2012-04-05T21:01:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/05/testing-handlebars-with-mocha</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/05/testing-handlebars-with-mocha</id>
     <content type="html"><![CDATA[<p>Mocha and Handlebars are two great things i use. Mocha is a testing library which can be used for backend (node.js) and fronend testing. On frontend its only dependency is jQuery. Handlebars is templating language that can be used for frontend javascript partials or even for backend (node.js) layouts. What ever you want! :).</p>
 
 <h1>Mocha</h1>
@@ -4265,9 +4265,9 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
   
   <entry>
     <title type="html"><![CDATA[Using Map Reduce with Mongodb]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/01/using-map-reduce-with-mongodb/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/01/using-map-reduce-with-mongodb/"/>
     <updated>2012-04-01T23:05:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/01/using-map-reduce-with-mongodb</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/01/using-map-reduce-with-mongodb</id>
     <content type="html"><![CDATA[<p>Mongodb has support for running Map Reduce queries besides having regular sql like query interface. In documentation we can read that it is not the best idea to use it as a regular interface but it is very good for generating things in backgrounds like preparing reports or caching some data. I will try to show simple example how to create a useful map reduce query and execute it.</p>
 
 <h2>Javascript</h2>

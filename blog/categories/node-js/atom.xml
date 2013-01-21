@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: node.js | No Fucking Idea]]></title>
-  <link href="http://JakubOboza.github.com/blog/categories/node-js/atom.xml" rel="self"/>
-  <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-17T22:17:26+00:00</updated>
-  <id>http://JakubOboza.github.com/</id>
+  <link href="http://no-fucking-idea.com/blog/categories/node-js/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-01-21T19:29:07+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
     <email><![CDATA[jakub.oboza@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Future toons processing logs with node.js]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
     <updated>2012-04-29T20:41:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
     <content type="html"><![CDATA[<p>I'm using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
 just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
 
@@ -123,9 +123,9 @@ It is a bit unsafe now so maybe i will remove it soonish.</p>
   
   <entry>
     <title type="html"><![CDATA[Building node.js module using npm]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/23/building-node-dot-js-module-using-npm/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/23/building-node-dot-js-module-using-npm/"/>
     <updated>2012-04-23T21:28:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/23/building-node-dot-js-module-using-npm</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/23/building-node-dot-js-module-using-npm</id>
     <content type="html"><![CDATA[<p>I have spend a bit time to find out how to build modules, where to put dependencies and how to form <code>package.json</code> so i decided to create this post to gather some of this info in one place. This <code>modules</code> are more like ruby <code>gems</code> than parts of language grouping functions also called modules (eg. Erlang). I was recently on conference and i want to post something about module i was working on at airport but before next post i need to add this so i will have something to reference to.</p>
 
 <h1>npm</h1>
@@ -155,7 +155,7 @@ Test command: (none) mocha -R landing lib/my_first_module.js      <br/>
 About to write to /private/tmp/my_first_module/package.json</p>
 
 <p>{
-  "author": "Jakub Oboza <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#111;&#58;&#106;&#97;&#x6b;&#x75;&#x62;&#46;&#111;&#x62;&#111;&#x7a;&#97;&#x40;&#x67;&#109;&#97;&#105;&#x6c;&#x2e;&#x63;&#111;&#x6d;">&#106;&#97;&#107;&#117;&#x62;&#x2e;&#x6f;&#98;&#x6f;&#122;&#97;&#x40;&#x67;&#x6d;&#97;&#x69;&#108;&#x2e;&#x63;&#x6f;&#109;</a> (no-fucking-idea.com)",
+  "author": "Jakub Oboza <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#106;&#x61;&#107;&#x75;&#x62;&#x2e;&#x6f;&#x62;&#111;&#x7a;&#97;&#64;&#103;&#x6d;&#97;&#105;&#x6c;&#46;&#x63;&#111;&#109;">&#106;&#97;&#x6b;&#x75;&#x62;&#46;&#111;&#98;&#111;&#122;&#97;&#x40;&#103;&#x6d;&#97;&#x69;&#x6c;&#46;&#x63;&#111;&#109;</a> (no-fucking-idea.com)",
   "name": "my_first_module",
   "description": "my first module",
   "version": "0.0.0",

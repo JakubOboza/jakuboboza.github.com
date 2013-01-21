@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: nodejs | No Fucking Idea]]></title>
-  <link href="http://JakubOboza.github.com/blog/categories/nodejs/atom.xml" rel="self"/>
-  <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-17T22:17:26+00:00</updated>
-  <id>http://JakubOboza.github.com/</id>
+  <link href="http://no-fucking-idea.com/blog/categories/nodejs/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-01-21T19:29:07+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
     <email><![CDATA[jakub.oboza@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Gems hidden in the past]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/12/17/gems-hidden-in-the-past/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/12/17/gems-hidden-in-the-past/"/>
     <updated>2012-12-17T20:52:00+00:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/12/17/gems-hidden-in-the-past</id>
+    <id>http://no-fucking-idea.com/blog/2012/12/17/gems-hidden-in-the-past</id>
     <content type="html"><![CDATA[<p>I've been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with "hacker" effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are "new" today like nodejs "the new black" are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment...  That is the things i would like to rant about today.</p>
 
 <h1>New Discoveries</h1>
@@ -157,9 +157,9 @@ You call</code>aio_write` and write to a file will happen, sometime in future...
   
   <entry>
     <title type="html"><![CDATA[Future toons processing logs with node.js]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
     <updated>2012-04-29T20:41:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
     <content type="html"><![CDATA[<p>I'm using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
 just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
 
@@ -265,9 +265,9 @@ It is a bit unsafe now so maybe i will remove it soonish.</p>
   
   <entry>
     <title type="html"><![CDATA[Building node.js module using npm]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/04/23/building-node-dot-js-module-using-npm/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/04/23/building-node-dot-js-module-using-npm/"/>
     <updated>2012-04-23T21:28:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/04/23/building-node-dot-js-module-using-npm</id>
+    <id>http://no-fucking-idea.com/blog/2012/04/23/building-node-dot-js-module-using-npm</id>
     <content type="html"><![CDATA[<p>I have spend a bit time to find out how to build modules, where to put dependencies and how to form <code>package.json</code> so i decided to create this post to gather some of this info in one place. This <code>modules</code> are more like ruby <code>gems</code> than parts of language grouping functions also called modules (eg. Erlang). I was recently on conference and i want to post something about module i was working on at airport but before next post i need to add this so i will have something to reference to.</p>
 
 <h1>npm</h1>
@@ -297,7 +297,7 @@ Test command: (none) mocha -R landing lib/my_first_module.js      <br/>
 About to write to /private/tmp/my_first_module/package.json</p>
 
 <p>{
-  "author": "Jakub Oboza <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#x3a;&#106;&#97;&#x6b;&#117;&#98;&#x2e;&#x6f;&#98;&#111;&#122;&#x61;&#x40;&#103;&#109;&#x61;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;">&#x6a;&#x61;&#x6b;&#x75;&#98;&#46;&#111;&#x62;&#111;&#122;&#x61;&#x40;&#x67;&#x6d;&#x61;&#x69;&#108;&#x2e;&#x63;&#111;&#x6d;</a> (no-fucking-idea.com)",
+  "author": "Jakub Oboza <a href="&#x6d;&#97;&#105;&#x6c;&#116;&#x6f;&#x3a;&#x6a;&#x61;&#x6b;&#117;&#x62;&#x2e;&#111;&#x62;&#111;&#122;&#x61;&#x40;&#x67;&#109;&#97;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;">&#x6a;&#97;&#x6b;&#117;&#98;&#x2e;&#111;&#x62;&#111;&#x7a;&#97;&#x40;&#103;&#109;&#97;&#x69;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a> (no-fucking-idea.com)",
   "name": "my_first_module",
   "description": "my first module",
   "version": "0.0.0",

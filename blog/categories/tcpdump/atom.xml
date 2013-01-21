@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: tcpdump | No Fucking Idea]]></title>
-  <link href="http://JakubOboza.github.com/blog/categories/tcpdump/atom.xml" rel="self"/>
-  <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-17T22:17:26+00:00</updated>
-  <id>http://JakubOboza.github.com/</id>
+  <link href="http://no-fucking-idea.com/blog/categories/tcpdump/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-01-21T19:29:07+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
     <email><![CDATA[jakub.oboza@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Using tcpdump]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/12/11/using-tcpdump/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/12/11/using-tcpdump/"/>
     <updated>2012-12-11T21:02:00+00:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/12/11/using-tcpdump</id>
+    <id>http://no-fucking-idea.com/blog/2012/12/11/using-tcpdump</id>
     <content type="html"><![CDATA[<p>We all love <code>tcpdump</code> :D So i found this tool useful while i was working on many things. Guess what ? it if very useful when working with network related stuff :D but its uneasy to grasp. This is my list of commands and options I use.</p>
 
 <h2>Mac, Linux</h2>

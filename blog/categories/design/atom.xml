@@ -2,10 +2,10 @@
 <feed xmlns="http://www.w3.org/2005/Atom">
 
   <title><![CDATA[Category: design | No Fucking Idea]]></title>
-  <link href="http://JakubOboza.github.com/blog/categories/design/atom.xml" rel="self"/>
-  <link href="http://JakubOboza.github.com/"/>
-  <updated>2012-12-17T22:17:26+00:00</updated>
-  <id>http://JakubOboza.github.com/</id>
+  <link href="http://no-fucking-idea.com/blog/categories/design/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-01-21T19:29:07+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
     <email><![CDATA[jakub.oboza@gmail.com]]></email>
@@ -15,9 +15,9 @@
   
   <entry>
     <title type="html"><![CDATA[Designing Twitter clone in redis]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/07/31/designing-twitter-clone-in-redis/"/>
     <updated>2012-07-31T14:02:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/07/31/designing-twitter-clone-in-redis</id>
+    <id>http://no-fucking-idea.com/blog/2012/07/31/designing-twitter-clone-in-redis</id>
     <content type="html"><![CDATA[<p>Ont he official redis site <a href="http://redis.io">http://redis.io</a>  you can find this <a href="http://redis.io/topics/twitter-clone/">http://redis.io/topics/twitter-clone/</a> post about building twitter clone in redis. I based my design post partially on it but i would like to go more deep into building timeline and posts.</p>
 
 <h1>Quick review</h1>
@@ -155,9 +155,9 @@ And you need to push your post id into their time line posts list. Thats all. Of
   
   <entry>
     <title type="html"><![CDATA[Designing todo app backend using redis and mongodb]]></title>
-    <link href="http://JakubOboza.github.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/"/>
+    <link href="http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/"/>
     <updated>2012-07-26T18:06:00+01:00</updated>
-    <id>http://JakubOboza.github.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb</id>
+    <id>http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb</id>
     <content type="html"><![CDATA[<h2>side note</h2>
 
 <p>Upgrading octopress is a @!#!@pain! :></p>
