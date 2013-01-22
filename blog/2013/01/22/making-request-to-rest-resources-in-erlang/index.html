@@ -1,0 +1,480 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Making request to REST resources in Erlang - No Fucking Idea</title>
+  <meta name="author" content="Jakub Oboza">
+
+  
+  <meta name="description" content="Recently with friends we are building side project called &#8220;Midway&#8221; its a simple battleship server. The whole point of the game is to &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="/javascripts/ender.js"></script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <link href="/atom.xml" rel="alternate" title="No Fucking Idea" type="application/atom+xml">
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-17523816-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">No Fucking Idea</a></h1>
+  
+    <h2>Common answer to everything</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:no-fucking-idea.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/link-lib">LIB!</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Making Request to REST Resources in Erlang</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-22T19:42:00+00:00" pubdate data-updated="true">Jan 22<span>nd</span>, 2013</time>
+        
+         | <a href="#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>Recently with friends we are building side project called &#8220;Midway&#8221; its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
+
+<h1>Making request</h1>
+
+<p>So first of all i used builtin inets for making requests.
+So first thing to do is to start inets!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nn">inets</span><span class="p">:</span><span class="n">start</span><span class="p">().</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok i generalized using httpc to really simple thing</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nf">post</span><span class="p">(</span><span class="nv">URL</span><span class="p">,</span> <span class="nv">ContentType</span><span class="p">,</span> <span class="nv">Body</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">request</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="p">{</span><span class="nv">URL</span><span class="p">,</span> <span class="p">[],</span> <span class="nv">ContentType</span><span class="p">,</span> <span class="nv">Body</span><span class="p">}).</span>
+</span><span class='line'><span class="nb">get</span><span class="p">(</span><span class="nv">URL</span><span class="p">)</span>                     <span class="o">-&gt;</span> <span class="n">request</span><span class="p">(</span><span class="nb">get</span><span class="p">,</span>  <span class="p">{</span><span class="nv">URL</span><span class="p">,</span> <span class="p">[]}).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">request</span><span class="p">(</span><span class="nv">Method</span><span class="p">,</span> <span class="nv">Body</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nn">httpc</span><span class="p">:</span><span class="n">request</span><span class="p">(</span><span class="nv">Method</span><span class="p">,</span> <span class="nv">Body</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[]).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So if you will a call you will get something like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nn">httpc</span><span class="p">:</span><span class="n">request</span><span class="p">(</span><span class="nb">get</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;http://www.youtube.com/watch?v=JvxG3zl_WhU&quot;</span><span class="p">,</span> <span class="p">[]},</span> <span class="p">[],</span> <span class="p">[]).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,{{</span><span class="s">&quot;HTTP/1.1&quot;</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="s">&quot;OK&quot;</span><span class="p">},</span>
+</span><span class='line'>     <span class="p">[{</span><span class="s">&quot;cache-control&quot;</span><span class="p">,</span><span class="s">&quot;no-cache&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;date&quot;</span><span class="p">,</span><span class="s">&quot;Tue, 22 Jan 2013 20:36:16 GMT&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;server&quot;</span><span class="p">,</span><span class="s">&quot;gwiseguy/2.0&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;content-length&quot;</span><span class="p">,</span><span class="s">&quot;221233&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;content-type&quot;</span><span class="p">,</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;expires&quot;</span><span class="p">,</span><span class="s">&quot;Tue, 27 Apr 1971 19:44:06 EST&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;set-cookie&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;PREF=f1=50000000; path=/; domain=.youtube.com; expires=Fri, 20-Jan-2023 20:36:15 GMT&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;set-cookie&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;use_hitbox=d5c5516c3379125f43aa0d495d100d6ddAEAAAAw; path=/; domain=.youtube.com&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;set-cookie&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;VISITOR_INFO1_LIVE=99hU0tGtAng; path=/; domain=.youtube.com; expires=Thu, 19-Sep-2013 20:36:15 GMT&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;set-cookie&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;recently_watched_video_id_list=dda4a4415949369ee6eb305306b40e47WwEAAABzCwAAAEp2eEczemxfV2hV; path=/; domain=.youtube.com&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;x-frame-options&quot;</span><span class="p">,</span><span class="s">&quot;SAMEORIGIN&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;x-content-type-options&quot;</span><span class="p">,</span><span class="s">&quot;nosniff&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;p3p&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;CP=</span><span class="se">\&quot;</span><span class="s">This is not a P3P policy! See http://support.google.com/accounts/bin/answer.py?answer=151657&amp;hl=en-GB for more info.</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;x-xss-protection&quot;</span><span class="p">,</span><span class="s">&quot;1; mode=block&quot;</span><span class="p">}],</span>
+</span><span class='line'>     <span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">68</span><span class="p">,</span><span class="mi">79</span><span class="p">,</span><span class="mi">67</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">89</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="mi">69</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">104</span><span class="p">,</span><span class="mi">116</span><span class="p">,</span><span class="mi">109</span><span class="p">,</span><span class="mi">108</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">104</span><span class="p">,</span>
+</span><span class='line'>      <span class="mi">116</span><span class="p">,</span><span class="mi">109</span><span class="p">,</span><span class="mi">108</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">108</span><span class="p">,</span><span class="mi">97</span><span class="p">,</span><span class="mi">110</span><span class="p">|...]}}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One more thing i added was extracting body of the response</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'>  <span class="n">response_body</span><span class="p">({</span><span class="n">ok</span><span class="p">,</span> <span class="p">{</span> <span class="p">_,</span> <span class="p">_,</span> <span class="nv">Body</span><span class="p">}})</span> <span class="o">-&gt;</span> <span class="nv">Body</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So after calling it on response we can get body</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'>  <span class="nv">Response</span> <span class="o">=</span> <span class="nn">httpc</span><span class="p">:</span><span class="n">request</span><span class="p">(</span><span class="nb">get</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;http://www.youtube.com/watch?v=JvxG3zl_WhU&quot;</span><span class="p">,</span> <span class="p">[]},</span> <span class="p">[],</span> <span class="p">[]).</span>
+</span><span class='line'>  <span class="nv">Body</span> <span class="o">=</span> <span class="n">response_body</span><span class="p">(</span><span class="nv">Response</span><span class="p">).</span>
+</span><span class='line'>  <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~s~n</span><span class="s">&quot;</span><span class="p">,[</span><span class="nv">Body</span><span class="p">]).</span>
+</span><span class='line'>  <span class="o">&lt;!</span><span class="nv">DOCTYPE</span> <span class="n">html</span><span class="o">&gt;&lt;</span><span class="n">html</span> <span class="n">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="o">&gt;&lt;</span><span class="n">head</span><span class="o">&gt;</span> <span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Parsing Json</h1>
+
+<p> So next thing to do was to parse json :)  for this pupose use two libs mochijson2 or jiffy.</p>
+
+<h2>Mochijson2</h2>
+
+<p>So this one is easy to find and use. All you need to do is grab file from mochiweb project and compile it :) it has two method encode and decode.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nn">mochijson2</span><span class="p">:</span><span class="n">decode</span><span class="p">(</span><span class="nv">STUFF</span><span class="p">).</span>
+</span><span class='line'><span class="nn">mochijson2</span><span class="p">:</span><span class="n">endcode</span><span class="p">(</span><span class="nv">STUFF</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One thing worth mentioning is that it expects input in a bit structured format.</p>
+
+<p>So typycaly it will use &#8220;struct&#8221; symbol for json &#8220;{}&#8221; objects.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">struct</span><span class="p">,</span> <span class="p">[{</span><span class="n">name</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;jakub&quot;</span><span class="o">&gt;&gt;</span><span class="p">},</span> <span class="p">{</span><span class="n">age</span><span class="p">,</span> <span class="mi">27</span><span class="p">},</span> <span class="p">{</span><span class="n">ids</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]}]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use&#8230;</p>
+
+<h2>Jiffy</h2>
+
+<p>This! There is a good example on main page.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Eshell</span> <span class="nv">V5</span><span class="p">.</span><span class="mi">8</span><span class="p">.</span><span class="mi">2</span>  <span class="p">(</span><span class="n">abort</span> <span class="n">with</span> <span class="err">^</span><span class="nv">G</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">jiffy</span><span class="p">:</span><span class="n">decode</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;{</span><span class="se">\&quot;</span><span class="s">foo</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">bar</span><span class="se">\&quot;</span><span class="s">}&quot;</span><span class="o">&gt;&gt;</span><span class="p">).</span>
+</span><span class='line'><span class="p">{[{</span><span class="o">&lt;&lt;</span><span class="s">&quot;foo&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="o">&lt;&lt;</span><span class="s">&quot;bar&quot;</span><span class="o">&gt;&gt;</span><span class="p">}]}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">Doc</span> <span class="o">=</span> <span class="p">{[{</span><span class="n">foo</span><span class="p">,</span> <span class="p">[</span><span class="o">&lt;&lt;</span><span class="s">&quot;bing&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="mi">2</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span> <span class="n">true</span><span class="p">]}]}.</span>
+</span><span class='line'><span class="p">{[{</span><span class="n">foo</span><span class="p">,[</span><span class="o">&lt;&lt;</span><span class="s">&quot;bing&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="mi">2</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span><span class="n">true</span><span class="p">]}]}</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">jiffy</span><span class="p">:</span><span class="n">encode</span><span class="p">(</span><span class="nv">Doc</span><span class="p">).</span>
+</span><span class='line'><span class="o">&lt;&lt;</span><span class="s">&quot;{</span><span class="se">\&quot;</span><span class="s">foo</span><span class="se">\&quot;</span><span class="s">:[</span><span class="se">\&quot;</span><span class="s">bing</span><span class="se">\&quot;</span><span class="s">,2.2999999999999998224,true]}&quot;</span><span class="o">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This shows how nice it is to use :D no &#8216;struct&#8217; pure love!</p>
+
+<p>You can get it here <a href="https://github.com/davisp/jiffy">https://github.com/davisp/jiffy</a></p>
+
+<h1>Summary</h1>
+
+<p>This is just note to self to not be checking up docs looking for this stuff again :).</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jakub Oboza</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-22T19:42:00+00:00" pubdate data-updated="true">Jan 22<span>nd</span>, 2013</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/erlang/'>erlang</a>, <a class='category' href='/blog/categories/get/'>get</a>, <a class='category' href='/blog/categories/json/'>json</a>, <a class='category' href='/blog/categories/mochi/'>mochi</a>, <a class='category' href='/blog/categories/mochiweb/'>mochiweb</a>, <a class='category' href='/blog/categories/post/'>post</a>, <a class='category' href='/blog/categories/request/'>request</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/" data-via="JakubOboza" data-counturl="http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2012/12/17/gems-hidden-in-the-past/" title="Previous Post: Gems hidden in the past">&laquo; Gems hidden in the past</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2013/01/22/making-request-to-rest-resources-in-erlang/">Making request to REST resources in Erlang</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/17/gems-hidden-in-the-past/">Gems hidden in the past</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/15/getting-some-clojure/">Getting some Clojure</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/12/11/using-tcpdump/">Using tcpdump</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2012/11/20/erlang-digraph/">Erlang: digraph</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
+  
+  <script type="text/javascript">
+    $.domReady(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'JakubOboza',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+<section>
+  <h1>Latest Tweets</h1>
+  <ul id="tweets">
+    <li class="loading">Status updating...</li>
+  </ul>
+  <script type="text/javascript">
+    $.domReady(function(){
+      getTwitterFeed("JakubOboza", 9000, false);
+    });
+  </script>
+  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
+  
+    <a href="http://twitter.com/JakubOboza" class="twitter-follow-button" data-show-count="false">Follow @JakubOboza</a>
+  
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/101398174644580064637?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2013 - Jakub Oboza -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'nofuckingidea';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/';
+        var disqus_url = 'http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

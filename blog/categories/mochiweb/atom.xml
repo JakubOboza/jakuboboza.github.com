@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: mochiweb | No Fucking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/mochiweb/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-01-22T20:57:25+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Making request to REST resources in Erlang]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/"/>
+    <updated>2013-01-22T19:42:00+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang</id>
+    <content type="html"><![CDATA[<p>Recently with friends we are building side project called "Midway" its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
+
+<h1>Making request</h1>
+
+<p>So first of all i used builtin inets for making requests.
+So first thing to do is to start inets!</p>
+
+<p><code>erlang
+inets:start().
+</code></p>
+
+<p>Ok i generalized using httpc to really simple thing</p>
+
+<p>``` erlang
+post(URL, ContentType, Body) -> request(post, {URL, [], ContentType, Body}).
+get(URL)                     -> request(get,  {URL, []}).</p>
+
+<p>request(Method, Body) -></p>
+
+<pre><code>httpc:request(Method, Body, [], []).
+</code></pre>
+
+<p>```</p>
+
+<p>So if you will a call you will get something like this</p>
+
+<p>``` erlang
+httpc:request(get, {"http://www.youtube.com/watch?v=JvxG3zl_WhU", []}, [], []).
+{ok,{{"HTTP/1.1",200,"OK"},</p>
+
+<pre><code> [{"cache-control","no-cache"},
+  {"date","Tue, 22 Jan 2013 20:36:16 GMT"},
+  {"server","gwiseguy/2.0"},
+  {"content-length","221233"},
+  {"content-type","text/html; charset=utf-8"},
+  {"expires","Tue, 27 Apr 1971 19:44:06 EST"},
+  {"set-cookie",
+   "PREF=f1=50000000; path=/; domain=.youtube.com; expires=Fri, 20-Jan-2023 20:36:15 GMT"},
+  {"set-cookie",
+   "use_hitbox=d5c5516c3379125f43aa0d495d100d6ddAEAAAAw; path=/; domain=.youtube.com"},
+  {"set-cookie",
+   "VISITOR_INFO1_LIVE=99hU0tGtAng; path=/; domain=.youtube.com; expires=Thu, 19-Sep-2013 20:36:15 GMT"},
+  {"set-cookie",
+   "recently_watched_video_id_list=dda4a4415949369ee6eb305306b40e47WwEAAABzCwAAAEp2eEczemxfV2hV; path=/; domain=.youtube.com"},
+  {"x-frame-options","SAMEORIGIN"},
+  {"x-content-type-options","nosniff"},
+  {"p3p",
+   "CP=\"This is not a P3P policy! See http://support.google.com/accounts/bin/answer.py?answer=151657&amp;hl=en-GB for more info.\""},
+  {"x-xss-protection","1; mode=block"}],
+ [60,33,68,79,67,84,89,80,69,32,104,116,109,108,62,60,104,
+  116,109,108,32,108,97,110|...]}}
+</code></pre>
+
+<p>```</p>
+
+<p>One more thing i added was extracting body of the response</p>
+
+<p><code>erlang
+  response_body({ok, { _, _, Body}}) -&gt; Body.
+</code></p>
+
+<p>So after calling it on response we can get body</p>
+
+<p>``` erlang
+  Response = httpc:request(get, {"http://www.youtube.com/watch?v=JvxG3zl_WhU", []}, [], []).
+  Body = response_body(Response).
+  io:format("~s~n",[Body]).
+  &lt;!DOCTYPE html><html lang="en"><head> ...</p>
+
+<p>```</p>
+
+<h1>Parsing Json</h1>
+
+<p> So next thing to do was to parse json :)  for this pupose use two libs mochijson2 or jiffy.</p>
+
+<h2>Mochijson2</h2>
+
+<p>So this one is easy to find and use. All you need to do is grab file from mochiweb project and compile it :) it has two method encode and decode.</p>
+
+<p><code>erlang
+mochijson2:decode(STUFF).
+mochijson2:endcode(STUFF).
+</code>
+One thing worth mentioning is that it expects input in a bit structured format.</p>
+
+<p>So typycaly it will use "struct" symbol for json "{}" objects.</p>
+
+<p><code>erlang
+{struct, [{name, &lt;&lt;"jakub"&gt;&gt;}, {age, 27}, {ids, [1,2]}]}
+</code>
+So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use...</p>
+
+<h2>Jiffy</h2>
+
+<p>This! There is a good example on main page.</p>
+
+<p><code>erlang
+Eshell V5.8.2  (abort with ^G)
+1&gt; jiffy:decode(&lt;&lt;"{\"foo\": \"bar\"}"&gt;&gt;).
+{[{&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"bar"&gt;&gt;}]}
+2&gt; Doc = {[{foo, [&lt;&lt;"bing"&gt;&gt;, 2.3, true]}]}.
+{[{foo,[&lt;&lt;"bing"&gt;&gt;,2.3,true]}]}
+3&gt; jiffy:encode(Doc).
+&lt;&lt;"{\"foo\":[\"bing\",2.2999999999999998224,true]}"&gt;&gt;
+</code></p>
+
+<p>This shows how nice it is to use :D no 'struct' pure love!</p>
+
+<p>You can get it here <a href="https://github.com/davisp/jiffy">https://github.com/davisp/jiffy</a></p>
+
+<h1>Summary</h1>
+
+<p>This is just note to self to not be checking up docs looking for this stuff again :).</p>
+]]></content>
+  </entry>
+  
+</feed>

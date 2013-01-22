@@ -9,8 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="After short talk with tomash and his gist https://gist.github.com/2871286 with performance of vibe.d i decided to write this post.
-In my opinion pong &hellip;">
+  <meta name="description" content="Prototyping json / xml RESTfull api with rails is easy. Before we will want to rewrite it to something like erlang webmachine or node.js! For purpose &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +77,142 @@ In my opinion pong &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/">Api Prototyping With Rails Respond_with</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-15T23:11:00+01:00" pubdate data-updated="true">Jun 15<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Prototyping json / xml RESTfull api with rails is easy. Before we will want to rewrite it to something like erlang webmachine or node.js! For purpose of this we can use syntax introduced in rails 3. (ages ago) with <code>respond_to/respond_with</code> it is very cool.</p>
+
+<h1>Example controller</h1>
+
+<p>How we use this ?  Lets take a peek and simple example:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">VenuesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:json</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venues</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">per</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Two things we will notice at start is <code>respond_to :html, :xml, :json</code> this is something like old merbs <code>provides</code> where we specify to which formats we want to respond. Second change is how we layout the action. All we have to do is to put into <code>respond_with</code> object we want to respond with.</p>
+
+<p>What this buys for us ?</p>
+
+<ul>
+<li>If we have html request to actions like create, update or destroy we want to redirect on success</li>
+<li>if we have json, xml request to same type of &#8220;state changing&#8221; actions we want to render response with our format.</li>
+</ul>
+
+
+<p>We achieve both of this with reponds_with in just one line. But lets take a peek at longer example.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">VenuesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">before_filter</span> <span class="ss">:authenticate_user!</span><span class="p">,</span> <span class="ss">:except</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="p">,</span> <span class="ss">:near</span><span class="o">]</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:json</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
+</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venues</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">per</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
+</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="n">permalink</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">))</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">new</span>
+</span><span class='line'>    <span class="n">repond_with</span><span class="p">(</span><span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
+</span><span class='line'>    <span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:venue</span><span class="o">]</span><span class="p">)</span>
+</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venue</span><span class="p">,</span> <span class="ss">:location</span> <span class="o">=&gt;</span> <span class="n">venues_url</span><span class="p">)</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>In this example we can see example of <code>create</code> action where we add <code>:location =&gt; venues_url</code> this will in case of format: html success redirect to this url.</p>
+
+<h1>Summary</h1>
+
+<p>Using this helps to write stuff fast and readable, you can still use plain old <code>respond_to</code> in action with old <code>format.html</code> syntax..</p>
+
+<p>I hope you liked it :)</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2576,197 +2711,6 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/04/01/using-map-reduce-with-mongodb/">Using Map Reduce With Mongodb</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-04-01T23:05:00+01:00" pubdate data-updated="true">Apr 1<span>st</span>, 2012</time>
-        
-         | <a href="/blog/2012/04/01/using-map-reduce-with-mongodb/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Mongodb has support for running Map Reduce queries besides having regular sql like query interface. In documentation we can read that it is not the best idea to use it as a regular interface but it is very good for generating things in backgrounds like preparing reports or caching some data. I will try to show simple example how to create a useful map reduce query and execute it.</p>
-
-<h2>Javascript</h2>
-
-<p>Map reduce queries in Mongodb are written in javascript. All you have to do is to prepare two regular javascript functions</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>    <span class="cm">/* emit values for each document */</span>
-</span><span class='line'>  <span class="nx">emit</span><span class="p">();</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In map function you have to emit key -> values from document, eg. for each document emit urls and counts of them.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">reduce</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">value</span><span class="p">){</span>
-</span><span class='line'>    <span class="cm">/* reduce emited values into result */</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">{</span><span class="nx">result1</span><span class="o">:</span> <span class="nx">one</span><span class="p">,</span> <span class="nx">result2</span><span class="o">:</span> <span class="nx">two</span><span class="p">};</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In reduce function you simple gather results and sum them up. It is easier to think about if you will imagine that reduce is something like fold or inject (depending on background) on emitted values from mapping function.</p>
-
-<h2>Running scripts</h2>
-
-<p>Mongo db has a really nice interface for running scripts. Lets examine a simple example</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>mongo localhost:27017/canis_production generate_report.js
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This will run <code>generate_report.js</code> script on database <code>canis_production</code> on db node <code>localhost:27017</code>. You don&#8217;t need to do it, but its easiet to write it into file then type each time functions ;).</p>
-
-<h1>Example Map reduce query</h1>
-
-<p>Now this is a simple mapReduce that actually do something. It is emitting for each document url field and value 1. Reducer is
-adding values for the same key so this way we will know how many occurrences of each url we have across whole collection.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>  <span class="nx">emit</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'><span class="kd">var</span> <span class="nx">reduce</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">values</span><span class="p">){</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">res</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>  <span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">){</span> <span class="nx">res</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">});</span>
-</span><span class='line'>  <span class="k">return</span> <span class="p">{</span><span class="nx">count</span><span class="o">:</span> <span class="nx">res</span><span class="p">};</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>this is have we defined out map reduce functions now all we need to do is just runt he query.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">sites</span><span class="p">.</span><span class="nx">mapReduce</span><span class="p">(</span><span class="nx">map</span><span class="p">,</span> <span class="nx">reduce</span><span class="p">,</span> <span class="p">{</span> <span class="nx">out</span><span class="o">:</span> <span class="s2">&quot;mapped_urls&quot;</span> <span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To run mapReduce we are using <code>mapReduce</code> function on collection (this example uses collection named &#8220;sites&#8221;), first argument is map function, second is reduce function and third is option but very useful, it is output collection where results will be stored in form of documents. This option lets us run the query at eg. night and see results in the morning :).</p>
-
-<h2>Lets test it</h2>
-
-<p>First some sample data</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">sites</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span><span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span> <span class="nx">trash_data</span><span class="o">:</span> <span class="mi">5</span> <span class="p">});</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">sites</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span><span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;www.no-fucking-idea.com&quot;</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span> <span class="nx">trash_data</span><span class="o">:</span> <span class="mi">13</span> <span class="p">});</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">sites</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span><span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span> <span class="nx">trash_data</span><span class="o">:</span> <span class="mi">1</span> <span class="p">});</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">sites</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span><span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;www.no-fucking-idea.com&quot;</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span> <span class="nx">trash_data</span><span class="o">:</span> <span class="mi">69</span> <span class="p">});</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">sites</span><span class="p">.</span><span class="nx">insert</span><span class="p">({</span><span class="nx">url</span><span class="o">:</span> <span class="s2">&quot;www.no-fucking-idea.com&quot;</span><span class="p">,</span> <span class="nx">date</span><span class="o">:</span> <span class="k">new</span> <span class="nb">Date</span><span class="p">(),</span> <span class="nx">trash_data</span><span class="o">:</span> <span class="mi">256</span> <span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>now functions and query</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="kd">var</span> <span class="nx">map</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'><span class="p">...</span>   <span class="nx">emit</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">url</span><span class="p">,</span> <span class="mi">1</span><span class="p">);</span>
-</span><span class='line'><span class="p">...</span> <span class="p">}</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="kd">var</span> <span class="nx">reduce</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">key</span><span class="p">,</span> <span class="nx">values</span><span class="p">){</span>
-</span><span class='line'><span class="p">...</span>   <span class="kd">var</span> <span class="nx">res</span> <span class="o">=</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'><span class="p">...</span>   <span class="nx">values</span><span class="p">.</span><span class="nx">forEach</span><span class="p">(</span><span class="kd">function</span><span class="p">(</span><span class="nx">v</span><span class="p">){</span> <span class="nx">res</span> <span class="o">+=</span> <span class="mi">1</span><span class="p">});</span>
-</span><span class='line'><span class="p">...</span>   <span class="k">return</span> <span class="p">{</span><span class="nx">count</span><span class="o">:</span> <span class="nx">res</span><span class="p">};</span>
-</span><span class='line'><span class="p">...</span> <span class="p">}</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">sites</span><span class="p">.</span><span class="nx">mapReduce</span><span class="p">(</span><span class="nx">map</span><span class="p">,</span> <span class="nx">reduce</span><span class="p">,</span> <span class="p">{</span> <span class="nx">out</span><span class="o">:</span> <span class="s2">&quot;mapped_urls&quot;</span> <span class="p">});</span>
-</span><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="s2">&quot;result&quot;</span> <span class="o">:</span> <span class="s2">&quot;mapped_urls&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="s2">&quot;timeMillis&quot;</span> <span class="o">:</span> <span class="mi">75</span><span class="p">,</span>
-</span><span class='line'>  <span class="s2">&quot;counts&quot;</span> <span class="o">:</span> <span class="p">{</span>
-</span><span class='line'>      <span class="s2">&quot;input&quot;</span> <span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;emit&quot;</span> <span class="o">:</span> <span class="mi">5</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;reduce&quot;</span> <span class="o">:</span> <span class="mi">2</span><span class="p">,</span>
-</span><span class='line'>      <span class="s2">&quot;output&quot;</span> <span class="o">:</span> <span class="mi">2</span>
-</span><span class='line'>  <span class="p">},</span>
-</span><span class='line'>  <span class="s2">&quot;ok&quot;</span> <span class="o">:</span> <span class="mi">1</span><span class="p">,</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And results</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">mapped_urls</span><span class="p">.</span><span class="nx">find</span><span class="p">({})</span>
-</span><span class='line'><span class="p">{</span> <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="s2">&quot;www.google.com&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span> <span class="o">:</span> <span class="p">{</span> <span class="s2">&quot;count&quot;</span> <span class="o">:</span> <span class="mi">2</span> <span class="p">}</span> <span class="p">}</span>
-</span><span class='line'><span class="p">{</span> <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="s2">&quot;www.no-fucking-idea.com&quot;</span><span class="p">,</span> <span class="s2">&quot;value&quot;</span> <span class="o">:</span> <span class="p">{</span> <span class="s2">&quot;count&quot;</span> <span class="o">:</span> <span class="mi">3</span> <span class="p">}</span> <span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Worked perfect ;)</p>
-
-<h1>Docs</h1>
-
-<p>More information on map reduce interface you can find in documentation for mongodb <a href="http://www.mongodb.org/display/DOCS/MapReduce">http://www.mongodb.org/display/DOCS/MapReduce</a></p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2784,6 +2728,10 @@ adding values for the same key so this way we will know how many occurrences of 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/01/22/making-request-to-rest-resources-in-erlang/">Making request to REST resources in Erlang</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2012/12/17/gems-hidden-in-the-past/">Gems hidden in the past</a>
       </li>
     
@@ -2797,10 +2745,6 @@ adding values for the same key so this way we will know how many occurrences of 
     
       <li class="post">
         <a href="/blog/2012/11/20/erlang-digraph/">Erlang: digraph</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/10/14/building-up-queue-system/">Building up Queue system</a>
       </li>
     
   </ul>
