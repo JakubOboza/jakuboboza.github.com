@@ -1,0 +1,201 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: extensions | No Fucking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/extensions/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-02-05T20:45:52+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Building FFI extensions in Erlang]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang/"/>
+    <updated>2013-02-05T20:20:00+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang</id>
+    <content type="html"><![CDATA[<p>I'm preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don't want to build whole app in C because i know how this can end when you are 1500 - 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
+
+<h1>Ports</h1>
+
+<p>Firt thought was to build small C program that will check stuff periodically or just "check stuff" in SHT1x and just print it out to output. So my first attempt was</p>
+
+<p>For the example here i will use <code>/proc/cpuinfo</code></p>
+
+<p>``` erlang
+-module(mycpuinfo).
+-export([info/0]).</p>
+
+<p>-define(CMD, "cat /proc/cpuinfo").</p>
+
+<p>info() -></p>
+
+<pre><code>Port = open_port({spawn, ?CMD}, [{packet, 1}, use_stdio, exit_status, binary]),
+port_command(Port, &lt;&lt;&gt;&gt;),
+receive
+</code></pre>
+
+<p>  {Port, {data, Response}} -></p>
+
+<pre><code>  {ok, {cpuinfo, Response}};
+</code></pre>
+
+<p>  _  -> error</p>
+
+<pre><code>end.
+</code></pre>
+
+<p>```</p>
+
+<p>Nothing super special, except that raspberry pi is not really cool with different packet sizes and it can for example not read whole input properly. I observed some issues with it. So i decided to explore more FFI.</p>
+
+<h1>erl_interface</h1>
+
+<p>The thing i found is called erl_interface and it is designed for FFI. This is it! What you do is you build process like thing in C and micro module in erlang that handles this. (It is just to make it look nice). But there are few glitches!</p>
+
+<p>This is my module posting back "pong" on "ping" message</p>
+
+<p>``` c lolpong.c</p>
+
+<h1>include &lt;stdio.h></h1>
+
+<h1>include &lt;sys/types.h></h1>
+
+<h1>include &lt;sys/socket.h></h1>
+
+<h1>include &lt;netinet/in.h></h1>
+
+<h1>include "erl_interface.h"</h1>
+
+<h1>include "ei.h"</h1>
+
+<h1>define BUFFSIZE 100</h1>
+
+<p>int main(int argc, char** argv){</p>
+
+<p>  int fd;
+  unsigned char buf[BUFFSIZE];
+  ErlMessage emsg;
+  int msg_type;
+  ETERM <em>fromp, </em>argp, *rsp;</p>
+
+<p>  erl_init(NULL, 0);</p>
+
+<p>  if(erl_connect_init(1, "cookie",  0) == -1){</p>
+
+<pre><code>erl_err_quit("init failed");
+</code></pre>
+
+<p>  }</p>
+
+<p>  if((fd = erl_connect("emu@raspberrypi")) &lt; 0 ){</p>
+
+<pre><code>erl_err_quit("Emus could won war with australia but you still can't connect to emu :(");
+</code></pre>
+
+<p>  }</p>
+
+<p>  while(1){</p>
+
+<pre><code>msg_type = erl_receive_msg(fd, buf, BUFFSIZE, &amp;emsg);
+if(msg_type == ERL_TICK){
+  /* Emu is checking australian defences, Polish people are safe! so I can ignore this */
+}
+else if(msg_type == ERL_ERROR){
+  /* Huston we have an Emu! */
+  break;
+}
+else {
+  /* our pro msg */
+  fromp = erl_element(1, emsg.msg);
+  argp = erl_element(2, emsg.msg);
+  rsp = erl_format("pong");
+  erl_send(fd, fromp, rsp);
+
+
+  erl_free_term(emsg.from);
+  erl_free_term(emsg.msg);
+  erl_free_term(fromp);
+  erl_free_term(argp);
+  erl_free_term(rsp);
+}
+</code></pre>
+
+<p>  }</p>
+
+<p>  return 0;</p>
+
+<p>}
+```</p>
+
+<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called "emu@raspberrypi" and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means "memory leak".</p>
+
+<p>But most important thing is how to build this and run.</p>
+
+<h2>Building</h2>
+
+<p>My make file looks like this</p>
+
+<p>``` make</p>
+
+<p>all:
+  gcc -o lolpong -I/usr/lib/erlang/lib/erl_interface-3.7.7/include -L/usr/lib/erlang/lib/erl_interface-3.7.7/lib lolpong.c -lerl_interface -lei -pthread
+```</p>
+
+<p>It is important to remember about -pthread.</p>
+
+<h2>Running everything.</h2>
+
+<p>No how to make everything work... we need module</p>
+
+<p>``` erlang lolpong.erl
+-module(lolpong).
+-export([ping/0]).</p>
+
+<p>ping() -></p>
+
+<pre><code>{any, 'c1@raspberrypi'} ! {self(), ping},
+receive
+</code></pre>
+
+<p>  R -> {ok, R}</p>
+
+<pre><code>end.
+</code></pre>
+
+<p>````
+This c1 is for c extension 1 not super obvious :) cN will be for c extension N =).</p>
+
+<p>And finally we need to spawn our node...
+<code>bash
+λ  erl -sname "emu" -setcookie "cookie"
+</code>
+This spawns node named emu@raspberrypi on my mini box with cookie "cookie" now ... i said finally... but it was not final step.</p>
+
+<p>Final step is to run out <code>lolpong</code> binary. It is important to run it after node is up because it will try to connect to this node.</p>
+
+<p><code>bash
+./lolpong
+</code></p>
+
+<p>Now we can run in our erlang shell check if everything works!</p>
+
+<p><code>erlang
+(emu@raspberrypi)1&gt; lolpong:ping().
+{ok,pong}
+</code>
+Works!</p>
+
+<h1>Summary</h1>
+
+<p>It is good fun, now i need to wait for the parts to assemble everything and build rest of application :)</p>
+
+<p>Cheers!!</p>
+]]></content>
+  </entry>
+  
+</feed>

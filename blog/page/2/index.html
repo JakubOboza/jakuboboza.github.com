@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Prototyping json / xml RESTfull api with rails is easy. Before we will want to rewrite it to something like erlang webmachine or node.js! For purpose &hellip;">
+  <meta name="description" content="side note Upgrading octopress is a @!#!@pain! :> What is this post about :) Long time nothing new here so i will glue something together about stuff &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,385 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/">Designing Todo App Backend Using Redis and Mongodb</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-07-26T18:06:00+01:00" pubdate data-updated="true">Jul 26<span>th</span>, 2012</time>
+        
+         | <a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h2>side note</h2>
+
+<p>Upgrading octopress is a @!#!@pain! :></p>
+
+<h1>What is this post about :)</h1>
+
+<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &#8220;how i would design it in different databases&#8221;. (i&#8217;m taking only about data model)</p>
+
+<h2>Requirements</h2>
+
+<p>What we know:</p>
+
+<ul>
+<li>User has some sort of id. (number, email, hash of something)</li>
+<li>We need to be able to have different todo lists</li>
+<li>User can choose his todo list and see tasks ( obvious )</li>
+<li>User can tag tasks!</li>
+<li>User can query tasks in list by tags</li>
+<li>User can see all tags.</li>
+</ul>
+
+
+<h1>Design using Redis</h1>
+
+<p>How to do it with redis ? :)</p>
+
+<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &#8220;todoapp&#8221;.</p>
+
+<p>So lets start with user and his list of todo lists :). This gives us first key</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:todolist:next <span class="o">=</span>&gt; auto incrementing counter <span class="k">for </span>lists id
+</span><span class='line'>todo:&lt;user_id&gt;:todolists <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
+</span><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:name <span class="o">=</span>&gt; list name
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Here we have two keys, first is  list id counter that we will bump to get new list counter :), second is list of todolists ids. Why do it this way ? Well people can add and remove todo lists.</p>
+
+<p>Ok so how to create new list ?</p>
+
+<figure class='code'><figcaption><span>example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:next
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; RPUSH todo:kuba:todolists 1
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolists 0 -1
+</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
+</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:todolist:1:name <span class="s2">&quot;things to do&quot;</span>
+</span><span class='line'>OK
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Hey ! we just added id of our first list to list of our todo lists (lots of list word here!). Ok so now lets add a task.</p>
+
+<p>list:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:next <span class="o">=</span>&gt; auto incrementing counter <span class="k">for </span>tasks id
+</span><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt; <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>and task:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt; <span class="o">=</span>&gt; content of task eg. <span class="s2">&quot;finish blog post&quot;</span>
+</span><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:created_at <span class="o">=</span>&gt; epoch <span class="nb">time </span>when it was created handled by app
+</span><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:updated_at <span class="o">=</span>&gt; epoch <span class="nb">time </span>when it was last updated handled by app
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok so how to i add task to my list</p>
+
+<figure class='code'><figcaption><span>adding task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:1:next
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:todolist:1 1
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1 <span class="s2">&quot;finish blog post&quot;</span>
+</span><span class='line'>OK
+</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:created_at  1343324314
+</span><span class='line'>OK
+</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:updated_at  1343324315
+</span><span class='line'>OK
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And we have our first task in. How do we get tasks from out todo list simple!</p>
+
+<figure class='code'><figcaption><span>peeking task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
+</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
+</span><span class='line'>redis 127.0.0.1:6379&gt; GET todo:kuba:task:1
+</span><span class='line'><span class="s2">&quot;finish blog post&quot;</span>
+</span><span class='line'>redis 127.0.0.1:6379&gt; GET todo:kuba:task:1:created_at
+</span><span class='line'><span class="s2">&quot;1343324314&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok so now we have very simple todo lists with tasks, well at least overview. Ofc you can use sets for todo lists or zsets but lets stay with lists to keep it simple for now.</p>
+
+<p>How ro remove task from the list ?</p>
+
+<figure class='code'><figcaption><span>removing task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LREM todo:kuba:todolist:1 -1 1
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
+</span><span class='line'><span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Good, now we can add tasks, remove tasks, same sotry with adding todo lists and removing todo lists.
+One last thing is to add tags!. Simply here each task will have list of tags and each tag will have list of tasks related with.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:tags <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
+</span><span class='line'>todo:&lt;user_id&gt;:tag:&lt;tag&gt;:tasks <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So how we will add tags to tasks ? Simple!</p>
+
+<figure class='code'><figcaption><span>tagging</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags <span class="s2">&quot;redis&quot;</span>
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags <span class="s2">&quot;design&quot;</span>
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 2
+</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:redis:tasks 1
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:design:tasks 1
+</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
+</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:tag:design:tasks 0 -1
+</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
+</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:task:1:tags 0 -1
+</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;design&quot;</span>
+</span><span class='line'>2<span class="o">)</span> <span class="s2">&quot;redis&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &#8220;redis&#8221; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
+
+<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &#8220;ultimate&#8221;  non splittable lists.</p>
+
+<h1>Design using Mongodb</h1>
+
+<p>Well this case upfront is easier to grasp because for each list we can use single document or collection of documents lets talk about both solutions.</p>
+
+<h2>Todolist = Document</h2>
+
+<p>In this example we will use built in &#8220;array&#8221; operators</p>
+
+<figure class='code'><figcaption><span>creating</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">save</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span> <span class="nx">tasks</span><span class="o">:</span> <span class="p">[]})</span>
+</span><span class='line'><span class="s2">&quot;ok&quot;</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">})</span>
+</span><span class='line'><span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
+</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="p">]</span>   <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So lets add a task :)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">update</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">},{</span><span class="nx">$push</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;tasks&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;mongo&quot;</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span> <span class="p">})</span>
+</span><span class='line'><span class="s2">&quot;ok&quot;</span>
+</span><span class='line'><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">})</span>
+</span><span class='line'><span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
+</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>       <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span>   <span class="s2">&quot;tags&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="s2">&quot;mongo&quot;</span> <span class="p">]</span>   <span class="p">}</span>
+</span><span class='line'>      <span class="p">]</span>   <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>this will create empty todo list with name &#8220;House work&#8221; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &#8220;lists&#8221; while doing search.</p>
+
+<p>Lets try it out how to find out mongo tagged entries?</p>
+
+<figure class='code'><figcaption><span>find by tag</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="s2">&quot;tasks.tags&quot;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$in</span> <span class="o">:</span> <span class="p">[</span><span class="s2">&quot;mongo&quot;</span><span class="p">]</span> <span class="p">}</span> <span class="p">})</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">[</span>
+</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
+</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>        <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span>   <span class="s2">&quot;tags&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="s2">&quot;mongo&quot;</span> <span class="p">]</span>   <span class="p">}</span>
+</span><span class='line'>      <span class="p">]</span>   <span class="p">}</span>
+</span><span class='line'><span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<p>This way we can find whole todolist with task that contains tag &#8220;mongo&#8221; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this</p>
+
+<figure class='code'><figcaption><span>todo list structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'> <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;&lt;name&gt;&quot;</span><span class="p">,</span>
+</span><span class='line'> <span class="nx">tasks</span><span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>   <span class="p">{</span>
+</span><span class='line'>    <span class="nx">text</span> <span class="o">:</span> <span class="s2">&quot;todo text&quot;</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">tags</span> <span class="o">:</span> <span class="p">[</span>
+</span><span class='line'>      <span class="s2">&quot;Tag1&quot;</span><span class="p">,</span> <span class="s2">&quot;Tag2&quot;</span>
+</span><span class='line'>    <span class="p">]</span>
+</span><span class='line'>    <span class="nx">created_at</span> <span class="o">:</span> <span class="nx">Time</span><span class="p">,</span>
+</span><span class='line'>    <span class="nx">updated_at</span> <span class="o">:</span> <span class="nx">Time</span>
+</span><span class='line'>   <span class="p">}</span>
+</span><span class='line'> <span class="p">]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Using redis we could wrapp stuff into MULTI command while using mongodb &#8220;array&#8221; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
+
+<h2>Todolist = many documents</h2>
+
+<p>Using this approach we can leverage more of our stuff on mongodb search in this approach each task will be a different document.
+With structure like this</p>
+
+<figure class='code'><figcaption><span>task structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nx">todo_list</span><span class="o">:</span> <span class="s2">&quot;todo list id&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">text</span><span class="o">:</span> <span class="s2">&quot;todo text&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">tags</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;Tag1&quot;</span><span class="p">,</span> <span class="s2">&quot;Tag2&quot;</span><span class="p">]</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This way we will have a lot of documents, more disk space consumption and still we will have to have second collection with with objects with structure like this</p>
+
+<figure class='code'><figcaption><span>structure of todolist</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
+</span><span class='line'>  <span class="nx">todo_list</span><span class="o">:</span> <span class="s2">&quot;todo list id&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;todo list name&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
+</span><span class='line'>  <span class="c1">// tasks: [Tasks OBjectID Array] you could have this and remove todo_list id from tasks choice is yours :)</span>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>And this way we can use <code>find</code> tool very easy and get documents fast.</p>
+
+<h1>Summary</h1>
+
+<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &#8220;strucutres&#8221; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
+
+<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&#8217;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &#8220;rawly&#8221; in redis hiredis client.</p>
+
+<p>btw i jsut wrote this from &#8220;top of my head&#8221; so it may contain typos and i&#8217;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
+
+<p>Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -2510,207 +2889,6 @@ Fingers crossed :)</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/04/05/testing-handlebars-with-mocha/">Testing Handlebars With Mocha</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-04-05T21:01:00+01:00" pubdate data-updated="true">Apr 5<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/04/05/testing-handlebars-with-mocha/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Mocha and Handlebars are two great things i use. Mocha is a testing library which can be used for backend (node.js) and fronend testing. On frontend its only dependency is jQuery. Handlebars is templating language that can be used for frontend javascript partials or even for backend (node.js) layouts. What ever you want! :).</p>
-
-<h1>Mocha</h1>
-
-<p>When i started working with <code>express.js</code> sinatra like framework i took a peek at other projects that people from Vision Media do.
-One of them was mocha and at that time i needed something to test my backend code. It is good to use such a tool while learning new thing. This was you can document your failures :). As i found it is  also great tool to test front end code.</p>
-
-<h2>Chai.js / Should.js</h2>
-
-<p>Because Mocha is not shipped with everything i like i decided to use <code>should.js</code> <a href="https://github.com/visionmedia/should.js">https://github.com/visionmedia/should.js</a> on backend (node.js) and <code>chai.js</code> on frontend to make my tests suits more <code>rspec</code> like. This way we will be able to write our specs like this.</p>
-
-<figure class='code'><figcaption><span>app.spec.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Application&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should exists&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>       <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">();</span>
-</span><span class='line'>       <span class="nx">app</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">an</span><span class="p">.</span><span class="k">instanceof</span><span class="p">(</span><span class="nx">Application</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I really like this <code>app.should.be.an.instanceof(Application);</code> syntax. But if you don&#8217;t like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
-
-<h1>Handlebars</h1>
-
-<p>Second very useful thing that i never skip in my project is Handlebars, easy to use and clean language to build templates in javascript. Simply it is <code>mustache</code> on steroids. But lets dive straight into some example.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;list-entry&quot;</span> <span class="na">type=</span><span class="s">&quot;text/x-handlebars-template&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">li</span> <span class="p"></span> <span class="kr">class</span><span class="o">=</span><span class="p"></span> <span class="p">&gt;</span>
-</span><span class='line'>        <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/span&gt; -&gt; </span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">strong</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/strong&gt;:&amp;nbsp;</span>
-</span><span class='line'>      <span class="o">&lt;</span><span class="nx">span</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/span&gt;</span>
-</span><span class='line'>  <span class="o">&lt;</span><span class="err">/li&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in <code>is getting interpolated. so in this example ` class= ` mans that if in rendering context we have class variable render `class=value_of_class_variable_in_context` as part of li element.</code> will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg. <code>underscore.js</code> templates explode if you don&#8217;t have any param that you use inside of them.</p>
-
-<h1>Both tools in action</h1>
-
-<p>Ok so lets try it out and write some code in bdd style using handlebars. I have prepared initial setup for this, it contains lib directory with our javascripts, spec directory with out specs and support directory with our mocha.js, chai.js etc. Our test runner is single index.html file we can open in browser. All the code can be downloaded here <a href="https://github.com/JakubOboza/handlebars-and-mocha">https://github.com/JakubOboza/handlebars-and-mocha</a></p>
-
-<h2>Step one</h2>
-
-<p>Lets write a spec that makes checks if out app loads</p>
-
-<figure class='code'><figcaption><span>app.spec.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">(</span><span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="nx">describe</span><span class="p">(</span><span class="s1">&#39;Application&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>    <span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should exists&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">()</span> <span class="p">{</span>
-</span><span class='line'>       <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">();</span>
-</span><span class='line'>       <span class="nx">app</span><span class="p">.</span><span class="nx">should</span><span class="p">.</span><span class="nx">be</span><span class="p">.</span><span class="nx">an</span><span class="p">.</span><span class="k">instanceof</span><span class="p">(</span><span class="nx">Application</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">});</span>
-</span><span class='line'>  <span class="p">});</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}).</span><span class="nx">call</span><span class="p">(</span><span class="k">this</span><span class="p">);</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://img814.imageshack.us/img814/1738/screenshot20120405at215.png" alt="Failing spec" />
-Obviously we have here a failing spec.
-Lets write some implementation to satisfy out spec.</p>
-
-<figure class='code'><figcaption><span>app.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Application</span><span class="p">(</span><span class="nx">template_id</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://img833.imageshack.us/img833/1738/screenshot20120405at215.png" alt="Success spec" />
-Bang everything works fine :). Lets make it do something useful, render some templates!
-First lets write a spec for it -></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">it</span><span class="p">(</span><span class="s1">&#39;should render handlebars template&#39;</span><span class="p">,</span> <span class="kd">function</span><span class="p">(){</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">app</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">Application</span><span class="p">(</span><span class="s2">&quot;#test-template&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="nx">app</span><span class="p">.</span><span class="nx">render</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;kuba&quot;</span><span class="p">}).</span><span class="nx">should</span><span class="p">.</span><span class="nx">equal</span><span class="p">(</span><span class="s2">&quot;&lt;p&gt;kuba&lt;/p&gt;&quot;</span><span class="p">);</span>
-</span><span class='line'><span class="p">});</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://img862.imageshack.us/img862/9451/screenshot20120405at220.png" alt="Failing spec" />
-Now lets implement this, our template will look like this</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='html'><span class='line'> <span class="nt">&lt;script </span><span class="na">id=</span><span class="s">&quot;test-template&quot;</span> <span class="na">type=</span><span class="s">&quot;text/x-handlebars-template&quot;</span><span class="nt">&gt;</span>
-</span><span class='line'>    <span class="o">&lt;</span><span class="nx">p</span><span class="o">&gt;</span><span class="p"></span><span class="o">&lt;</span><span class="err">/p&gt;</span>
-</span><span class='line'> <span class="nt">&lt;/script&gt;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It is very basic, hard to make mistake ;). And javascript code</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="kd">function</span> <span class="nx">Application</span><span class="p">(</span><span class="nx">template_id</span><span class="p">){</span>
-</span><span class='line'>  <span class="kd">var</span> <span class="nx">source</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">template_id</span><span class="p">);</span>
-</span><span class='line'>  <span class="k">this</span><span class="p">.</span><span class="nx">template</span> <span class="o">=</span> <span class="nx">Handlebars</span><span class="p">.</span><span class="nx">compile</span><span class="p">(</span><span class="nx">source</span><span class="p">.</span><span class="nx">html</span><span class="p">());</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nx">Application</span><span class="p">.</span><span class="nx">prototype</span><span class="p">.</span><span class="nx">render</span> <span class="o">=</span> <span class="kd">function</span><span class="p">(</span><span class="nx">params</span><span class="p">){</span>
-</span><span class='line'>  <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">template</span><span class="p">(</span><span class="nx">params</span><span class="p">);</span>
-</span><span class='line'><span class="p">};</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p><img src="http://img684.imageshack.us/img684/2551/screenshot20120405at221.png" alt="Success" />
-Works! Like a charm!
-I really enjoy writing tests for javascript this way. It is much more like rspec. At least for me it is much more useful then jasmine</p>
-
-<h1>Why not jasmine</h1>
-
-<p>I prefer syntax of Mocha. On this few examples i think i show how to start using it and how fun it is. For people with rspec background this should be very easy tool to pick up. More about Mocha can be found on official project page <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
-
-<h2>Example code for this post</h2>
-
-<p>Can be found here <a href="https://github.com/JakubOboza/handlebars-and-mocha">https://github.com/JakubOboza/handlebars-and-mocha</a> just open <code>index.html</code> :)</p>
-
-<p>Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2728,6 +2906,10 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/02/05/building-ffi-extensions-in-erlang/">Building FFI extensions in Erlang</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/01/22/making-request-to-rest-resources-in-erlang/">Making request to REST resources in Erlang</a>
       </li>
     
@@ -2741,10 +2923,6 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
     
       <li class="post">
         <a href="/blog/2012/12/11/using-tcpdump/">Using tcpdump</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2012/11/20/erlang-digraph/">Erlang: digraph</a>
       </li>
     
   </ul>
