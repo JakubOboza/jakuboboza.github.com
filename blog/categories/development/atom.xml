@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: development | No Fucking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/development/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-02-12T22:11:09+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Recent Rails security problems and building software]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/02/12/recent-rails-security-problems-and-building-software/"/>
+    <updated>2013-02-12T21:33:00+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/02/12/recent-rails-security-problems-and-building-software</id>
+    <content type="html"><![CDATA[<p>Recently we have a very very exploit rich winter. By now most of people connects everything to YAML and in general deserializing stuff. But I will not write about this in detail because for me the problem is deeper.</p>
+
+<h1>Startup era</h1>
+
+<p>We live now in startup era and main focus of people building new products is to make them fast. Who is the first to build some solution is most likely to get the market and monetize it. So almost every father of startup is looking for a technology that will help him build thing fast. This is the main reason that Rails are so popular, they are not fast, they consume memory like crazy but they offer you out-of-box something that you can work on. It has all properties you are looking for and everything is there with rich documentation and easy to learn and use conventions. Rails are like a gift to people who wants to "prototype" application fast, but for 99% of solution out there they never leave prototype stage.</p>
+
+<h2>Going big!</h2>
+
+<p>Rails started small, the community was small and it was normal that not many people cared about finding security issues because it was more important to add support for everything and make the framework richer and richer. First thing that was the biggest helper in opening every door was raising popularity but this is also the biggest enemy of the framework. It started traction around the framework and people started to hack it, audit code and find things that can be exploited.</p>
+
+<h2>Natural point in life</h2>
+
+<p>Every framework has to go through this type of periods in its life, there is no bug free code. People will find bugs in code base. What is the best way to prevent this ? Have a great team of engineers that follows the trends. But... most of startup owners wants to cut the costs, they outsource the work and have periods of life of the product that simply nobody cares about it in technical way.  Or it can be even worse, team can be focused so much on features because of the boss pressure that they don't have time for it.</p>
+
+<h1>Building solution</h1>
+
+<p>Some of startup starters will be technical, more technical or not technical at all, in most cases it is not technical at all and this is a problem. This leads to building every startup base on frameworks like Rails or Django. Scenario looks the same every time. First team spends a lot of time building initial release and next it goes big so they don't have a way to scale it in other way than spaming rails instances and changing database. So if something hits rails it hits whole platform and that hurts. Second scenario is that team is having some sort of engine and just a rails front end this is a smart approach because if something will go really wrong it only will kill front end and this is not bad! But how many teams build solutions in this way ? Not many, mostly polilingual team that know something more than ruby. What i experienced in my career is that people don't wan to do some initial design decisions before start they just want to have product and "we will think about it later". This from business point of view is ok but this "later" is often very early.  Some startups are lucky enough to have engineer that are smart and know how to solve problems using background processing, caching and a bit of cheating (eg. like youtube do with vote count) so make everything work smooth but most of startups are created in a crazy way with big stress on speed of building.</p>
+
+<h2>Problems, security and future</h2>
+
+<p>People will always suggest things like <code>YAML.safe_load</code> in my personal opinion its not a solution but just a patch. Why not disable support for YAML, JSON, XML and any other type of request and make it explicit what you accept as form of request for actions. Trying to apply every possible parser to input is not often best thing to do.</p>
+
+<h1>Summary</h1>
+
+<p>I think problems like rails have now with security are not something we should cry about, it is just another step in becoming mature framework and problems like this can happen always with every framework. We have to embrace it and devise tactics to deal with it in a timely  fashion so we will not be affected. Building software is not cheap, maintaining it is not cheap but... if you will hit right market you will get the money back.</p>
+
+<p>This is how i see startup stage now.</p>
+]]></content>
+  </entry>
+  
+</feed>

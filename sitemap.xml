@@ -115,12 +115,18 @@
         <lastmod>2013-02-05T20:44:44+00:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://no-fucking-idea.com/blog/2013/02/12/recent-rails-security-problems-and-building-software/
+        </loc>
+        <lastmod>2013-02-12T22:10:31+00:00</lastmod>
+    </url>
+    <url>
         <loc>http://no-fucking-idea.com/blog/archives/</loc>
-        <lastmod>2013-02-05T20:44:44+00:00</lastmod>
+        <lastmod>2013-02-12T22:10:31+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/</loc>
-        <lastmod>2013-02-05T20:44:44+00:00</lastmod>
+        <lastmod>2013-02-12T22:10:31+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/link-lib/</loc>
