@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-02-12T22:11:09+00:00</updated>
+  <updated>2013-02-21T22:01:45+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,446 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA['if' the real game changer]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/02/21/if-the-real-game-changer/"/>
+    <updated>2013-02-21T21:35:00+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/02/21/if-the-real-game-changer</id>
+    <content type="html"><![CDATA[<p>Recently i was working on a project that is processing campaigns. I asked my self if I can improve it a bit, but not by refactoring existing code but by trying to approach it from a different angle.</p>
+
+<h1>Observations</h1>
+
+<p>I started making mind notes of things that i understand about system i&#8217;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
+
+<h2>Observation 1</h2>
+
+<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &#8220;this is simple&#8221;. We can represent it by list of actions like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But this is true only for simple campaigns and most of them are NOT like this :(</p>
+
+<h2>Observation 2</h2>
+
+<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &#8220;if&#8221; i WIN !
+Lets have a look</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>                     /&gt; <span class="o">[</span>step<span class="o">]</span>
+</span><span class='line'>                   <span class="o">(</span>No<span class="o">)</span>
+</span><span class='line'>                    |
+</span><span class='line'>  <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span><span class="k">if </span>a &lt; 5<span class="o">]</span> - <span class="o">(</span> yes <span class="o">)</span> -&gt; <span class="o">[</span>step<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yes! This was it, i think this is solution to all problems, ability to represent campaign as a sequence of steps mixed with if statements essentially abstract syntax tree of campaign.</p>
+
+<h2>Observation 3</h2>
+
+<p>It is not a tree&#8230;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&#8230; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
+
+<h1>AST</h1>
+
+<p>I wrote simple grammar and made a parser of a very simple &#8220;ify&#8221; language. My language starts like this&#8230;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>-- Grammar
+</span><span class='line'>-- x is variable
+</span><span class='line'>-- a is artmetic thing aka number
+</span><span class='line'>-- n is actual number eg. 1
+</span><span class='line'>-- b is boolean
+</span><span class='line'>-- opa is arthmetic operator
+</span><span class='line'>-- opb is boolean operator
+</span><span class='line'>-- opr is comparison operator
+</span><span class='line'>-- S is statement
+</span><span class='line'>--  a   ::<span class="o">=</span> x | n | - a | a opa a
+</span><span class='line'>--  b   ::<span class="o">=</span> <span class="nb">true</span> | <span class="nb">false</span> | not b | b opb b | a opr a
+</span><span class='line'>--  opa ::<span class="o">=</span> + | - | * | /
+</span><span class='line'>--  opb ::<span class="o">=</span> and | or
+</span><span class='line'>--  opr ::<span class="o">=</span> &gt; | &lt;
+</span><span class='line'>--  S   ::<span class="o">=</span> x | x &lt;- a | S1; S2 | <span class="o">(</span> S <span class="o">)</span> | <span class="k">if </span>b <span class="k">then </span>S1 <span class="k">else </span>S2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This shows that the grammar is very simple, we can have assigments, operators to test and compare and ofc IF statement ;) this is our key to divnity!</p>
+
+<p>Parser looks kinda ugly because i used parts of the code i wrote before and had i in different projects.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">import</span> <span class="nn">System.Environment</span><span class="p">(</span><span class="n">getArgs</span><span class="p">)</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">System.IO</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Control.Monad</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec.Expr</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec.Language</span>
+</span><span class='line'><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Text.ParserCombinators.Parsec.Token</span> <span class="k">as</span> <span class="n">Token</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">--  Grammar</span>
+</span><span class='line'><span class="c1">-- x is variable</span>
+</span><span class='line'><span class="c1">-- a is artmetic thing aka number</span>
+</span><span class='line'><span class="c1">-- n is actual number eg. 1</span>
+</span><span class='line'><span class="c1">-- b is boolean</span>
+</span><span class='line'><span class="c1">-- opa is arthmetic operator</span>
+</span><span class='line'><span class="c1">-- opb is boolean operator</span>
+</span><span class='line'><span class="c1">-- opr is comparison operator</span>
+</span><span class='line'><span class="c1">-- S is statement</span>
+</span><span class='line'><span class="c1">--  a   ::= x | n | - a | a opa a</span>
+</span><span class='line'><span class="c1">--  b   ::= true | false | not b | b opb b | a opr a</span>
+</span><span class='line'><span class="c1">--  opa ::= + | - | * | /</span>
+</span><span class='line'><span class="c1">--  opb ::= and | or</span>
+</span><span class='line'><span class="c1">--  opr ::= &gt; | &lt;</span>
+</span><span class='line'><span class="c1">--  S   ::= x | x &lt;- a | S1; S2 | ( S ) | if b then S1 else S2 </span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">AExpr</span> <span class="ow">=</span> <span class="kt">Var</span> <span class="kt">String</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">IntConst</span> <span class="kt">Integer</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Neg</span> <span class="kt">AExpr</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">ABinary</span> <span class="kt">ABinOp</span> <span class="kt">AExpr</span> <span class="kt">AExpr</span>
+</span><span class='line'>              <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">BExpr</span> <span class="ow">=</span> <span class="kt">BoolConst</span> <span class="kt">Bool</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Not</span> <span class="kt">BExpr</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">BBinary</span> <span class="kt">BBinOp</span> <span class="kt">BExpr</span> <span class="kt">BExpr</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">RBinary</span> <span class="kt">RBinOp</span> <span class="kt">AExpr</span> <span class="kt">AExpr</span>
+</span><span class='line'>             <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">ABinOp</span> <span class="ow">=</span> <span class="kt">Add</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Subtract</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Multiply</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Divide</span>
+</span><span class='line'>              <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">BBinOp</span> <span class="ow">=</span> <span class="kt">And</span> <span class="o">|</span> <span class="kt">Or</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'><span class="kr">data</span> <span class="kt">RBinOp</span> <span class="ow">=</span> <span class="kt">Greater</span> <span class="o">|</span> <span class="kt">Less</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">Stmt</span> <span class="ow">=</span> <span class="kt">Seq</span> <span class="p">[</span><span class="kt">Stmt</span><span class="p">]</span>
+</span><span class='line'>           <span class="o">|</span> <span class="kt">Assign</span> <span class="kt">String</span> <span class="kt">AExpr</span>
+</span><span class='line'>           <span class="o">|</span> <span class="kt">If</span> <span class="kt">BExpr</span> <span class="kt">Stmt</span> <span class="kt">Stmt</span>
+</span><span class='line'>           <span class="o">|</span> <span class="kt">Ident</span> <span class="kt">String</span>
+</span><span class='line'>             <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">languageDef</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="n">emptyDef</span> <span class="p">{</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentStart</span>    <span class="ow">=</span> <span class="s">&quot;/*&quot;</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentEnd</span>      <span class="ow">=</span> <span class="s">&quot;*/&quot;</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentLine</span>     <span class="ow">=</span> <span class="s">&quot;#&quot;</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identStart</span>      <span class="ow">=</span> <span class="n">letter</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identLetter</span>     <span class="ow">=</span> <span class="n">alphaNum</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedNames</span>   <span class="ow">=</span> <span class="p">[</span> <span class="s">&quot;if&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;then&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;else&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;true&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;false&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;not&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;and&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;or&quot;</span>
+</span><span class='line'>                                      <span class="p">]</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedOpNames</span> <span class="ow">=</span> <span class="p">[</span><span class="s">&quot;+&quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> <span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;-&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;and&quot;</span><span class="p">,</span> <span class="s">&quot;or&quot;</span><span class="p">,</span> <span class="s">&quot;not&quot;</span>
+</span><span class='line'>                                      <span class="p">]</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">lexer</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">makeTokenParser</span> <span class="n">languageDef</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">identifier</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identifier</span> <span class="n">lexer</span> <span class="c1">-- parses an identifier</span>
+</span><span class='line'><span class="nf">reserved</span>   <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reserved</span>   <span class="n">lexer</span> <span class="c1">-- parses a reserved name</span>
+</span><span class='line'><span class="nf">reservedOp</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedOp</span> <span class="n">lexer</span> <span class="c1">-- parses an operator</span>
+</span><span class='line'><span class="nf">parens</span>     <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">parens</span>     <span class="n">lexer</span> <span class="c1">-- parses surrounding parenthesis:</span>
+</span><span class='line'><span class="nf">integer</span>    <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">integer</span>    <span class="n">lexer</span> <span class="c1">-- parses an integer</span>
+</span><span class='line'><span class="nf">semi</span>       <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">semi</span>       <span class="n">lexer</span> <span class="c1">-- parses a semicolon</span>
+</span><span class='line'><span class="nf">whiteSpace</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">whiteSpace</span> <span class="n">lexer</span> <span class="c1">-- parses whitespace</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">whileParser</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">whileParser</span> <span class="ow">=</span> <span class="n">whiteSpace</span> <span class="o">&gt;&gt;</span> <span class="n">statement</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">statement</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">statement</span> <span class="ow">=</span>   <span class="n">parens</span> <span class="n">statement</span>
+</span><span class='line'>           <span class="o">&lt;|&gt;</span> <span class="n">sequenceOfStmt</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">sequenceOfStmt</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">list</span> <span class="ow">&lt;-</span> <span class="p">(</span><span class="n">sepBy1</span> <span class="n">statement&#39;</span> <span class="n">semi</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kr">if</span> <span class="n">length</span> <span class="n">list</span> <span class="o">==</span> <span class="mi">1</span> <span class="kr">then</span> <span class="n">head</span> <span class="n">list</span> <span class="kr">else</span> <span class="kt">Seq</span> <span class="n">list</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">statement&#39;</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">statement&#39;</span> <span class="ow">=</span>   <span class="n">ifStmt</span>
+</span><span class='line'>            <span class="o">&lt;|&gt;</span> <span class="n">assignStmt</span>
+</span><span class='line'>            <span class="o">&lt;|&gt;</span> <span class="n">identName</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">ifStmt</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">ifStmt</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">reserved</span> <span class="s">&quot;if&quot;</span>
+</span><span class='line'>      <span class="n">cond</span>  <span class="ow">&lt;-</span> <span class="n">bExpression</span>
+</span><span class='line'>      <span class="n">reserved</span> <span class="s">&quot;then&quot;</span>
+</span><span class='line'>      <span class="n">stmt1</span> <span class="ow">&lt;-</span> <span class="n">statement</span>
+</span><span class='line'>      <span class="n">reserved</span> <span class="s">&quot;else&quot;</span>
+</span><span class='line'>      <span class="n">stmt2</span> <span class="ow">&lt;-</span> <span class="n">statement</span>
+</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">If</span> <span class="n">cond</span> <span class="n">stmt1</span> <span class="n">stmt2</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nf">identName</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">identName</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span>  <span class="n">varName</span> <span class="ow">&lt;-</span> <span class="n">identifier</span>
+</span><span class='line'>       <span class="n">return</span> <span class="o">$</span> <span class="kt">Ident</span> <span class="n">varName</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">assignStmt</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">assignStmt</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">var</span>  <span class="ow">&lt;-</span> <span class="n">identifier</span>
+</span><span class='line'>      <span class="n">reservedOp</span> <span class="s">&quot;&lt;-&quot;</span>
+</span><span class='line'>      <span class="n">expr</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
+</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">Assign</span> <span class="n">var</span> <span class="n">expr</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">aExpression</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">AExpr</span>
+</span><span class='line'><span class="nf">aExpression</span> <span class="ow">=</span> <span class="n">buildExpressionParser</span> <span class="n">aOperators</span> <span class="n">aTerm</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">bExpression</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">BExpr</span>
+</span><span class='line'><span class="nf">bExpression</span> <span class="ow">=</span> <span class="n">buildExpressionParser</span> <span class="n">bOperators</span> <span class="n">bTerm</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">aOperators</span> <span class="ow">=</span> <span class="p">[</span> <span class="p">[</span><span class="kt">Prefix</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;-&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">Neg</span>             <span class="p">))</span>          <span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;*&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Multiply</span><span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;/&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Divide</span>  <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;+&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Add</span>     <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;-&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Subtract</span><span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>               <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">bOperators</span> <span class="ow">=</span> <span class="p">[</span> <span class="p">[</span><span class="kt">Prefix</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;not&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">Not</span>             <span class="p">))</span>          <span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;and&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BBinary</span> <span class="kt">And</span>     <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;or&quot;</span>  <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BBinary</span> <span class="kt">Or</span>      <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">aTerm</span> <span class="ow">=</span>  <span class="n">parens</span> <span class="n">aExpression</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">liftM</span> <span class="kt">Var</span> <span class="n">identifier</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">liftM</span> <span class="kt">IntConst</span> <span class="n">integer</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">bTerm</span> <span class="ow">=</span>  <span class="n">parens</span> <span class="n">bExpression</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reserved</span> <span class="s">&quot;true&quot;</span>  <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BoolConst</span> <span class="kt">True</span> <span class="p">))</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reserved</span> <span class="s">&quot;false&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BoolConst</span> <span class="kt">False</span><span class="p">))</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">rExpression</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">rExpression</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">a1</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
+</span><span class='line'>      <span class="n">op</span> <span class="ow">&lt;-</span> <span class="n">relation</span>
+</span><span class='line'>      <span class="n">a2</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
+</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">RBinary</span> <span class="n">op</span> <span class="n">a1</span> <span class="n">a2</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">relation</span> <span class="ow">=</span>   <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;&gt;&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="kt">Greater</span><span class="p">)</span>
+</span><span class='line'>          <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;&lt;&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="kt">Less</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nf">parseString</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">parseString</span> <span class="n">str</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">case</span> <span class="n">parse</span> <span class="n">whileParser</span> <span class="s">&quot;&quot;</span> <span class="n">str</span> <span class="kr">of</span>
+</span><span class='line'>     <span class="kt">Left</span> <span class="n">e</span>  <span class="ow">-&gt;</span> <span class="ne">error</span> <span class="o">$</span> <span class="n">show</span> <span class="n">e</span>
+</span><span class='line'>     <span class="kt">Right</span> <span class="n">r</span> <span class="ow">-&gt;</span> <span class="n">r</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">parseFile</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">parseFile</span> <span class="n">file</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">program</span>  <span class="ow">&lt;-</span> <span class="n">readFile</span> <span class="n">file</span>
+</span><span class='line'>      <span class="kr">case</span> <span class="n">parse</span> <span class="n">whileParser</span> <span class="s">&quot;&quot;</span> <span class="n">program</span> <span class="kr">of</span>
+</span><span class='line'>        <span class="kt">Left</span> <span class="n">e</span>  <span class="ow">-&gt;</span> <span class="n">print</span> <span class="n">e</span> <span class="o">&gt;&gt;</span> <span class="n">fail</span> <span class="s">&quot;parse error&quot;</span>
+</span><span class='line'>        <span class="kt">Right</span> <span class="n">r</span> <span class="ow">-&gt;</span> <span class="n">return</span> <span class="n">r</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">args</span> <span class="ow">&lt;-</span> <span class="n">getArgs</span>
+</span><span class='line'>  <span class="n">ast</span> <span class="ow">&lt;-</span> <span class="n">parseFile</span><span class="p">(</span><span class="n">head</span> <span class="n">args</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">putStrLn</span> <span class="o">$</span> <span class="n">show</span> <span class="n">ast</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But it works&#8230; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Recent Rails security problems and building software]]></title>
@@ -1617,7 +2057,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#105;&#108;&#116;&#x6f;&#58;&#x6b;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#98;&#x64;&#x61;&#x63;&#117;&#46;&#x62;&#x65;">&#107;&#x75;&#98;&#x61;&#x40;&#108;&#97;&#109;&#x62;&#100;&#97;&#99;&#117;&#x2e;&#98;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#x3a;&#107;&#117;&#98;&#97;&#64;&#108;&#x61;&#x6d;&#x62;&#100;&#x61;&#99;&#117;&#x2e;&#98;&#x65;">&#x6b;&#x75;&#x62;&#x61;&#64;&#x6c;&#97;&#109;&#98;&#100;&#97;&#99;&#117;&#x2e;&#x62;&#101;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
@@ -3559,463 +3999,6 @@ Here is my sample config</p>
 <h1>Summary</h1>
 
 <p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don&#8217;t work as intended and some keys are not pushed. But it is pulled from unstable branch so i&#8217;m crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Building ORM/ODM using virtus for MongoDB part 1]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/"/>
-    <updated>2012-04-12T21:07:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1</id>
-    <content type="html"><![CDATA[<p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&#8217;s really worth reading) and i thought &#8220;it&#8217;s nice&#8221;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&#8217;s ORM&#8217;s is not so common topic across web.</p>
-
-<h1>Aim</h1>
-
-<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&#8217;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &#8220;Muppet&#8221;. Name describes the project :).</p>
-
-<h3>Virtus</h3>
-
-<p>Virtus handles properties for Plain Old Ruby Objects and this is all we need to have. This eliminates a lot of boilerplate code we would have to write to make anything work. PORO Powah!</p>
-
-<h3>Mongo</h3>
-
-<p><code>mongo</code> is a Mongodb native ruby driver. It has really good api and is easy to use. For most things in this post i just <code>proxied</code> calls to it :).</p>
-
-<h3>Database!</h3>
-
-<p>Be sure to have mongodb working ;).</p>
-
-<h1>First step: Building a gem</h1>
-
-<p>All about building gem you can find in my previous blog post here <a href="http://no-fucking-idea.com/blog/2012/04/11/building-gem-with-bundler/">http://no-fucking-idea.com/blog/2012/04/11/building-gem-with-bundler/</a>
-Be sure to add rspec :) i used it to describe tests for this project.</p>
-
-<h1>Second step: Describing api</h1>
-
-<p>I like do develop things in TDD/BDD style so first thing for me description of api i wanted to implement during this tutorial.
-All this specs are stripped to minimum to enhance readability.</p>
-
-<figure class='code'><figcaption><span>spec/muppet_spec.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;spec_helper&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">class</span> <span class="nc">User</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Virtus</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Muppet</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">attribute</span> <span class="ss">:name</span><span class="p">,</span> <span class="nb">String</span>
-</span><span class='line'>  <span class="n">attribute</span> <span class="ss">:age</span><span class="p">,</span> <span class="nb">Integer</span>
-</span><span class='line'>  <span class="n">attribute</span> <span class="ss">:birthday</span><span class="p">,</span> <span class="no">DateTime</span>
-</span><span class='line'><span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">describe</span> <span class="no">Muppet</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#configuration&quot;</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should be configurable&quot;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
-</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">configure</span> <span class="p">{{</span>
-</span><span class='line'>          <span class="n">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="n">port</span><span class="p">:</span> <span class="mi">27017</span><span class="p">,</span>
-</span><span class='line'>          <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span>
-</span><span class='line'>        <span class="p">}}</span>
-</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
-</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="ss">:host</span><span class="o">].</span><span class="n">should</span> <span class="n">eql</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should_not</span> <span class="n">raise_error</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should by default point to localhost:27017&quot;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
-</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="ss">:host</span><span class="o">].</span><span class="n">should</span> <span class="n">eql</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
-</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="ss">:port</span><span class="o">].</span><span class="n">should</span> <span class="n">eql</span><span class="p">(</span><span class="mi">27017</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#connection&quot;</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should connect to mongodb&quot;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
-</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">connect!</span>
-</span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should_not</span> <span class="n">raise_error</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#inserting&quot;</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should insert values to database&quot;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">pending</span>
-</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
-</span><span class='line'>        <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Jakub&quot;</span><span class="p">,</span> <span class="n">age</span><span class="p">:</span> <span class="mi">27</span> <span class="p">)</span>
-</span><span class='line'>        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="o">.</span><span class="n">should</span> <span class="n">be_true</span>
-</span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should</span> <span class="n">change</span><span class="p">(</span><span class="no">User</span><span class="p">,</span> <span class="ss">:count</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#quering&quot;</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should query all documents from collection&quot;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">pending</span>
-</span><span class='line'>      <span class="no">User</span><span class="o">.</span><span class="n">find_one</span><span class="o">.</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="no">User</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should query first document from collection&quot;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">pending</span>
-</span><span class='line'>      <span class="n">users</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">find</span>
-</span><span class='line'>      <span class="n">users</span><span class="o">.</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="nb">Array</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">users</span><span class="o">[</span><span class="mi">0</span><span class="o">].</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="no">User</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">describe</span> <span class="s2">&quot;#destroy&quot;</span> <span class="k">do</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should destroy document&quot;</span> <span class="k">do</span>
-</span><span class='line'>      <span class="n">pending</span>
-</span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
-</span><span class='line'>        <span class="no">User</span><span class="o">.</span><span class="n">find_one</span><span class="o">.</span><span class="n">destroy</span>
-</span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should</span> <span class="n">change</span><span class="p">(</span><span class="no">User</span><span class="p">,</span> <span class="ss">:count</span><span class="p">)</span><span class="o">.</span><span class="n">by</span><span class="p">(</span><span class="o">-</span><span class="mi">1</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I defined them in order how i wanted to implement this. First configuration and connection to db. Next inserting and querying and destroying as last thing. Also at top i have simple User object with <code>virtus</code> and <code>muppet</code> included.</p>
-
-<h1>Third step: layouting Muppet!</h1>
-
-<p>At this moment we should have ready specs, that fail hard throwing errors on unknown tokens. Its good.
-What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&#8217;s.</p>
-
-<figure class='code'><figcaption><span>muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;mongo&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/version&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/setup&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Setup</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>in <code>lib/muppet/</code> we will have components of our project. I we already know we will start with setup as defined in <code>muppet.rb</code> so lets create file <code>lib/muppet/setup</code> and configuration and connection to mongodb.</p>
-
-<figure class='code'><figcaption><span>lib/muppet/setup.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
-</span><span class='line'>  <span class="k">module</span> <span class="nn">Setup</span>
-</span><span class='line'>    <span class="vc">@@configuration</span> <span class="o">=</span> <span class="p">{</span>
-</span><span class='line'>      <span class="n">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">port</span><span class="p">:</span> <span class="mi">27017</span><span class="p">,</span>
-</span><span class='line'>      <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">configure</span><span class="p">(</span><span class="o">&amp;</span><span class="n">user_config</span><span class="p">)</span>
-</span><span class='line'>      <span class="vc">@@configuration</span><span class="o">.</span><span class="n">merge!</span><span class="p">(</span><span class="n">user_config</span><span class="o">.</span><span class="n">call</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">config</span>
-</span><span class='line'>      <span class="vc">@@configuration</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">connect!</span>
-</span><span class='line'>      <span class="vc">@@connection</span> <span class="o">=</span> <span class="no">Mongo</span><span class="o">::</span><span class="no">Connection</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="vc">@@configuration</span><span class="o">[</span><span class="ss">:host</span><span class="o">]</span><span class="p">,</span>
-</span><span class='line'>        <span class="vc">@@configuration</span><span class="o">[</span><span class="ss">:port</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'>      <span class="vc">@@database</span> <span class="o">=</span> <span class="vc">@@connection</span><span class="o">.</span><span class="n">db</span><span class="p">(</span><span class="vc">@@configuration</span><span class="o">[</span><span class="ss">:database</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">database</span>
-</span><span class='line'>      <span class="vc">@@database</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">def</span> <span class="nf">connection</span>
-</span><span class='line'>      <span class="vc">@@connection</span>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here i defined default configuration and few method to access vital part of our config like <code>database</code> , <code>connection</code>. Most important part is <code>connect!</code> this method uses mongo gem to establish connection to mongodb store it into connection variable and set the database we will be working on. I wanted to make few things explicit so i used some name redundancy. (later on i learned that i did not even need <code>config</code> method)</p>
-
-<p>With this working we can run out rspecs and if mongodb is up we should see all green and few yellows! Good it works!</p>
-
-<h1>Forth step: support for quering and inserting</h1>
-
-<p>Now lets remove pending marks from specs that  are in &#8220;describes&#8221; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.</p>
-
-<figure class='code'><figcaption><span>lib/muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s2">&quot;mongo&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/version&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/setup&quot;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/document&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Setup</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Document</span><span class="o">::</span><span class="no">InstanceMethods</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Document</span><span class="o">::</span><span class="no">ClassMethods</span> <span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok many new things. I created <code>lib/muppet/document.rb</code> module with the stuff we will put into class and instance definitions in the moment of inclusion. As we can see in definition of <code>User</code> in our test cases we will <code>include Muppet</code> so all the instance methods like (save, destroy) will have to be defined in separated module then class methods like (find_one, find). In <code>document.rb</code> we  can see how it is implemented.</p>
-
-<figure class='code'><figcaption><span>lib/muppet/document.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
-</span><span class='line'>  <span class="k">module</span> <span class="nn">Document</span>
-</span><span class='line'>    <span class="k">module</span> <span class="nn">ClassMethods</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="nf">collection_name</span>
-</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">to_s</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="nf">collection</span>
-</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">database</span><span class="o">.</span><span class="n">collection</span><span class="p">(</span><span class="n">collection_name</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="nf">find_one</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{})</span>
-</span><span class='line'>        <span class="n">result</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find_one</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
-</span><span class='line'>        <span class="k">return</span> <span class="kp">nil</span> <span class="k">unless</span> <span class="n">result</span>
-</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="nf">find</span><span class="p">(</span><span class="n">opts</span> <span class="o">=</span> <span class="p">{})</span>
-</span><span class='line'>        <span class="n">results</span> <span class="o">=</span> <span class="n">collection</span><span class="o">.</span><span class="n">find</span><span class="p">(</span><span class="n">opts</span><span class="p">)</span>
-</span><span class='line'>        <span class="n">results</span><span class="o">.</span><span class="n">map</span><span class="p">{</span><span class="o">|</span><span class="n">result</span><span class="o">|</span> <span class="nb">self</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="n">result</span><span class="p">)</span> <span class="p">}</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="nf">count</span>
-</span><span class='line'>        <span class="n">collection</span><span class="o">.</span><span class="n">count</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">module</span> <span class="nn">InstanceMethods</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="nf">save</span>
-</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="k">def</span> <span class="nf">destroy</span>
-</span><span class='line'>        <span class="nb">self</span><span class="o">.</span><span class="n">class</span><span class="o">.</span><span class="n">collection</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="nb">self</span><span class="o">.</span><span class="n">attributes</span><span class="p">)</span>
-</span><span class='line'>      <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>I could not think of a way to implement it in a more simple way. We have to &#8220;sections&#8221; first is class methods where we define</p>
-
-<ul>
-<li>collection_name this method says to us what is the collection name (we can override it in model)</li>
-<li>collection uses database to return this collection object for us to use.</li>
-<li>find_one, find, count are methods that we proxy in a dirty explicit way (but without using method missing) things to mongo native driver.</li>
-</ul>
-
-
-<p>Only thing we do here is to wrap things that we get back into <code>self.new</code> object. So we can mimic AR/Mongoid api and when doing User.find we will get back array of all users. not array of hashes :).</p>
-
-<p>Instance methods are only two <code>save</code> and <code>destroy</code> save is raw and simple, takes all attributes from using virtues and saves them using mongo native driver. destroy acts in the same way.</p>
-
-<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&#8217;s and remove.</p>
-
-<h1>Summary</h1>
-
-<p>I really enjoyed writing this code and blog post :).
-You can find code for this blog post here <a href="https://github.com/JakubOboza/muppet">https://github.com/JakubOboza/muppet</a></p>
-
-<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &#8220;Muppet&#8221;</p>
-
-<p>-Cheers</p>
 ]]></content>
   </entry>
   

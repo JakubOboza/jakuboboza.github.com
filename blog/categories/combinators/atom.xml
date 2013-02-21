@@ -1,0 +1,304 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: combinators | No Fucking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/combinators/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-02-21T22:01:45+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA['if' the real game changer]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/02/21/if-the-real-game-changer/"/>
+    <updated>2013-02-21T21:35:00+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/02/21/if-the-real-game-changer</id>
+    <content type="html"><![CDATA[<p>Recently i was working on a project that is processing campaigns. I asked my self if I can improve it a bit, but not by refactoring existing code but by trying to approach it from a different angle.</p>
+
+<h1>Observations</h1>
+
+<p>I started making mind notes of things that i understand about system i'm working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
+
+<h2>Observation 1</h2>
+
+<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was "this is simple". We can represent it by list of actions like this</p>
+
+<p>``` bash</p>
+
+<p> [step] -> [step] -> [step]</p>
+
+<p>```</p>
+
+<p>But this is true only for simple campaigns and most of them are NOT like this :(</p>
+
+<h2>Observation 2</h2>
+
+<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate "if" i WIN !
+Lets have a look</p>
+
+<p>``` bash</p>
+
+<pre><code>                     /&gt; [step]
+                   (No)
+                    |
+</code></pre>
+
+<p>  [step] -> [if a &lt; 5] - ( yes ) -> [step]</p>
+
+<p>```</p>
+
+<p>Yes! This was it, i think this is solution to all problems, ability to represent campaign as a sequence of steps mixed with if statements essentially abstract syntax tree of campaign.</p>
+
+<h2>Observation 3</h2>
+
+<p>It is not a tree...its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it... but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
+
+<h1>AST</h1>
+
+<p>I wrote simple grammar and made a parser of a very simple "ify" language. My language starts like this...</p>
+
+<p><code>bash
+-- Grammar
+-- x is variable
+-- a is artmetic thing aka number
+-- n is actual number eg. 1
+-- b is boolean
+-- opa is arthmetic operator
+-- opb is boolean operator
+-- opr is comparison operator
+-- S is statement
+--  a   ::= x | n | - a | a opa a
+--  b   ::= true | false | not b | b opb b | a opr a
+--  opa ::= + | - | * | /
+--  opb ::= and | or
+--  opr ::= &gt; | &lt;
+--  S   ::= x | x &lt;- a | S1; S2 | ( S ) | if b then S1 else S2
+</code></p>
+
+<p>This shows that the grammar is very simple, we can have assigments, operators to test and compare and ofc IF statement ;) this is our key to divnity!</p>
+
+<p>Parser looks kinda ugly because i used parts of the code i wrote before and had i in different projects.</p>
+
+<p>``` haskell
+import System.Environment(getArgs)
+import System.IO
+import Control.Monad
+import Text.ParserCombinators.Parsec
+import Text.ParserCombinators.Parsec.Expr
+import Text.ParserCombinators.Parsec.Language
+import qualified Text.ParserCombinators.Parsec.Token as Token</p>
+
+<p>--  Grammar
+-- x is variable
+-- a is artmetic thing aka number
+-- n is actual number eg. 1
+-- b is boolean
+-- opa is arthmetic operator
+-- opb is boolean operator
+-- opr is comparison operator
+-- S is statement
+--  a   ::= x | n | - a | a opa a
+--  b   ::= true | false | not b | b opb b | a opr a
+--  opa ::= + | - | * | /
+--  opb ::= and | or
+--  opr ::= > | &lt;
+--  S   ::= x | x &lt;- a | S1; S2 | ( S ) | if b then S1 else S2</p>
+
+<p>data AExpr = Var String</p>
+
+<pre><code>        | IntConst Integer
+        | Neg AExpr
+        | ABinary ABinOp AExpr AExpr
+          deriving (Show)
+</code></pre>
+
+<p>data BExpr = BoolConst Bool</p>
+
+<pre><code>        | Not BExpr
+        | BBinary BBinOp BExpr BExpr
+        | RBinary RBinOp AExpr AExpr
+         deriving (Show)
+</code></pre>
+
+<p>data ABinOp = Add</p>
+
+<pre><code>        | Subtract
+        | Multiply
+        | Divide
+          deriving (Show)
+</code></pre>
+
+<p>data BBinOp = And | Or deriving (Show)
+data RBinOp = Greater | Less deriving (Show)</p>
+
+<p>data Stmt = Seq [Stmt]</p>
+
+<pre><code>       | Assign String AExpr
+       | If BExpr Stmt Stmt
+       | Ident String
+         deriving (Show)
+</code></pre>
+
+<p>languageDef =
+   emptyDef { Token.commentStart    = "/*"</p>
+
+<pre><code>        , Token.commentEnd      = "*/"
+        , Token.commentLine     = "#"
+        , Token.identStart      = letter
+        , Token.identLetter     = alphaNum
+        , Token.reservedNames   = [ "if"
+                                  , "then"
+                                  , "else"
+                                  , "true"
+                                  , "false"
+                                  , "not"
+                                  , "and"
+                                  , "or"
+                                  ]
+        , Token.reservedOpNames = ["+", "-", "*", "/", "&lt;-"
+                                  , "&lt;", "&gt;", "and", "or", "not"
+                                  ]
+        }
+</code></pre>
+
+<p>lexer = Token.makeTokenParser languageDef</p>
+
+<p>identifier = Token.identifier lexer -- parses an identifier
+reserved   = Token.reserved   lexer -- parses a reserved name
+reservedOp = Token.reservedOp lexer -- parses an operator
+parens     = Token.parens     lexer -- parses surrounding parenthesis:
+integer    = Token.integer    lexer -- parses an integer
+semi       = Token.semi       lexer -- parses a semicolon
+whiteSpace = Token.whiteSpace lexer -- parses whitespace</p>
+
+<p>whileParser :: Parser Stmt
+whileParser = whiteSpace >> statement</p>
+
+<p>statement :: Parser Stmt
+statement =   parens statement</p>
+
+<pre><code>       &lt;|&gt; sequenceOfStmt
+</code></pre>
+
+<p>sequenceOfStmt =
+   do list &lt;- (sepBy1 statement' semi)</p>
+
+<pre><code>  return $ if length list == 1 then head list else Seq list
+</code></pre>
+
+<p>statement' :: Parser Stmt
+statement' =   ifStmt</p>
+
+<pre><code>        &lt;|&gt; assignStmt
+        &lt;|&gt; identName            
+</code></pre>
+
+<p>ifStmt :: Parser Stmt
+ifStmt =
+   do reserved "if"</p>
+
+<pre><code>  cond  &lt;- bExpression
+  reserved "then"
+  stmt1 &lt;- statement
+  reserved "else"
+  stmt2 &lt;- statement
+  return $ If cond stmt1 stmt2
+</code></pre>
+
+<p>identName :: Parser Stmt
+identName =
+   do  varName &lt;- identifier</p>
+
+<pre><code>   return $ Ident varName
+</code></pre>
+
+<p>assignStmt :: Parser Stmt
+assignStmt =
+   do var  &lt;- identifier</p>
+
+<pre><code>  reservedOp "&lt;-"
+  expr &lt;- aExpression
+  return $ Assign var expr
+</code></pre>
+
+<p>aExpression :: Parser AExpr
+aExpression = buildExpressionParser aOperators aTerm</p>
+
+<p>bExpression :: Parser BExpr
+bExpression = buildExpressionParser bOperators bTerm</p>
+
+<p>aOperators = [ [Prefix (reservedOp "-"   >> return (Neg             ))          ]</p>
+
+<pre><code>          , [Infix  (reservedOp "*"   &gt;&gt; return (ABinary Multiply)) AssocLeft]
+          , [Infix  (reservedOp "/"   &gt;&gt; return (ABinary Divide  )) AssocLeft]
+          , [Infix  (reservedOp "+"   &gt;&gt; return (ABinary Add     )) AssocLeft]
+          , [Infix  (reservedOp "-"   &gt;&gt; return (ABinary Subtract)) AssocLeft]
+           ]
+</code></pre>
+
+<p>bOperators = [ [Prefix (reservedOp "not" >> return (Not             ))          ]</p>
+
+<pre><code>          , [Infix  (reservedOp "and" &gt;&gt; return (BBinary And     )) AssocLeft]
+          , [Infix  (reservedOp "or"  &gt;&gt; return (BBinary Or      )) AssocLeft]
+          ]
+</code></pre>
+
+<p>aTerm =  parens aExpression</p>
+
+<pre><code>  &lt;|&gt; liftM Var identifier
+  &lt;|&gt; liftM IntConst integer
+</code></pre>
+
+<p>bTerm =  parens bExpression</p>
+
+<pre><code>  &lt;|&gt; (reserved "true"  &gt;&gt; return (BoolConst True ))
+  &lt;|&gt; (reserved "false" &gt;&gt; return (BoolConst False))
+  &lt;|&gt; rExpression
+</code></pre>
+
+<p>rExpression =
+   do a1 &lt;- aExpression</p>
+
+<pre><code>  op &lt;- relation
+  a2 &lt;- aExpression
+  return $ RBinary op a1 a2
+</code></pre>
+
+<p>relation =   (reservedOp ">" >> return Greater)</p>
+
+<pre><code>      &lt;|&gt; (reservedOp "&lt;" &gt;&gt; return Less)
+</code></pre>
+
+<p>parseString :: String -> Stmt
+parseString str =
+   case parse whileParser "" str of</p>
+
+<pre><code> Left e  -&gt; error $ show e
+ Right r -&gt; r
+</code></pre>
+
+<p>parseFile :: String -> IO Stmt
+parseFile file =
+   do program  &lt;- readFile file</p>
+
+<pre><code>  case parse whileParser "" program of
+    Left e  -&gt; print e &gt;&gt; fail "parse error"
+    Right r -&gt; return r
+</code></pre>
+
+<p>main = do
+  args &lt;- getArgs
+  ast &lt;- parseFile(head args)
+  putStrLn $ show ast
+```</p>
+
+<p>But it works... we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
+]]></content>
+  </entry>
+  
+</feed>
