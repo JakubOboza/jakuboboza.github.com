@@ -4,7 +4,7 @@
   <title><![CDATA[Category: twitter | No Fucking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/twitter/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-02-21T22:01:45+00:00</updated>
+  <updated>2013-06-09T23:43:44+01:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,49 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to use twitter for something else than pics of cats]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/"/>
+    <updated>2013-06-09T23:30:00+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats</id>
+    <content type="html"><![CDATA[<p>So it was long since last post and i have in pipeline many posts on ODM's, Genetic Algorithms, Streaming Algorithms Clojure and Haskell i was working on but nothing is finished ;/. Need time!</p>
+
+<h1>I'm using twitter</h1>
+
+<p>And most of the time it is just updates from friends, sometimes some news from hacker world that potentially could be interesting. I use twitter in a bit odd way first of all i post link to things i read during commute to work :) and i use twitter to post alters from my apps to me.</p>
+
+<h1>Why twitter ?</h1>
+
+<p>I think twitter is great because he is posting things to my phone also, so instead of building this really complex infrastructure i can use twitter to do everything.</p>
+
+<h1>How ?</h1>
+
+<p>This is simple i add to every app i make a bit of code to handle twitter. eg. method like this in ruby</p>
+
+<p>``` ruby</p>
+
+<pre><code>def alert_notify!
+  if @config[:notification_list]
+    notifier = Twitter::Client.new(
+      :oauth_token =&gt; @config[:"oauth_token"],
+      :oauth_token_secret =&gt; @config[:"oauth_token_secret"]
+    )
+    @config[:notification_list].each do |entry|
+      notifier.direct_message_create(entry, "#{Time.now}: I crushed! please go to logs and see what happpened!")
+    end
+  end
+end
+</code></pre>
+
+<p>```
+This is part of TwitterDriver/Agent class. And i wrap everything into exception handler when i get exception i log it and send notification to me via twitter direct message.</p>
+
+<p>I love this way of using twitter because a year ago i thought it is only for sharing very random not useful messages about cats and sharing instagram pictures.</p>
+
+<p>Try it yourself!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Designing Twitter clone in redis]]></title>

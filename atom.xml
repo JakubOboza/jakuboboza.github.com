@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-02-21T22:01:45+00:00</updated>
+  <updated>2013-06-09T23:43:44+01:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,58 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[How to use twitter for something else than pics of cats]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/"/>
+    <updated>2013-06-09T23:30:00+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats</id>
+    <content type="html"><![CDATA[<p>So it was long since last post and i have in pipeline many posts on ODM&#8217;s, Genetic Algorithms, Streaming Algorithms Clojure and Haskell i was working on but nothing is finished ;/. Need time!</p>
+
+<h1>I&#8217;m using twitter</h1>
+
+<p>And most of the time it is just updates from friends, sometimes some news from hacker world that potentially could be interesting. I use twitter in a bit odd way first of all i post link to things i read during commute to work :) and i use twitter to post alters from my apps to me.</p>
+
+<h1>Why twitter ?</h1>
+
+<p>I think twitter is great because he is posting things to my phone also, so instead of building this really complex infrastructure i can use twitter to do everything.</p>
+
+<h1>How ?</h1>
+
+<p>This is simple i add to every app i make a bit of code to handle twitter. eg. method like this in ruby</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">def</span> <span class="nf">alert_notify!</span>
+</span><span class='line'>  <span class="k">if</span> <span class="vi">@config</span><span class="o">[</span><span class="ss">:notification_list</span><span class="o">]</span>
+</span><span class='line'>    <span class="n">notifier</span> <span class="o">=</span> <span class="no">Twitter</span><span class="o">::</span><span class="no">Client</span><span class="o">.</span><span class="n">new</span><span class="p">(</span>
+</span><span class='line'>      <span class="ss">:oauth_token</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="ss">:&quot;oauth_token&quot;</span><span class="o">]</span><span class="p">,</span>
+</span><span class='line'>      <span class="ss">:oauth_token_secret</span> <span class="o">=&gt;</span> <span class="vi">@config</span><span class="o">[</span><span class="ss">:&quot;oauth_token_secret&quot;</span><span class="o">]</span>
+</span><span class='line'>    <span class="p">)</span>
+</span><span class='line'>    <span class="vi">@config</span><span class="o">[</span><span class="ss">:notification_list</span><span class="o">].</span><span class="n">each</span> <span class="k">do</span> <span class="o">|</span><span class="n">entry</span><span class="o">|</span>
+</span><span class='line'>      <span class="n">notifier</span><span class="o">.</span><span class="n">direct_message_create</span><span class="p">(</span><span class="n">entry</span><span class="p">,</span> <span class="s2">&quot;</span><span class="si">#{</span><span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="si">}</span><span class="s2">: I crushed! please go to logs and see what happpened!&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="k">end</span>
+</span><span class='line'>  <span class="k">end</span>
+</span><span class='line'><span class="k">end</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is part of TwitterDriver/Agent class. And i wrap everything into exception handler when i get exception i log it and send notification to me via twitter direct message.</p>
+
+<p>I love this way of using twitter because a year ago i thought it is only for sharing very random not useful messages about cats and sharing instagram pictures.</p>
+
+<p>Try it yourself!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA['if' the real game changer]]></title>
@@ -2057,7 +2109,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#x3a;&#107;&#117;&#98;&#97;&#64;&#108;&#x61;&#x6d;&#x62;&#100;&#x61;&#99;&#117;&#x2e;&#98;&#x65;">&#x6b;&#x75;&#x62;&#x61;&#64;&#x6c;&#97;&#109;&#98;&#100;&#97;&#99;&#117;&#x2e;&#x62;&#101;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#116;&#111;&#58;&#x6b;&#x75;&#98;&#x61;&#x40;&#108;&#97;&#109;&#x62;&#x64;&#97;&#99;&#x75;&#46;&#98;&#x65;">&#x6b;&#117;&#98;&#97;&#x40;&#108;&#x61;&#109;&#98;&#x64;&#97;&#99;&#117;&#46;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
@@ -3771,234 +3823,6 @@ Most of this fields don&#8217;t need a lot of description because keys are self 
 
 <p>I hope it helped a bit.
 Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Setting up redis cluster]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/04/16/setting-up-redis-cluster/"/>
-    <updated>2012-04-16T19:54:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/04/16/setting-up-redis-cluster</id>
-    <content type="html"><![CDATA[<p>redis cluster in currently unstable, i used todays master HEAD (93a74949d7bb5d0c4115d1bf45f856c368badf31) commit to build my redis server and client. Setting redis cluster requires only few settings to go! :)</p>
-
-<p>Here is link to overview how redis cluster works <a href="http://redis.io/presentation/Redis_Cluster.pdf">http://redis.io/presentation/Redis_Cluster.pdf</a></p>
-
-<h1>redis.conf</h1>
-
-<p>Regular nodes can&#8217;t be part of cluster :( so you have to prepare separate redis configs for your cluster servers.
-Most important thing is to setup <code>cluster-enabled</code> and <code>cluster-config-file</code> I decided to name my config files <code>redis-cluster-&lt;port&gt;.conf</code>. I used ports 4444, 4445 4446
-Here is my sample config</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>daemonize yes
-</span><span class='line'>timeout 0
-</span><span class='line'>loglevel notice
-</span><span class='line'>logfile stdout
-</span><span class='line'>databases 16
-</span><span class='line'>save 900 1
-</span><span class='line'>save 300 10
-</span><span class='line'>save 60 10000
-</span><span class='line'>stop-writes-on-bgsave-error yes
-</span><span class='line'>rdbcompression yes
-</span><span class='line'>rdbchecksum yes
-</span><span class='line'>dbfilename dump.rdb
-</span><span class='line'>dir ./cluster_4444
-</span><span class='line'>slave-serve-stale-data yes
-</span><span class='line'>slave-read-only yes
-</span><span class='line'>appendonly no
-</span><span class='line'>appendfsync everysec
-</span><span class='line'>no-appendfsync-on-rewrite no
-</span><span class='line'>auto-aof-rewrite-percentage 100
-</span><span class='line'>auto-aof-rewrite-min-size 64mb
-</span><span class='line'>lua-time-limit 5000
-</span><span class='line'>
-</span><span class='line'><span class="c"># Cluster</span>
-</span><span class='line'><span class="c">#</span>
-</span><span class='line'>pidfile /var/run/redis-4444.pid
-</span><span class='line'>port 4444
-</span><span class='line'>cluster-enabled yes
-</span><span class='line'>cluster-config-file redis-cluster-4444.conf
-</span><span class='line'>
-</span><span class='line'>slowlog-log-slower-than 10000
-</span><span class='line'>slowlog-max-len 1024
-</span><span class='line'><span class="nb">hash</span>-max-ziplist-entries 512
-</span><span class='line'><span class="nb">hash</span>-max-ziplist-value 64
-</span><span class='line'>list-max-ziplist-entries 512
-</span><span class='line'>list-max-ziplist-value 64
-</span><span class='line'><span class="nb">set</span>-max-intset-entries 512
-</span><span class='line'>zset-max-ziplist-entries 128
-</span><span class='line'>zset-max-ziplist-value 64
-</span><span class='line'>activerehashing yes
-</span><span class='line'>client-output-buffer-limit normal 0 0 0
-</span><span class='line'>client-output-buffer-limit slave 256mb 64mb 60
-</span><span class='line'>client-output-buffer-limit pubsub 32mb 8mb 60
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For each node i created directory <code>cluster_&lt;port&gt;</code> and that was the hardest part actually to do. With this all you have to do is to start ( for debug you can set daemonize to no) all nodes using <code>redis-server path/to/redis-cluster-&lt;port&gt;.conf</code> and then use magic ruby tool :)</p>
-
-<h1>redis-tribe.rb</h1>
-
-<p>In <code>src/</code> directory of source you can find ruby script for creating and managing cluster. But first you need to have ruby installed with <code>redis</code> gem. i just did <code>gem install redis</code> but if you don&#8217;t have ruby you have to google how to install it etc (hint: get 1.9.2).</p>
-
-<p>now you can run the script. <code>./redis-tribe.rb</code> and see</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ ./redis-trib.rb
-</span><span class='line'>Usage: redis-trib &lt;<span class="nb">command</span>&gt; &lt;arguments ...&gt;
-</span><span class='line'>
-</span><span class='line'>  create               host1:port host2:port ... hostN:port
-</span><span class='line'>  check                host:port
-</span><span class='line'>  reshard              host:port
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To start cluster we will type &#8220;create&#8221; (useless comment)</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ ./redis-trib.rb create 127.0.0.1:4444 127.0.0.1:4445 127.0.0.1:4446
-</span><span class='line'>Creating cluster
-</span><span class='line'>Connecting to node 127.0.0.1:4444: OK
-</span><span class='line'>Connecting to node 127.0.0.1:4445: OK
-</span><span class='line'>Connecting to node 127.0.0.1:4446: OK
-</span><span class='line'>Performing <span class="nb">hash </span>slots allocation on 3 nodes...
-</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 5a2f6df453f1cd52bcb22c2afc45580283bcce87 127.0.0.1:4444 slots:0-1364 <span class="o">(</span>1365 slots<span class="o">)</span>
-</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 35d107017bc726ece9b57e1ea2f21678555cf6a8 127.0.0.1:4445 slots:1365-2729 <span class="o">(</span>1365 slots<span class="o">)</span>
-</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 76d06b0d3cb1b3829cb60574260dff2d06964cea 127.0.0.1:4446 slots:2730-4095 <span class="o">(</span>1366 slots<span class="o">)</span>
-</span><span class='line'>Can I <span class="nb">set </span>the above configuration? <span class="o">(</span><span class="nb">type</span> <span class="s1">&#39;yes&#39;</span> to accept<span class="o">)</span>: yes
-</span><span class='line'>** Nodes configuration updated
-</span><span class='line'>** Sending CLUSTER MEET messages to join the cluster
-</span><span class='line'>Performing Cluster Check <span class="o">(</span>using node 127.0.0.1:4444<span class="o">)</span>
-</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 5a2f6df453f1cd52bcb22c2afc45580283bcce87 127.0.0.1:4444 slots:0-1364 <span class="o">(</span>1365 slots<span class="o">)</span>
-</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 35d107017bc726ece9b57e1ea2f21678555cf6a8 127.0.0.1:4445 slots:1365-2729 <span class="o">(</span>1365 slots<span class="o">)</span>
-</span><span class='line'><span class="o">[</span>FAIL<span class="o">]</span> 76d06b0d3cb1b3829cb60574260dff2d06964cea 127.0.0.1:4446 slots:2730-4095 <span class="o">(</span>1366 slots<span class="o">)</span>
-</span><span class='line'><span class="o">[</span>OK<span class="o">]</span> All 4096 slots covered.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nice we have our cluster running :) now we can connect to any node and try it out.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ ./redis-cli -h 127.0.0.1 -p 4445
-</span><span class='line'>redis 127.0.0.1:4445&gt; <span class="nb">set</span> <span class="s2">&quot;jakub&quot;</span> <span class="s2">&quot;oboza&quot;</span>
-</span><span class='line'><span class="o">(</span>error<span class="o">)</span> MOVED 198 127.0.0.1:4444
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Sweet :D</p>
-
-<p>Using this tool you can also reshard :D I did on my 15 keys worked :-F.</p>
-
-<h1>Smart clients</h1>
-
-<p>In redis doc we can read that you will require &#8220;smart client&#8221; to make it low latency. Yes, you can read from output that it was moved so you will have to cache where the key is now and reset temp cache when it will be moved (resharding)</p>
-
-<h1>Fire!</h1>
-
-<p>You can now test how it will behaves under fire by killing and restarting your nodes eg.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:44:09.945 <span class="c"># Server started, Redis version 2.9.7</span>
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:44:09.946 * The server is now ready to accept connections on port 4444
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:45:14.414 * Connecting with Node c20290a7b70a2a840a168c3309f00e3de1b1844d at 127.0.0.1:14446
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:45:15.424 * Connecting with Node ab93647957ed4bb93fc43b1dc76202a6cdb94f49 at 127.0.0.1:14445
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:59:10.047 * 1 changes in 900 seconds. Saving...
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:59:10.047 * Background saving started by pid 19321
-</span><span class='line'><span class="o">[</span>19321<span class="o">]</span> 16 Apr 19:59:10.080 * DB saved on disk
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 19:59:10.248 * Background saving terminated with success
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:29.837 * I/O error reading from node link: connection closed
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:29.837 * I/O error reading from node link: connection closed
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:30.056 * Connecting with Node 76d06b0d3cb1b3829cb60574260dff2d06964cea at 127.0.0.1:14446
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:30.056 * I/O error writing to node link: Broken pipe
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:30.525 * I/O error reading from node link: connection closed
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:30.526 * I/O error reading from node link: connection closed
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:31.063 * Connecting with Node 35d107017bc726ece9b57e1ea2f21678555cf6a8 at 127.0.0.1:14445
-</span><span class='line'><span class="o">[</span>19008<span class="o">]</span> 16 Apr 20:08:31.064 * Connecting with Node 76d06b0d3cb1b3829cb60574260dff2d06964cea at 127.0.0.1:14446
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Summary</h1>
-
-<p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don&#8217;t work as intended and some keys are not pushed. But it is pulled from unstable branch so i&#8217;m crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
 ]]></content>
   </entry>
   
