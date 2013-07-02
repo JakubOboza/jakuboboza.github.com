@@ -4,7 +4,7 @@
   <title><![CDATA[Category: redis | No Fucking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/redis/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-06-11T20:00:03+01:00</updated>
+  <updated>2013-07-02T23:57:13+01:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Redis SETEX to the rescue]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/07/02/redis-setex-to-the-rescue/"/>
+    <updated>2013-07-02T23:33:00+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/07/02/redis-setex-to-the-rescue</id>
+    <content type="html"><![CDATA[<p>This is next mini entry about small thing that makes me happy in terms of changes in redis. Nothing new :D but still nice :D.</p>
+
+<h1>SET, EXPIRE, CHECK, ???, REPEAT</h1>
+
+<p>While using redis there is very common task we do. It is <code>SET</code> followed by <code>EXPIRE</code>. We do this when we want to cache for some period of time some data.</p>
+
+<p><code>bash
+SET "user:1:token" "kuba"
+EXPIRE "user:1:token" 5
+</code></p>
+
+<p>This will set key <code>user:1:token</code> to value <code>"kuba"</code> and next set it to expire in 5 seconds. We can check Time to live on this key by using ttl command.</p>
+
+<p><code>bash
+TTL "user:1:token"
+</code>
+this will return number of seconds that this key will be valid for or an negative number if its not valid anymore.</p>
+
+<h1>SETEX</h1>
+
+<p>SETEX Introduced in redis 2.0.0 command, lets you do both things SET and EXPIRE in one go. How do we use it ? Its simple!</p>
+
+<p><code>bash
+SETEX &lt;key&gt; &lt;seconds&gt; &lt;value&gt;
+</code></p>
+
+<p>It is not key, value seconds! :D:D example usage:</p>
+
+<p><code>bash
+SETEX "key:to:home" 1500 "4b234ferg34ret34rasd32rs"
+</code></p>
+
+<p>This will set for 1500 seconds key "key:to:home" to value "4b234ferg34ret34rasd32rs". Pretty easy thing to do.</p>
+
+<h2>PSETEX</h2>
+
+<p>Since Redis 2.6.0 we can use new command it is PSETEX <key> <milliseconds> <value> this is same as SETEX except it takes miliseconds not seconds so you can be more accurate in low latency / time situations</p>
+
+<p><code>bash
+PSETEX "key:to:home" 15000 "4b234ferg34ret34rasd32rs"
+</code></p>
+
+<p>Will set "key:to:home" to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Building up Queue system]]></title>
@@ -201,7 +254,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#107;&#x75;&#x62;&#x61;&#x40;&#108;&#x61;&#109;&#98;&#x64;&#x61;&#99;&#x75;&#x2e;&#98;&#101;">&#x6b;&#117;&#98;&#x61;&#64;&#x6c;&#x61;&#x6d;&#98;&#100;&#97;&#99;&#x75;&#46;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#108;&#x74;&#111;&#x3a;&#107;&#117;&#98;&#97;&#64;&#x6c;&#97;&#109;&#98;&#100;&#x61;&#x63;&#117;&#x2e;&#98;&#101;">&#x6b;&#117;&#x62;&#x61;&#64;&#x6c;&#97;&#x6d;&#x62;&#x64;&#97;&#99;&#117;&#46;&#x62;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can't find time to finish this stuff ;/.</p>
 
@@ -718,108 +771,6 @@ And this way we can use</code>find` tool very easy and get documents fast.</p>
 <p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i'm sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things "rawly" in redis hiredis client.</p>
 
 <p>btw i jsut wrote this from "top of my head" so it may contain typos and i'm sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
-
-<p>Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Setting up replication with Redis]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/04/29/setting-up-replication-with-redis/"/>
-    <updated>2012-04-29T20:16:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/04/29/setting-up-replication-with-redis</id>
-    <content type="html"><![CDATA[<p>Everyone who wants to feel safe about his data wants to have some sort of backup :). Redis have a support for replication.
-And it is very easy to setup.</p>
-
-<h1>Setup!</h1>
-
-<p>To setup replica node all you have to do is to add one line <code>slaveOf</code> in config @_@ of your new Redis instance.
-Sounds easy :). Lets think about most basic scenario.</p>
-
-<p>Two nodes, master node and slave node. For purpose of this example you can just start redis using <code>redis-server</code> command without by default he will start on port <code>6379</code> and this is all we need to know to setup replication.</p>
-
-<h2>Configuration of replica node</h2>
-
-<p>To configure replica node all we need to do is to create place to store the db eg. <code>mkdir replica_db</code> and choose port eg. <code>7789</code>. Last thing to do is to create config and point this node to the master. For me it looks like this:
-``` bash redis-replica.conf
-daemonize no
-timeout 0
-loglevel notice
-logfile stdout
-databases 16
-save 900 1
-save 300 10
-save 60 10000
-stop-writes-on-bgsave-error yes
-rdbcompression yes
-rdbchecksum yes
-dbfilename dump.rdb
-dir ./replica_dir
-slave-serve-stale-data yes
-slave-read-only yes
-appendonly no
-appendfsync everysec
-no-appendfsync-on-rewrite no
-auto-aof-rewrite-percentage 100
-auto-aof-rewrite-min-size 64mb
-lua-time-limit 5000</p>
-
-<p>pidfile /var/run/redis-replica-7789.pid
-port 7789</p>
-
-<h1>replication config</h1>
-
-<p>slaveof 127.0.0.1 6379</p>
-
-<p>slowlog-log-slower-than 10000
-slowlog-max-len 1024
-hash-max-ziplist-entries 512
-hash-max-ziplist-value 64
-list-max-ziplist-entries 512
-list-max-ziplist-value 64
-set-max-intset-entries 512
-zset-max-ziplist-entries 128
-zset-max-ziplist-value 64
-activerehashing yes
-client-output-buffer-limit normal 0 0 0
-client-output-buffer-limit slave 256mb 64mb 60
-client-output-buffer-limit pubsub 32mb 8mb 60
-<code>``
-Here the important thing really is</code>slaveof 127.0.0.1 6379<code>where we set where is our master.</code>port 7789<code>important if we are using few redis instances on one box and</code>dir ./replica_dir` be sure to not point this to master node db path if you do... you will suffer eternal flame.</p>
-
-<p>Now just start the node <code>redis-server redis-replica.conf</code> and he will start syncing.</p>
-
-<h1>Checking if everything works</h1>
-
-<p>So by now we should have master running on default port and replica connected to it. Lets connect using <code>redis-cli</code> to master and set some keys eg. <code>set name kuba</code>.  Now lets connect to our replica.  If you followed the same configuration then me you can simply do <code>./redis-cli -p 7789</code> this will prompt you with regular command line interface. Now jsut type <code>get name</code></p>
-
-<p><code>
-redis 127.0.0.1:7789&gt; get name
-"jakub"
-</code>
-Bang works!</p>
-
-<h1>RO</h1>
-
-<p>Important information is that one master can have many replicas and each replica is read only! So you can connect to it and read from it if you want / need.</p>
-
-<p><code>bash
- λ ./redis-cli -p 7789
-redis 127.0.0.1:7789&gt; keys *
- 1) "age"
- 2) "name"
-redis 127.0.0.1:7789&gt; get name
-"jakub"
-redis 127.0.0.1:7789&gt; set name "not jakub"
-(error) READONLY You can't write against a read only slave.
-redis 127.0.0.1:7789&gt;
-</code></p>
-
-<h1>Summary</h1>
-
-<p>I never had deadly important data in redis :) But still its worth knowing how to setup this just in case something goes wrong you may want to have replica ready :).</p>
-
-<p>On official site <a href="http://redis.io/topics/replication">http://redis.io/topics/replication</a> you can learn more about replication in redis.</p>
 
 <p>Cheers!</p>
 ]]></content>

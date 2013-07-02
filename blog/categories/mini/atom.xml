@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mini | No Fucking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/mini/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-06-11T20:00:03+01:00</updated>
+  <updated>2013-07-02T23:57:13+01:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,59 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Redis SETEX to the rescue]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/07/02/redis-setex-to-the-rescue/"/>
+    <updated>2013-07-02T23:33:00+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/07/02/redis-setex-to-the-rescue</id>
+    <content type="html"><![CDATA[<p>This is next mini entry about small thing that makes me happy in terms of changes in redis. Nothing new :D but still nice :D.</p>
+
+<h1>SET, EXPIRE, CHECK, ???, REPEAT</h1>
+
+<p>While using redis there is very common task we do. It is <code>SET</code> followed by <code>EXPIRE</code>. We do this when we want to cache for some period of time some data.</p>
+
+<p><code>bash
+SET "user:1:token" "kuba"
+EXPIRE "user:1:token" 5
+</code></p>
+
+<p>This will set key <code>user:1:token</code> to value <code>"kuba"</code> and next set it to expire in 5 seconds. We can check Time to live on this key by using ttl command.</p>
+
+<p><code>bash
+TTL "user:1:token"
+</code>
+this will return number of seconds that this key will be valid for or an negative number if its not valid anymore.</p>
+
+<h1>SETEX</h1>
+
+<p>SETEX Introduced in redis 2.0.0 command, lets you do both things SET and EXPIRE in one go. How do we use it ? Its simple!</p>
+
+<p><code>bash
+SETEX &lt;key&gt; &lt;seconds&gt; &lt;value&gt;
+</code></p>
+
+<p>It is not key, value seconds! :D:D example usage:</p>
+
+<p><code>bash
+SETEX "key:to:home" 1500 "4b234ferg34ret34rasd32rs"
+</code></p>
+
+<p>This will set for 1500 seconds key "key:to:home" to value "4b234ferg34ret34rasd32rs". Pretty easy thing to do.</p>
+
+<h2>PSETEX</h2>
+
+<p>Since Redis 2.6.0 we can use new command it is PSETEX <key> <milliseconds> <value> this is same as SETEX except it takes miliseconds not seconds so you can be more accurate in low latency / time situations</p>
+
+<p><code>bash
+PSETEX "key:to:home" 15000 "4b234ferg34ret34rasd32rs"
+</code></p>
+
+<p>Will set "key:to:home" to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Using tcpdump]]></title>
