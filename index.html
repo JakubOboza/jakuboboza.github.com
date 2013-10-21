@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="This is next mini entry about small thing that makes me happy in terms of changes in redis. Nothing new :D but still nice :D. SET, EXPIRE, CHECK &hellip;">
+  <meta name="description" content="Today I got my hands on Programming Erlang 2ed. And i have to make a spoiler now. The book is great. I remember the times when i was reading &#8220; &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -77,6 +77,121 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/">Erlang E17 and Second Edition of Programming Erlang</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-10-21T20:09:00+01:00" pubdate data-updated="true">Oct 21<span>st</span>, 2013</time>
+        
+         | <a href="/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/#disqus_thread">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Today I got my hands on <a href="http://pragprog.com/book/jaerlang2/programming-erlang">Programming Erlang 2ed</a>. And i have to make a spoiler now. The book is great. I remember the times when i was reading &#8220;Programing Erlang&#8221; and it was a great book. I enjoyed it and it made me get into erlang I was a really happy person.</p>
+
+<p>This book is talking about R17. From what i read R17 should be named Erlang 2.0 the changes are just amazing.</p>
+
+<p>My face after reading changes&#8230;</p>
+
+<p><img src="http://i.imgur.com/fbC4hQ7.png" alt="Vomiting Rainbow" /></p>
+
+<h1>Page 75 Maps</h1>
+
+<p>This chapter hits you in the face! I don&#8217;t have yet E17 to check more stuff but this looks amazing. Ok lets have a look. In Erlang E17 they are introducing MAPS. Also known as key-val&#8217;s / hashes / assoccs / dictionary. Basically a data structure that lets you store a value with a key and retrieve the value if you know the right key.</p>
+
+<p>Lets have a look at the syntax.</p>
+
+<figure class='code'><figcaption><span>maps</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span>  <span class="nv">Kv</span> <span class="o">=</span> <span class="err">#</span><span class="p">{</span><span class="n">a</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="n">c</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">}.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This creates a map with 3 elements a,b and c. Easy. Of course maps are immutable data structures so if you want to add stuff you need to do it like this</p>
+
+<figure class='code'><figcaption><span>maps2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span>  <span class="nv">Kv2</span> <span class="o">=</span> <span class="nv">Kv</span><span class="err">#</span><span class="p">{</span><span class="n">d</span> <span class="o">=&gt;</span> <span class="mi">4</span><span class="p">}.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So it is similar to updating records but imho the true power is in retrieving data and pattern matching on maps. YES PATTERN MATCHING.</p>
+
+<figure class='code'><figcaption><span>maps3</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span>  <span class="err">#</span><span class="p">{</span><span class="n">b</span> <span class="o">=&gt;</span> <span class="nv">B</span><span class="p">,</span> <span class="n">c</span> <span class="o">=&gt;</span> <span class="nv">C</span><span class="p">}</span> <span class="o">=</span> <span class="nv">Kv2</span><span class="p">.</span>
+</span><span class='line'><span class="err">λ</span>  <span class="nv">B</span><span class="p">.</span>
+</span><span class='line'><span class="err">λ</span><span class="o">&gt;</span> <span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Isn&#8217;t this amazing!? You can use maps like in ruby and pattern match on them. And i was just about to scream from joy when&#8230;</p>
+
+<p>i saw this.</p>
+
+<h2>Maps ->  Json</h2>
+
+<p>Yes you can serialize and deserialize maps to json. WTF ?! Yes.</p>
+
+<figure class='code'><figcaption><span>maps4</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span> <span class="nn">maps</span><span class="p">:</span><span class="n">to_json</span><span class="p">(</span><span class="nv">Map</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Bin</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Calling maps:to_json you can make from map a json and by calling</p>
+
+<figure class='code'><figcaption><span>maps5</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span> <span class="nn">maps</span><span class="p">:</span><span class="n">from_json</span><span class="p">(</span><span class="nv">Bin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Map</span>
+</span><span class='line'><span class="err">λ</span> <span class="nn">maps</span><span class="p">:</span><span class="n">save_from_json</span><span class="p">(</span><span class="nv">Bin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Map</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Gives you option to load maps from binaries! C&#8217;mon! this is amazing. Safe version will explode if you try to flood VM with not existing atoms. This is useful! because atoms are never GC&#8217;ed!</p>
+
+<p>Yes new MAPs are amazing! I love them :> This sloves so many problems and resolved so many situations when you had to write boilerplate code. Amazing work!</p>
+
+<h1>Page 287 Programing with Websockets and Erlang</h1>
+
+<p>Is also new thing i love this chapter as it shows you how to tackle real thing which is websockets :) it is very cool addition to the book and also a free sample so you can read it on your own before buying book.</p>
+
+<p><a href="http://media.pragprog.com/titles/jaerlang2/websockets.pdf">http://media.pragprog.com/titles/jaerlang2/websockets.pdf</a></p>
+
+<h1>Addition of Dializer and Rebar</h1>
+
+<p>This is great from empiric point of view as Joe shows how to use rebar and build real life code using github. This is a great thing and worth reading. I love it :) You get real life example&#8230; i get here everything i lacked in previous book.</p>
+
+<h1>Summary</h1>
+
+<p>Every single new thing in the book is great. Stuff about E17 version of Erlang is just great. I don&#8217;t have E17 yet on my box but this will be by far best release of Erlang.  In chapter about maps he talks about looking at ruby. I think it is a bit inspired by ruby builtin syntax for hashes by yet again. This is amazing and in future this will resolve so many problems and make many API&#8217;s much more useful. You don&#8217;t have to type anymore ton of _ if you want to pattern match on big tuple. You can match on a key.</p>
+
+<p>I spend an hour reading the book on the train from London to Epsom and all I can say. It is great!. I love it and i love new changes!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1913,168 +2028,6 @@ Map is a high order function that takes function and list/array/sequance of argu
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/11/20/erlang-digraph/">Erlang: Digraph</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-11-20T19:20:00+00:00" pubdate data-updated="true">Nov 20<span>th</span>, 2012</time>
-        
-         | <a href="/blog/2012/11/20/erlang-digraph/#disqus_thread">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><ul>
-<li>This is more &#8220;note to self&#8221; type of post rather than tutorial thing.</li>
-<li>It&#8217;s hard to write blog posts when you are trying to take over the world :)</li>
-</ul>
-
-
-<h1>Why ?</h1>
-
-<p>Recently in &#8220;professor Toons&#8221; :)  computer club was a task that was ideal to solve as graph. It was one of this &#8220;find path&#8221; tasks. Yesterday just before going to bed I thought &#8220;Why not solve it in Erlang&#8221;.  And this are my thoughts about erlang digraph: library.</p>
-
-<h2>Task</h2>
-
-<p>First of all <a href="http://erldocs.com/">http://erldocs.com/</a> is the way to go when working with documentation.</p>
-
-<p>Second &#8220;the Task&#8221;. It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
-
-<p>example.</p>
-
-<p>if you have song list:
-ABC
-CBA
-BAC
-ACB
-BBA</p>
-
-<p>And you want to find playlist from ABC to BAC you will get ABC -> CBA -> ACB -> BAC. Easy</p>
-
-<h2>Digraph</h2>
-
-<p>Digraph API is quite nice but there are few things you have to have in mind.</p>
-
-<ul>
-<li>Digraph is imperative graph!</li>
-<li>You need to pass vertices to get_path!</li>
-<li>Graph with loads of edges can be quite big :D</li>
-</ul>
-
-
-<p>To create empty graph you call :new/0</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Graph</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">new</span><span class="p">().</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To add node to graph you call :add_vertex/2</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Data</span> <span class="o">=</span> <span class="p">{</span><span class="nv">Value1</span><span class="p">,</span> <span class="nv">Value2</span><span class="p">,</span> <span class="nv">Value3</span><span class="p">},</span>
-</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">Graph</span><span class="p">,</span> <span class="nv">Data</span><span class="p">).</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To add edge to graph you call :add_edge/3</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">Graph</span><span class="p">,</span> <span class="nv">VertexStart</span><span class="p">,</span> <span class="nv">VertexEnd</span><span class="p">).</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>To get all vertices from graph (random order) :vertices/1</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Vertices</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">vertices</span><span class="p">(</span><span class="nv">Graph</span><span class="p">).</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And finally to get path you just call :get_path/3</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Path</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">get_path</span><span class="p">(</span><span class="nv">Graph</span><span class="p">,</span> <span class="nv">VertexStart</span><span class="p">,</span> <span class="nv">VertexEnd</span><span class="p">).</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This path is a list of vertices in order.  This API is just to remind me essential things about using the digraph from erlang stdlib. This graph is quite simple.</p>
-
-<p>And for me for about 5000 vertices and a lot of edges it consumed 1.5 GB of ram. But when it was created it was super fast to use.</p>
-
-<p>It was fun to play with.</p>
-
-<h2>Quick summary</h2>
-
-<p>I will make quick summary in form of short code sample!</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">G</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">new</span><span class="p">(),</span>
-</span><span class='line'><span class="nv">V1</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;Andrychow&quot;</span><span class="p">),</span>
-</span><span class='line'><span class="nv">V2</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;Krakow&quot;</span><span class="p">),</span>
-</span><span class='line'><span class="nv">V3</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;London&quot;</span><span class="p">),</span>
-</span><span class='line'><span class="nv">V4</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;Warsaw&quot;</span><span class="p">),</span>
-</span><span class='line'><span class="nv">V5</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">add_vertex</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="s">&quot;Paris&quot;</span><span class="p">),</span>
-</span><span class='line'>
-</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V1</span><span class="p">,</span> <span class="nv">V2</span><span class="p">),</span>
-</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V2</span><span class="p">,</span> <span class="nv">V4</span><span class="p">),</span>
-</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V2</span><span class="p">,</span> <span class="nv">V5</span><span class="p">),</span>
-</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V2</span><span class="p">,</span> <span class="nv">V3</span><span class="p">),</span>
-</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V3</span><span class="p">,</span> <span class="nv">V4</span><span class="p">),</span>
-</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V3</span><span class="p">,</span> <span class="nv">V2</span><span class="p">),</span>
-</span><span class='line'><span class="nn">digraph</span><span class="p">:</span><span class="n">add_edge</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V2</span><span class="p">,</span> <span class="nv">V1</span><span class="p">),</span>
-</span><span class='line'>
-</span><span class='line'><span class="nv">PathHome</span> <span class="o">=</span> <span class="nn">digraph</span><span class="p">:</span><span class="n">get_path</span><span class="p">(</span><span class="nv">G</span><span class="p">,</span> <span class="nv">V3</span><span class="p">,</span> <span class="nv">V1</span><span class="p">).</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This gives you back <code>["London","Krakow","Andrychow"]</code> so Win! we are at home!</p>
-
-<h1>Summary</h1>
-
-<p>It was fun to play a bit with digraph before going to bed. There is a tone of things i did not use and also look into digraph_utils for even more things :)</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -2090,6 +2043,10 @@ BBA</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/">Erlang E17 and Second Edition of Programming Erlang</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the rescue</a>
       </li>
     
@@ -2103,10 +2060,6 @@ BBA</p>
     
       <li class="post">
         <a href="/blog/2013/02/12/recent-rails-security-problems-and-building-software/">Recent Rails security problems and building software</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/05/building-ffi-extensions-in-erlang/">Building FFI extensions in Erlang</a>
       </li>
     
   </ul>

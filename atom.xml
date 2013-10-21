@@ -4,7 +4,7 @@
   <title><![CDATA[No Fucking Idea]]></title>
   <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-07-02T23:57:13+01:00</updated>
+  <updated>2013-10-21T21:01:46+01:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,92 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Erlang E17 and Second Edition of Programming Erlang]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/"/>
+    <updated>2013-10-21T20:09:00+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang</id>
+    <content type="html"><![CDATA[<p>Today I got my hands on <a href="http://pragprog.com/book/jaerlang2/programming-erlang">Programming Erlang 2ed</a>. And i have to make a spoiler now. The book is great. I remember the times when i was reading &#8220;Programing Erlang&#8221; and it was a great book. I enjoyed it and it made me get into erlang I was a really happy person.</p>
+
+<p>This book is talking about R17. From what i read R17 should be named Erlang 2.0 the changes are just amazing.</p>
+
+<p>My face after reading changes&#8230;</p>
+
+<p><img src="http://i.imgur.com/fbC4hQ7.png" alt="Vomiting Rainbow" /></p>
+
+<h1>Page 75 Maps</h1>
+
+<p>This chapter hits you in the face! I don&#8217;t have yet E17 to check more stuff but this looks amazing. Ok lets have a look. In Erlang E17 they are introducing MAPS. Also known as key-val&#8217;s / hashes / assoccs / dictionary. Basically a data structure that lets you store a value with a key and retrieve the value if you know the right key.</p>
+
+<p>Lets have a look at the syntax.</p>
+
+<figure class='code'><figcaption><span>maps</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span>  <span class="nv">Kv</span> <span class="o">=</span> <span class="err">#</span><span class="p">{</span><span class="n">a</span> <span class="o">=&gt;</span> <span class="mi">1</span><span class="p">,</span> <span class="n">b</span> <span class="o">=&gt;</span> <span class="mi">2</span><span class="p">,</span> <span class="n">c</span> <span class="o">=&gt;</span> <span class="mi">3</span><span class="p">}.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This creates a map with 3 elements a,b and c. Easy. Of course maps are immutable data structures so if you want to add stuff you need to do it like this</p>
+
+<figure class='code'><figcaption><span>maps2</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span>  <span class="nv">Kv2</span> <span class="o">=</span> <span class="nv">Kv</span><span class="err">#</span><span class="p">{</span><span class="n">d</span> <span class="o">=&gt;</span> <span class="mi">4</span><span class="p">}.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So it is similar to updating records but imho the true power is in retrieving data and pattern matching on maps. YES PATTERN MATCHING.</p>
+
+<figure class='code'><figcaption><span>maps3</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span>  <span class="err">#</span><span class="p">{</span><span class="n">b</span> <span class="o">=&gt;</span> <span class="nv">B</span><span class="p">,</span> <span class="n">c</span> <span class="o">=&gt;</span> <span class="nv">C</span><span class="p">}</span> <span class="o">=</span> <span class="nv">Kv2</span><span class="p">.</span>
+</span><span class='line'><span class="err">λ</span>  <span class="nv">B</span><span class="p">.</span>
+</span><span class='line'><span class="err">λ</span><span class="o">&gt;</span> <span class="mi">2</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Isn&#8217;t this amazing!? You can use maps like in ruby and pattern match on them. And i was just about to scream from joy when&#8230;</p>
+
+<p>i saw this.</p>
+
+<h2>Maps ->  Json</h2>
+
+<p>Yes you can serialize and deserialize maps to json. WTF ?! Yes.</p>
+
+<figure class='code'><figcaption><span>maps4</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span> <span class="nn">maps</span><span class="p">:</span><span class="n">to_json</span><span class="p">(</span><span class="nv">Map</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Bin</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Calling maps:to_json you can make from map a json and by calling</p>
+
+<figure class='code'><figcaption><span>maps5</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="err">λ</span> <span class="nn">maps</span><span class="p">:</span><span class="n">from_json</span><span class="p">(</span><span class="nv">Bin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Map</span>
+</span><span class='line'><span class="err">λ</span> <span class="nn">maps</span><span class="p">:</span><span class="n">save_from_json</span><span class="p">(</span><span class="nv">Bin</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="nv">Map</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Gives you option to load maps from binaries! C&#8217;mon! this is amazing. Safe version will explode if you try to flood VM with not existing atoms. This is useful! because atoms are never GC&#8217;ed!</p>
+
+<p>Yes new MAPs are amazing! I love them :> This sloves so many problems and resolved so many situations when you had to write boilerplate code. Amazing work!</p>
+
+<h1>Page 287 Programing with Websockets and Erlang</h1>
+
+<p>Is also new thing i love this chapter as it shows you how to tackle real thing which is websockets :) it is very cool addition to the book and also a free sample so you can read it on your own before buying book.</p>
+
+<p><a href="http://media.pragprog.com/titles/jaerlang2/websockets.pdf">http://media.pragprog.com/titles/jaerlang2/websockets.pdf</a></p>
+
+<h1>Addition of Dializer and Rebar</h1>
+
+<p>This is great from empiric point of view as Joe shows how to use rebar and build real life code using github. This is a great thing and worth reading. I love it :) You get real life example&#8230; i get here everything i lacked in previous book.</p>
+
+<h1>Summary</h1>
+
+<p>Every single new thing in the book is great. Stuff about E17 version of Erlang is just great. I don&#8217;t have E17 yet on my box but this will be by far best release of Erlang.  In chapter about maps he talks about looking at ruby. I think it is a bit inspired by ruby builtin syntax for hashes by yet again. This is amazing and in future this will resolve so many problems and make many API&#8217;s much more useful. You don&#8217;t have to type anymore ton of _ if you want to pattern match on big tuple. You can match on a key.</p>
+
+<p>I spend an hour reading the book on the train from London to Epsom and all I can say. It is great!. I love it and i love new changes!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Redis SETEX to the rescue]]></title>
@@ -2169,7 +2255,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#x74;&#111;&#x3a;&#107;&#117;&#x62;&#x61;&#64;&#x6c;&#x61;&#x6d;&#x62;&#x64;&#97;&#x63;&#117;&#x2e;&#x62;&#x65;">&#x6b;&#117;&#98;&#x61;&#64;&#108;&#x61;&#x6d;&#98;&#x64;&#97;&#99;&#117;&#46;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#107;&#117;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#x62;&#x64;&#x61;&#x63;&#x75;&#46;&#x62;&#101;">&#107;&#x75;&#x62;&#x61;&#x40;&#x6c;&#97;&#x6d;&#98;&#x64;&#97;&#99;&#x75;&#x2e;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
 
@@ -3411,160 +3497,6 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 <h1>Summary</h1>
 
 <p>if you will get email from new relic sales guy, ignore! don&#8217;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
-
-<p>Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Setting up replication with Redis]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/04/29/setting-up-replication-with-redis/"/>
-    <updated>2012-04-29T20:16:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/04/29/setting-up-replication-with-redis</id>
-    <content type="html"><![CDATA[<p>Everyone who wants to feel safe about his data wants to have some sort of backup :). Redis have a support for replication.
-And it is very easy to setup.</p>
-
-<h1>Setup!</h1>
-
-<p>To setup replica node all you have to do is to add one line <code>slaveOf</code> in config @_@ of your new Redis instance.
-Sounds easy :). Lets think about most basic scenario.</p>
-
-<p>Two nodes, master node and slave node. For purpose of this example you can just start redis using <code>redis-server</code> command without by default he will start on port <code>6379</code> and this is all we need to know to setup replication.</p>
-
-<h2>Configuration of replica node</h2>
-
-<p>To configure replica node all we need to do is to create place to store the db eg. <code>mkdir replica_db</code> and choose port eg. <code>7789</code>. Last thing to do is to create config and point this node to the master. For me it looks like this:</p>
-
-<figure class='code'><figcaption><span>redis-replica.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>daemonize no
-</span><span class='line'>timeout 0
-</span><span class='line'>loglevel notice
-</span><span class='line'>logfile stdout
-</span><span class='line'>databases 16
-</span><span class='line'>save 900 1
-</span><span class='line'>save 300 10
-</span><span class='line'>save 60 10000
-</span><span class='line'>stop-writes-on-bgsave-error yes
-</span><span class='line'>rdbcompression yes
-</span><span class='line'>rdbchecksum yes
-</span><span class='line'>dbfilename dump.rdb
-</span><span class='line'>dir ./replica_dir
-</span><span class='line'>slave-serve-stale-data yes
-</span><span class='line'>slave-read-only yes
-</span><span class='line'>appendonly no
-</span><span class='line'>appendfsync everysec
-</span><span class='line'>no-appendfsync-on-rewrite no
-</span><span class='line'>auto-aof-rewrite-percentage 100
-</span><span class='line'>auto-aof-rewrite-min-size 64mb
-</span><span class='line'>lua-time-limit 5000
-</span><span class='line'>
-</span><span class='line'>pidfile /var/run/redis-replica-7789.pid
-</span><span class='line'>port 7789
-</span><span class='line'><span class="c"># replication config</span>
-</span><span class='line'>slaveof 127.0.0.1 6379
-</span><span class='line'>
-</span><span class='line'>slowlog-log-slower-than 10000
-</span><span class='line'>slowlog-max-len 1024
-</span><span class='line'><span class="nb">hash</span>-max-ziplist-entries 512
-</span><span class='line'><span class="nb">hash</span>-max-ziplist-value 64
-</span><span class='line'>list-max-ziplist-entries 512
-</span><span class='line'>list-max-ziplist-value 64
-</span><span class='line'><span class="nb">set</span>-max-intset-entries 512
-</span><span class='line'>zset-max-ziplist-entries 128
-</span><span class='line'>zset-max-ziplist-value 64
-</span><span class='line'>activerehashing yes
-</span><span class='line'>client-output-buffer-limit normal 0 0 0
-</span><span class='line'>client-output-buffer-limit slave 256mb 64mb 60
-</span><span class='line'>client-output-buffer-limit pubsub 32mb 8mb 60
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here the important thing really is <code>slaveof 127.0.0.1 6379</code> where we set where is our master. <code>port 7789</code> important if we are using few redis instances on one box and <code>dir ./replica_dir</code> be sure to not point this to master node db path if you do&#8230; you will suffer eternal flame.</p>
-
-<p>Now just start the node <code>redis-server redis-replica.conf</code> and he will start syncing.</p>
-
-<h1>Checking if everything works</h1>
-
-<p>So by now we should have master running on default port and replica connected to it. Lets connect using <code>redis-cli</code> to master and set some keys eg. <code>set name kuba</code>.  Now lets connect to our replica.  If you followed the same configuration then me you can simply do <code>./redis-cli -p 7789</code> this will prompt you with regular command line interface. Now jsut type <code>get name</code></p>
-
-<figure class='code'><figcaption><span>redis-replica.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:7789&gt; get name
-</span><span class='line'><span class="s2">&quot;jakub&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Bang works!</p>
-
-<h1>RO</h1>
-
-<p>Important information is that one master can have many replicas and each replica is read only! So you can connect to it and read from it if you want / need.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> λ ./redis-cli -p 7789
-</span><span class='line'>redis 127.0.0.1:7789&gt; keys *
-</span><span class='line'> 1<span class="o">)</span> <span class="s2">&quot;age&quot;</span>
-</span><span class='line'> 2<span class="o">)</span> <span class="s2">&quot;name&quot;</span>
-</span><span class='line'>redis 127.0.0.1:7789&gt; get name
-</span><span class='line'><span class="s2">&quot;jakub&quot;</span>
-</span><span class='line'>redis 127.0.0.1:7789&gt; <span class="nb">set </span>name <span class="s2">&quot;not jakub&quot;</span>
-</span><span class='line'><span class="o">(</span>error<span class="o">)</span> READONLY You can<span class="err">&#39;</span>t write against a <span class="nb">read </span>only slave.
-</span><span class='line'>redis 127.0.0.1:7789&gt;
-</span></code></pre></td></tr></table></div></figure>
-
-
-<h1>Summary</h1>
-
-<p>I never had deadly important data in redis :) But still its worth knowing how to setup this just in case something goes wrong you may want to have replica ready :).</p>
-
-<p>On official site <a href="http://redis.io/topics/replication">http://redis.io/topics/replication</a> you can learn more about replication in redis.</p>
 
 <p>Cheers!</p>
 ]]></content>

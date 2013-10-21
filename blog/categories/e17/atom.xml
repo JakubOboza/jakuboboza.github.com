@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: e17 | No Fucking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/e17/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-10-21T21:01:46+01:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Erlang E17 and Second Edition of Programming Erlang]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/"/>
+    <updated>2013-10-21T20:09:00+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang</id>
+    <content type="html"><![CDATA[<p>Today I got my hands on <a href="http://pragprog.com/book/jaerlang2/programming-erlang">Programming Erlang 2ed</a>. And i have to make a spoiler now. The book is great. I remember the times when i was reading "Programing Erlang" and it was a great book. I enjoyed it and it made me get into erlang I was a really happy person.</p>
+
+<p>This book is talking about R17. From what i read R17 should be named Erlang 2.0 the changes are just amazing.</p>
+
+<p>My face after reading changes...</p>
+
+<p><img src="http://i.imgur.com/fbC4hQ7.png" alt="Vomiting Rainbow" /></p>
+
+<h1>Page 75 Maps</h1>
+
+<p>This chapter hits you in the face! I don't have yet E17 to check more stuff but this looks amazing. Ok lets have a look. In Erlang E17 they are introducing MAPS. Also known as key-val's / hashes / assoccs / dictionary. Basically a data structure that lets you store a value with a key and retrieve the value if you know the right key.</p>
+
+<p>Lets have a look at the syntax.</p>
+
+<p><code>erlang maps
+λ  Kv = #{a =&gt; 1, b =&gt; 2, c =&gt; 3}.
+</code>
+This creates a map with 3 elements a,b and c. Easy. Of course maps are immutable data structures so if you want to add stuff you need to do it like this</p>
+
+<p>``` erlang maps2</p>
+
+<p>λ  Kv2 = Kv#{d => 4}.</p>
+
+<p>```</p>
+
+<p>So it is similar to updating records but imho the true power is in retrieving data and pattern matching on maps. YES PATTERN MATCHING.</p>
+
+<p><code>erlang maps3
+λ  #{b =&gt; B, c =&gt; C} = Kv2.
+λ  B.
+λ&gt; 2
+</code></p>
+
+<p>Isn't this amazing!? You can use maps like in ruby and pattern match on them. And i was just about to scream from joy when...</p>
+
+<p>i saw this.</p>
+
+<h2>Maps ->  Json</h2>
+
+<p>Yes you can serialize and deserialize maps to json. WTF ?! Yes.</p>
+
+<p><code>erlang maps4
+λ maps:to_json(Map) -&gt; Bin
+</code>
+Calling maps:to_json you can make from map a json and by calling</p>
+
+<p><code>erlang maps5
+λ maps:from_json(Bin) -&gt; Map
+λ maps:save_from_json(Bin) -&gt; Map
+</code>
+Gives you option to load maps from binaries! C'mon! this is amazing. Safe version will explode if you try to flood VM with not existing atoms. This is useful! because atoms are never GC'ed!</p>
+
+<p>Yes new MAPs are amazing! I love them :> This sloves so many problems and resolved so many situations when you had to write boilerplate code. Amazing work!</p>
+
+<h1>Page 287 Programing with Websockets and Erlang</h1>
+
+<p>Is also new thing i love this chapter as it shows you how to tackle real thing which is websockets :) it is very cool addition to the book and also a free sample so you can read it on your own before buying book.</p>
+
+<p><a href="http://media.pragprog.com/titles/jaerlang2/websockets.pdf">http://media.pragprog.com/titles/jaerlang2/websockets.pdf</a></p>
+
+<h1>Addition of Dializer and Rebar</h1>
+
+<p>This is great from empiric point of view as Joe shows how to use rebar and build real life code using github. This is a great thing and worth reading. I love it :) You get real life example... i get here everything i lacked in previous book.</p>
+
+<h1>Summary</h1>
+
+<p>Every single new thing in the book is great. Stuff about E17 version of Erlang is just great. I don't have E17 yet on my box but this will be by far best release of Erlang.  In chapter about maps he talks about looking at ruby. I think it is a bit inspired by ruby builtin syntax for hashes by yet again. This is amazing and in future this will resolve so many problems and make many API's much more useful. You don't have to type anymore ton of _ if you want to pattern match on big tuple. You can match on a key.</p>
+
+<p>I spend an hour reading the book on the train from London to Epsom and all I can say. It is great!. I love it and i love new changes!</p>
+]]></content>
+  </entry>
+  
+</feed>
