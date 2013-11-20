@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: pi | No Fucking Idea]]></title>
+  <title><![CDATA[Category: pi | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/pi/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-11-20T11:52:04+00:00</updated>
+  <updated>2013-11-20T12:32:53+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,11 +18,11 @@
     <link href="http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang/"/>
     <updated>2013-02-05T20:20:00+00:00</updated>
     <id>http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang</id>
-    <content type="html"><![CDATA[<p>I'm preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don't want to build whole app in C because i know how this can end when you are 1500 - 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
+    <content type="html"><![CDATA[<p>I&rsquo;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&rsquo;t want to build whole app in C because i know how this can end when you are 1500 &ndash; 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
 
 <h1>Ports</h1>
 
-<p>Firt thought was to build small C program that will check stuff periodically or just "check stuff" in SHT1x and just print it out to output. So my first attempt was</p>
+<p>Firt thought was to build small C program that will check stuff periodically or just &ldquo;check stuff&rdquo; in SHT1x and just print it out to output. So my first attempt was</p>
 
 <p>For the example here i will use <code>/proc/cpuinfo</code></p>
 
@@ -30,21 +30,21 @@
 -module(mycpuinfo).
 -export([info/0]).</p>
 
-<p>-define(CMD, "cat /proc/cpuinfo").</p>
+<p>-define(CMD, &ldquo;cat /proc/cpuinfo&rdquo;).</p>
 
-<p>info() -></p>
+<p>info() &ndash;></p>
 
 <pre><code>Port = open_port({spawn, ?CMD}, [{packet, 1}, use_stdio, exit_status, binary]),
 port_command(Port, &lt;&lt;&gt;&gt;),
 receive
 </code></pre>
 
-<p>  {Port, {data, Response}} -></p>
+<p>  {Port, {data, Response}} &ndash;></p>
 
 <pre><code>  {ok, {cpuinfo, Response}};
 </code></pre>
 
-<p>  _  -> error</p>
+<p>  _  &ndash;> error</p>
 
 <pre><code>end.
 </code></pre>
@@ -57,7 +57,7 @@ receive
 
 <p>The thing i found is called erl_interface and it is designed for FFI. This is it! What you do is you build process like thing in C and micro module in erlang that handles this. (It is just to make it look nice). But there are few glitches!</p>
 
-<p>This is my module posting back "pong" on "ping" message</p>
+<p>This is my module posting back &ldquo;pong&rdquo; on &ldquo;ping&rdquo; message</p>
 
 <p>``` c lolpong.c</p>
 
@@ -69,9 +69,9 @@ receive
 
 <h1>include &lt;netinet/in.h></h1>
 
-<h1>include "erl_interface.h"</h1>
+<h1>include &ldquo;erl_interface.h&rdquo;</h1>
 
-<h1>include "ei.h"</h1>
+<h1>include &ldquo;ei.h&rdquo;</h1>
 
 <h1>define BUFFSIZE 100</h1>
 
@@ -85,14 +85,14 @@ receive
 
 <p>  erl_init(NULL, 0);</p>
 
-<p>  if(erl_connect_init(1, "cookie",  0) == -1){</p>
+<p>  if(erl_connect_init(1, &ldquo;cookie&rdquo;,  0) == -1){</p>
 
 <pre><code>erl_err_quit("init failed");
 </code></pre>
 
 <p>  }</p>
 
-<p>  if((fd = erl_connect("emu@raspberrypi")) &lt; 0 ){</p>
+<p>  if((fd = erl_connect(&ldquo;emu@raspberrypi&rdquo;)) &lt; 0 ){</p>
 
 <pre><code>erl_err_quit("Emus could won war with australia but you still can't connect to emu :(");
 </code></pre>
@@ -132,7 +132,7 @@ else {
 <p>}
 ```</p>
 
-<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called "emu@raspberrypi" and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means "memory leak".</p>
+<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called &ldquo;emu@raspberrypi&rdquo; and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means &ldquo;memory leak&rdquo;.</p>
 
 <p>But most important thing is how to build this and run.</p>
 
@@ -150,19 +150,19 @@ else {
 
 <h2>Running everything.</h2>
 
-<p>No how to make everything work... we need module</p>
+<p>No how to make everything work&hellip; we need module</p>
 
 <p>``` erlang lolpong.erl
 -module(lolpong).
 -export([ping/0]).</p>
 
-<p>ping() -></p>
+<p>ping() &ndash;></p>
 
 <pre><code>{any, 'c1@raspberrypi'} ! {self(), ping},
 receive
 </code></pre>
 
-<p>  R -> {ok, R}</p>
+<p>  R &ndash;> {ok, R}</p>
 
 <pre><code>end.
 </code></pre>
@@ -170,11 +170,11 @@ receive
 <p>````
 This c1 is for c extension 1 not super obvious :) cN will be for c extension N =).</p>
 
-<p>And finally we need to spawn our node...
+<p>And finally we need to spawn our node&hellip;
 <code>bash
 λ  erl -sname "emu" -setcookie "cookie"
 </code>
-This spawns node named emu@raspberrypi on my mini box with cookie "cookie" now ... i said finally... but it was not final step.</p>
+This spawns node named emu@raspberrypi on my mini box with cookie &ldquo;cookie&rdquo; now &hellip; i said finally&hellip; but it was not final step.</p>
 
 <p>Final step is to run out <code>lolpong</code> binary. It is important to run it after node is up because it will try to connect to this node.</p>
 

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: sentinel | No Fucking Idea]]></title>
+  <title><![CDATA[Category: sentinel | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/sentinel/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-11-20T11:52:04+00:00</updated>
+  <updated>2013-11-20T12:32:53+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,9 +18,9 @@
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#x69;&#x6c;&#116;&#111;&#58;&#107;&#x75;&#98;&#97;&#x40;&#108;&#x61;&#109;&#x62;&#x64;&#x61;&#99;&#117;&#x2e;&#98;&#x65;">&#x6b;&#x75;&#98;&#x61;&#64;&#x6c;&#x61;&#x6d;&#x62;&#x64;&#x61;&#99;&#x75;&#x2e;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#58;&#107;&#x75;&#98;&#x61;&#64;&#x6c;&#x61;&#x6d;&#98;&#x64;&#x61;&#99;&#x75;&#46;&#x62;&#101;">&#107;&#117;&#98;&#x61;&#x40;&#108;&#x61;&#109;&#x62;&#100;&#x61;&#99;&#x75;&#46;&#98;&#x65;</a> =)</p>
 
-<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can't find time to finish this stuff ;/.</p>
+<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
 <h1>Auto failover</h1>
 
@@ -32,7 +32,7 @@
 
 <h1>Setup</h1>
 
-<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start "master" and "replica servers" with this configs
+<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &ldquo;master&rdquo; and &ldquo;replica servers&rdquo; with this configs
 (ofc turn daemonize to yes in production lol)</p>
 
 <p>Standard Master setup with default script on port 6379 and replica with</p>
@@ -122,7 +122,7 @@ OK
 </code>
 and got
 ``` bash
-1)  1) "name"</p>
+1)  1) &ldquo;name&rdquo;</p>
 
 <pre><code>2) "resque"
 3) "ip"
@@ -136,7 +136,7 @@ and got
 
 <p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
 
-<h1>when you do this...</h1>
+<h1>when you do this&hellip;</h1>
 
 <p>You will see beefy
 <code>bash
@@ -150,7 +150,7 @@ On the initial slave :) things just went from bad to good :D</p>
 
 <h1>Summary</h1>
 
-<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but...</p>
+<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&hellip;</p>
 
 <p>I like it!</p>
 

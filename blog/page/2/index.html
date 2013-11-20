@@ -5,12 +5,12 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>No Fucking Idea</title>
+  <title>No F*cking Idea</title>
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="This is more &#8220;note to self&#8221; type of post rather than tutorial thing.
-It&#8217;s hard to write blog posts when you are trying to take &hellip;">
+  <meta name="description" content="This is more &ldquo;note to self&rdquo; type of post rather than tutorial thing.
+It&rsquo;s hard to write blog posts when you are trying to take &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -19,13 +19,14 @@ It&#8217;s hard to write blog posts when you are trying to take &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://no-fucking-idea.com/blog/page/2/">
+  <link rel="canonical" href="http://no-fucking-idea.com/blog/page/2">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="No F*cking Idea" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="No Fucking Idea" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -48,7 +49,7 @@ It&#8217;s hard to write blog posts when you are trying to take &hellip;">
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">No Fucking Idea</a></h1>
+  <h1><a href="/">No F*cking Idea</a></h1>
   
     <h2>Common answer to everything</h2>
   
@@ -102,7 +103,8 @@ It&#8217;s hard to write blog posts when you are trying to take &hellip;">
 
 <time datetime="2012-11-20T19:20:00+00:00" pubdate data-updated="true">Nov 20<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/11/20/erlang-digraph/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/11/20/erlang-digraph/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/11/20/erlang-digraph/">Comments</a>
         
       </p>
     
@@ -110,20 +112,20 @@ It&#8217;s hard to write blog posts when you are trying to take &hellip;">
 
 
   <div class="entry-content"><ul>
-<li>This is more &#8220;note to self&#8221; type of post rather than tutorial thing.</li>
-<li>It&#8217;s hard to write blog posts when you are trying to take over the world :)</li>
+<li>This is more &ldquo;note to self&rdquo; type of post rather than tutorial thing.</li>
+<li>It&rsquo;s hard to write blog posts when you are trying to take over the world :)</li>
 </ul>
 
 
 <h1>Why ?</h1>
 
-<p>Recently in &#8220;professor Toons&#8221; :)  computer club was a task that was ideal to solve as graph. It was one of this &#8220;find path&#8221; tasks. Yesterday just before going to bed I thought &#8220;Why not solve it in Erlang&#8221;.  And this are my thoughts about erlang digraph: library.</p>
+<p>Recently in &ldquo;professor Toons&rdquo; :)  computer club was a task that was ideal to solve as graph. It was one of this &ldquo;find path&rdquo; tasks. Yesterday just before going to bed I thought &ldquo;Why not solve it in Erlang&rdquo;.  And this are my thoughts about erlang digraph: library.</p>
 
 <h2>Task</h2>
 
 <p>First of all <a href="http://erldocs.com/">http://erldocs.com/</a> is the way to go when working with documentation.</p>
 
-<p>Second &#8220;the Task&#8221;. It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
+<p>Second &ldquo;the Task&rdquo;. It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
 
 <p>example.</p>
 
@@ -134,7 +136,7 @@ BAC
 ACB
 BBA</p>
 
-<p>And you want to find playlist from ABC to BAC you will get ABC -> CBA -> ACB -> BAC. Easy</p>
+<p>And you want to find playlist from ABC to BAC you will get ABC &ndash;> CBA &ndash;> ACB &ndash;> BAC. Easy</p>
 
 <h2>Digraph</h2>
 
@@ -264,7 +266,8 @@ BBA</p>
 
 <time datetime="2012-10-14T21:16:00+01:00" pubdate data-updated="true">Oct 14<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/10/14/building-up-queue-system/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/10/14/building-up-queue-system/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/10/14/building-up-queue-system/">Comments</a>
         
       </p>
     
@@ -277,7 +280,7 @@ BBA</p>
 
 <h1>Rolling out own queue system</h1>
 
-<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don&#8217;t have constraint that data can never be lost!</p>
+<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don&rsquo;t have constraint that data can never be lost!</p>
 
 <h2>Can lose data in queue</h2>
 
@@ -307,19 +310,19 @@ BBA</p>
 
 <p>So how we approach problems so of us would create inside of their code queue.</p>
 
-<p>In C it would be simply array wrapped with mutex&#8217;es but this is unreliable and its long to write and and and&#8230;</p>
+<p>In C it would be simply array wrapped with mutex&#8217;es but this is unreliable and its long to write and and and&hellip;</p>
 
 <p>So what people do ? They try use READY products.</p>
 
 <h2>First big mistake</h2>
 
 <p>Use key-value store as queue.
-- Lets serialize array into XYZ and set it into key.
-- That&#8217;s good idea! Only one thing will write to it!</p>
+&ndash; Lets serialize array into XYZ and set it into key.
+&ndash; That&rsquo;s good idea! Only one thing will write to it!</p>
 
 <p>WRONG!</p>
 
-<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know &#8220;agile says XYZ now&#8221;&#8230; actually &#8220;agile&#8221; don&#8217;t say &#8220;take drugs an yolo because tomorrow you can die&#8221; but &#8220;TAKE RISKY THINGS FIRST&#8221; and this is risky thing. Should be implemented well.</p>
+<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know &ldquo;agile says XYZ now&rdquo;&hellip; actually &ldquo;agile&rdquo; don&rsquo;t say &ldquo;take drugs an yolo because tomorrow you can die&rdquo; but &ldquo;TAKE RISKY THINGS FIRST&rdquo; and this is risky thing. Should be implemented well.</p>
 
 <p>What happens in this case ? Someone gets a great idea that product should scale adds another daemon and this f*cks up queue you lose messages.</p>
 
@@ -337,7 +340,7 @@ Process a)</p>
 
 <p>Now imagine process b) does the same. Everything is blazing fast and you get f*cked.</p>
 
-<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don&#8217;t know how to resolve this issue but at least you would know&#8230; but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
+<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don&rsquo;t know how to resolve this issue but at least you would know&hellip; but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
 
 <h2>Redis list as queue</h2>
 
@@ -383,11 +386,11 @@ Process a)</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Cool ! Works great and any process can access it in atomic way isn&#8217;t it great ? best thing ever ?!</p>
+<p>Cool ! Works great and any process can access it in atomic way isn&rsquo;t it great ? best thing ever ?!</p>
 
 <p>Actually it is very good. But there is one thing you just missed! Redis do a flush of keys every 60 sec if 10k keys did change by default. What does it mean ? You can get screwed if redis will instantly die!</p>
 
-<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section &#8220;Append-only file&#8221;</p>
+<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section &ldquo;Append-only file&rdquo;</p>
 
 <figure class='code'><figcaption><span>redis_config.fix</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -397,11 +400,11 @@ Process a)</p>
 
 
 <p>Man you just did it, you lost some performance but you did it. Who would knew ? You just saved the world.
-How much we just cut performance ? &#8220;fsync every time a new command is appended to the AOF. Very very slow, very safe.&#8221; that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
+How much we just cut performance ? &ldquo;fsync every time a new command is appended to the AOF. Very very slow, very safe.&rdquo; that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
 
-<h2>Can&#8217;t lose any data! Redis plus Mysql/Postgres</h2>
+<h2>Can&rsquo;t lose any data! Redis plus Mysql/Postgres</h2>
 
-<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on &#8220;appendonly yes&#8221;. Also it makes things hell more complicated and forces you to do updates in both system.</p>
+<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on &ldquo;appendonly yes&rdquo;. Also it makes things hell more complicated and forces you to do updates in both system.</p>
 
 <p>Is this system cure for cancer ? No! You have to have very good queue fail recovery / startup system. Simply empty list and make query</p>
 
@@ -410,13 +413,13 @@ How much we just cut performance ? &#8220;fsync every time a new command is appe
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>next you have to clean redis queue and push new data. Is this safe ? No you don&#8217;t know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
+<p>next you have to clean redis queue and push new data. Is this safe ? No you don&rsquo;t know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
 
 <p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
 
 <h1>Why not MongoDB</h1>
 
-<p>You can&#8217;t atomically pop stuff. Don&#8217;t think about pop/push/pushall on array in document!
+<p>You can&rsquo;t atomically pop stuff. Don&rsquo;t think about pop/push/pushall on array in document!
 If you will have this idea check my gist <a href="https://gist.github.com/2071805">https://gist.github.com/2071805</a> run it and see what happens :) what you get back.</p>
 
 <h1>RabbitMQ / ZeroMQ</h1>
@@ -456,7 +459,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <h1>Why do we use Queues ?</h1>
 
-<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain&#8217;t doing our job properly.</p>
+<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain&rsquo;t doing our job properly.</p>
 
 <p>What makes things hard.</p>
 
@@ -477,7 +480,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 </ul>
 
 
-<p>I&#8217;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
+<p>I&rsquo;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
 
 <p>Loads of things can be brilliant queue choices eg. Redis, ZeroMQ, RabbitMQ or even named pipes but not serialized array in key-value store.</p>
 </div>
@@ -510,7 +513,8 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <time datetime="2012-09-26T21:59:00+01:00" pubdate data-updated="true">Sep 26<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/09/26/redis-list-internals/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/09/26/redis-list-internals/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/09/26/redis-list-internals/">Comments</a>
         
       </p>
     
@@ -519,9 +523,9 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
   <div class="entry-content"><p>Today i spoted on twitter this:</p>
 
-<p>@antirez: &#8220;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis internals and behaviour, and are * great *.&#8221;</p>
+<p>@antirez: &ldquo;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis internals and behaviour, and are * great *.&rdquo;</p>
 
-<p>@shanley: &#8220;@antirez I&#8217;ve never met a technical community where 99% of them were familiar with the internals of anything. Did you mean 9%?&#8221;</p>
+<p>@shanley: &ldquo;@antirez I&rsquo;ve never met a technical community where 99% of them were familiar with the internals of anything. Did you mean 9%?&rdquo;</p>
 
 <p>This sparked in my mind very quick review of the topics that we talk about in work and i realised that we talk about a lot  about internals of redis and a bit about riak but this is different story :).</p>
 
@@ -612,9 +616,9 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And see that even if AL_START_HEAD is defined as 0 and AL_START_TAIL as 1 if we will use direction of 5 (lol) we will get tail :D I know that i&#8217;m bikesheding now.</p>
+<p>And see that even if AL_START_HEAD is defined as 0 and AL_START_TAIL as 1 if we will use direction of 5 (lol) we will get tail :D I know that i&rsquo;m bikesheding now.</p>
 
-<p>Even without going any deeper you have a feeling how this works. Double linked list with (void<em>) value. First thing i thought today was (this was stupid) &#8220;Wow why this is (void </em>) and not (char <em>) this would let compiler better type check it while compilation&#8221; but antirez wrote to me &#8220;@jakuboboza hint: grep listCreate </em>.c&#8221; and that was the hint i needed. (void *) is more generic but list is used in many places in redis internals and i did not thought about it (lol)</p>
+<p>Even without going any deeper you have a feeling how this works. Double linked list with (void<em>) value. First thing i thought today was (this was stupid) &ldquo;Wow why this is (void </em>) and not (char <em>) this would let compiler better type check it while compilation&rdquo; but antirez wrote to me &ldquo;@jakuboboza hint: grep listCreate </em>.c&rdquo; and that was the hint i needed. (void *) is more generic but list is used in many places in redis internals and i did not thought about it (lol)</p>
 
 <figure class='code'><figcaption><span>grep listCreate *.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -733,7 +737,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <p>Thing to view is suggested by antires Dict!</p>
 
-<p>antirez: &#8220;@jakuboboza it&#8217;s definitely a very simple implementation! Probably our most &#8220;on steroids&#8221; implementation of data structures is dict.c&#8221;</p>
+<p>antirez: &ldquo;@jakuboboza it&rsquo;s definitely a very simple implementation! Probably our most &#8220;on steroids&rdquo; implementation of data structures is dict.c&#8221;</p>
 
 <p>^_____^</p>
 </div>
@@ -766,16 +770,17 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <time datetime="2012-09-26T20:54:00+01:00" pubdate data-updated="true">Sep 26<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/09/26/failover-redis-setup-with-sentinel/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/09/26/failover-redis-setup-with-sentinel/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;&#58;&#x6b;&#117;&#x62;&#x61;&#64;&#x6c;&#97;&#109;&#98;&#x64;&#97;&#x63;&#117;&#x2e;&#98;&#x65;">&#107;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#x6d;&#98;&#100;&#97;&#99;&#117;&#x2e;&#98;&#x65;</a> =)</p>
+  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#116;&#111;&#x3a;&#x6b;&#x75;&#98;&#x61;&#64;&#108;&#97;&#109;&#98;&#x64;&#97;&#x63;&#117;&#x2e;&#98;&#101;">&#107;&#x75;&#x62;&#97;&#64;&#108;&#x61;&#109;&#x62;&#100;&#97;&#x63;&#117;&#46;&#98;&#x65;</a> =)</p>
 
-<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
+<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
 <h1>Auto failover</h1>
 
@@ -787,7 +792,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <h1>Setup</h1>
 
-<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &#8220;master&#8221; and &#8220;replica servers&#8221; with this configs
+<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &ldquo;master&rdquo; and &ldquo;replica servers&rdquo; with this configs
 (ofc turn daemonize to yes in production lol)</p>
 
 <p>Standard Master setup with default script on port 6379 and replica with</p>
@@ -955,7 +960,7 @@ with</p>
 
 <p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
 
-<h1>when you do this&#8230;</h1>
+<h1>when you do this&hellip;</h1>
 
 <p>You will see beefy</p>
 
@@ -976,7 +981,7 @@ with</p>
 
 <h1>Summary</h1>
 
-<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&#8230;</p>
+<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&hellip;</p>
 
 <p>I like it!</p>
 
@@ -1011,7 +1016,8 @@ with</p>
 
 <time datetime="2012-07-31T14:02:00+01:00" pubdate data-updated="true">Jul 31<span>st</span>, 2012</time>
         
-         | <a href="/blog/2012/07/31/designing-twitter-clone-in-redis/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/07/31/designing-twitter-clone-in-redis/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/07/31/designing-twitter-clone-in-redis/">Comments</a>
         
       </p>
     
@@ -1031,7 +1037,7 @@ with</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>What happens when i click &#8220;follow&#8221;</p>
+<p>What happens when i click &ldquo;follow&rdquo;</p>
 
 <figure class='code'><figcaption><span>example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1126,7 +1132,7 @@ with</p>
 </ul>
 
 
-<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&#8217;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
+<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&rsquo;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1137,7 +1143,7 @@ with</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH&#8217;ed so should be semi ordered. (we don&#8217;t really care about order). adding stuff to time line is bit tricky.</p>
+<p>So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH&#8217;ed so should be semi ordered. (we don&rsquo;t really care about order). adding stuff to time line is bit tricky.</p>
 
 <p>we need to do it like this
 <code>LRANGE &lt;key&gt; 0 1</code> current list id, next we need to <code>LLEN &lt;key&gt;</code> to check size and if it is &lt; SIZE ( for our example 100 ) we just <code>LPUSH &lt;key&gt; &lt;value&gt;</code> and job done, if size is > 100 we need to <code>INCR &lt;list counter&gt;</code> and LPUSH its result on list of lists and next we need to <code>LPUSH &lt;key&gt; &lt;value&gt;</code> on the new list.</p>
@@ -1152,7 +1158,7 @@ with</p>
 <p>This list is just the most current posts of particular user. How does this list work ? Algorithm is simple</p>
 
 <ul>
-<li>LPUSH new post id&#8217;s</li>
+<li>LPUSH new post id&rsquo;s</li>
 <li>RPOP if SIZE > 100</li>
 </ul>
 
@@ -1161,9 +1167,9 @@ with</p>
 
 <h2>Time line</h2>
 
-<p>Now the time line. Time line is exactly the same as user post list. we will just one &#8220;bit&#8221; about adding posts.</p>
+<p>Now the time line. Time line is exactly the same as user post list. we will just one &ldquo;bit&rdquo; about adding posts.</p>
 
-<p>Algorithm here is when you add a post you have to pick all id&#8217;s of people who follow you. (example from top if you are adding post as amelia)</p>
+<p>Algorithm here is when you add a post you have to pick all id&rsquo;s of people who follow you. (example from top if you are adding post as amelia)</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>SMEMBERS twtr:&lt;user_id&gt;:followers
@@ -1185,11 +1191,11 @@ with</p>
 
 <h1>Summary</h1>
 
-<p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys <user_id> this could be skiped but in my opinion it is not bad. IF you will use <user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
+<p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys &lt;user_id> this could be skiped but in my opinion it is not bad. IF you will use &lt;user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
 
-<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &#8220;lazy way&#8221; you can minimize number of hits to around 10.</p>
+<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &ldquo;lazy way&rdquo; you can minimize number of hits to around 10.</p>
 
-<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &#8220;sharding&#8221; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
+<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &ldquo;sharding&rdquo; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
 
 <p>Cheers!</p>
 </div>
@@ -1222,7 +1228,8 @@ with</p>
 
 <time datetime="2012-07-26T18:06:00+01:00" pubdate data-updated="true">Jul 26<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/">Comments</a>
         
       </p>
     
@@ -1235,7 +1242,7 @@ with</p>
 
 <h1>What is this post about :)</h1>
 
-<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &#8220;how i would design it in different databases&#8221;. (i&#8217;m taking only about data model)</p>
+<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &ldquo;how i would design it in different databases&rdquo;. (i&rsquo;m taking only about data model)</p>
 
 <h2>Requirements</h2>
 
@@ -1255,7 +1262,7 @@ with</p>
 
 <p>How to do it with redis ? :)</p>
 
-<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &#8220;todoapp&#8221;.</p>
+<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &ldquo;todoapp&rdquo;.</p>
 
 <p>So lets start with user and his list of todo lists :). This gives us first key</p>
 
@@ -1411,9 +1418,9 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &#8220;redis&#8221; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
+<p>This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &ldquo;redis&rdquo; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
 
-<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &#8220;ultimate&#8221;  non splittable lists.</p>
+<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &ldquo;ultimate&rdquo;  non splittable lists.</p>
 
 <h1>Design using Mongodb</h1>
 
@@ -1421,7 +1428,7 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 
 <h2>Todolist = Document</h2>
 
-<p>In this example we will use built in &#8220;array&#8221; operators</p>
+<p>In this example we will use built in &ldquo;array&rdquo; operators</p>
 
 <figure class='code'><figcaption><span>creating</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1463,7 +1470,7 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>this will create empty todo list with name &#8220;House work&#8221; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &#8220;lists&#8221; while doing search.</p>
+<p>this will create empty todo list with name &ldquo;House work&rdquo; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &ldquo;lists&rdquo; while doing search.</p>
 
 <p>Lets try it out how to find out mongo tagged entries?</p>
 
@@ -1488,7 +1495,7 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 
 <p></p>
 
-<p>This way we can find whole todolist with task that contains tag &#8220;mongo&#8221; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this</p>
+<p>This way we can find whole todolist with task that contains tag &ldquo;mongo&rdquo; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this</p>
 
 <figure class='code'><figcaption><span>todo list structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1521,7 +1528,7 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Using redis we could wrapp stuff into MULTI command while using mongodb &#8220;array&#8221; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
+<p>Using redis we could wrapp stuff into MULTI command while using mongodb &ldquo;array&rdquo; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
 
 <h2>Todolist = many documents</h2>
 
@@ -1564,11 +1571,11 @@ With structure like this</p>
 
 <h1>Summary</h1>
 
-<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &#8220;strucutres&#8221; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
+<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &ldquo;strucutres&rdquo; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
 
-<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&#8217;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &#8220;rawly&#8221; in redis hiredis client.</p>
+<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&rsquo;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &ldquo;rawly&rdquo; in redis hiredis client.</p>
 
-<p>btw i jsut wrote this from &#8220;top of my head&#8221; so it may contain typos and i&#8217;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
+<p>btw i jsut wrote this from &ldquo;top of my head&rdquo; so it may contain typos and i&rsquo;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
 
 <p>Cheers!</p>
 </div>
@@ -1601,7 +1608,8 @@ With structure like this</p>
 
 <time datetime="2012-06-15T23:11:00+01:00" pubdate data-updated="true">Jun 15<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/">Comments</a>
         
       </p>
     
@@ -1641,7 +1649,7 @@ With structure like this</p>
 
 <ul>
 <li>If we have html request to actions like create, update or destroy we want to redirect on success</li>
-<li>if we have json, xml request to same type of &#8220;state changing&#8221; actions we want to render response with our format.</li>
+<li>if we have json, xml request to same type of &ldquo;state changing&rdquo; actions we want to render response with our format.</li>
 </ul>
 
 
@@ -1737,7 +1745,8 @@ With structure like this</p>
 
 <time datetime="2012-06-07T19:09:00+01:00" pubdate data-updated="true">Jun 7<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/06/07/pong-tests-are-wrong/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/06/07/pong-tests-are-wrong/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/06/07/pong-tests-are-wrong/">Comments</a>
         
       </p>
     
@@ -1745,7 +1754,7 @@ With structure like this</p>
 
 
   <div class="entry-content"><p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
-In my opinion pong tests are wrong and do not show real &#8220;performance&#8221;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
+In my opinion pong tests are wrong and do not show real &ldquo;performance&rdquo;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
 
 <p>From this gist we can see that his vibe.d benchmark set pong test at 8425.85 req/sec (He used ab and i used httperf).</p>
 
@@ -1817,9 +1826,9 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
 <p>I prepared results to show how big lie is pong test. Because in this type of test / showoff all you test is how fast really you can accept connections. Single thread will always win :). But lets look at results:</p>
 
 <ul>
-<li>Multi threaded - 50 threads   - Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
-<li>Multi threaded - 4 threads ( on for each core ) - Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
-<li>Single threaded - default compilation  - Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
+<li>Multi threaded &ndash; 50 threads   &ndash; Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
+<li>Multi threaded &ndash; 4 threads ( on for each core ) &ndash; Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
+<li>Single threaded &ndash; default compilation  &ndash; Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
 </ul>
 
 
@@ -1831,7 +1840,7 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
 
 <h2>So how to test ?!</h2>
 
-<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&#8230; users are really testing performance of our db ;>&#8230; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
+<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&hellip; users are really testing performance of our db ;>&hellip; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
 </div>
   
   
@@ -1862,7 +1871,8 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
 
 <time datetime="2012-05-29T21:38:00+01:00" pubdate data-updated="true">May 29<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/05/29/rebar-templates/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/05/29/rebar-templates/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/05/29/rebar-templates/">Comments</a>
         
       </p>
     
@@ -1879,7 +1889,7 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
 
 <p>Basic template is made from one or many <code>.erl</code> files written with <code>mustache</code> style <code>{ { } }</code> code and <code>.template</code> file describing what to do with files.</p>
 
-<h2>Let&#8217;s build gen_server template</h2>
+<h2>Let&rsquo;s build gen_server template</h2>
 
 <p>So my first file will be <code>gen_server.erl</code></p>
 
@@ -2003,7 +2013,7 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
 
 <h1>important</h1>
 
-<p>When i was looking at this post i saw that {{ is converted in a wrong way by octopress so i added spaces between them! check repo for correct code!</p>
+<p>When i was looking at this post i saw that { { is converted in a wrong way by octopress so i added spaces between them! check repo for correct code!</p>
 
 <h1>My own templates</h1>
 
@@ -2043,25 +2053,26 @@ Cheers!</p>
 
 <time datetime="2012-04-29T20:41:00+01:00" pubdate data-updated="true">Apr 29<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>I&#8217;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
+  <div class="entry-content"><p>I&rsquo;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
 just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
 
-<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by &#8220;entry&#8221;. Some of the</p>
+<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by &ldquo;entry&rdquo;. Some of the</p>
 
 <h1>Initial idea</h1>
 
-<p>We will emit single &#8220;entry&#8221; so for logs that are build around &#8220;lines&#8221; we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
+<p>We will emit single &ldquo;entry&rdquo; so for logs that are build around &ldquo;lines&rdquo; we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
 
 <h1>Future toons</h1>
 
-<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can&#8217;t be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That&#8217;s ok.</p>
+<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can&rsquo;t be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That&rsquo;s ok.</p>
 
 <figure class='code'><figcaption><span>lib/toons.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -2104,9 +2115,9 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don&#8217;t need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don&#8217;t wanna lose your &#8220;instance methods&#8221; don&#8217;t you.</p>
+<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don&rsquo;t need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don&rsquo;t wanna lose your &ldquo;instance methods&rdquo; don&rsquo;t you.</p>
 
-<p>Next nice thing to help users is check of instanceof just at top of &#8220;constructor&#8221; function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.</p>
+<p>Next nice thing to help users is check of instanceof just at top of &ldquo;constructor&rdquo; function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -2167,7 +2178,7 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This example will show each line of the file prefixed with &#8220;>&#8221; symbol and at the end he will print out &#8220;lol&#8221;. This is most common case in real world :) you need to optimize &#8220;lol&#8221;. And for now thats the whole api.</p>
+<p>This example will show each line of the file prefixed with &ldquo;>&rdquo; symbol and at the end he will print out &ldquo;lol&rdquo;. This is most common case in real world :) you need to optimize &ldquo;lol&rdquo;. And for now thats the whole api.</p>
 
 <h1>Command line interface</h1>
 
@@ -2184,11 +2195,11 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 
 <h1>Db vs File</h1>
 
-<p>Some people say they need to put logs into db, i always ask this people &#8220;why not just file? this db will have to write it to this file anyway :)&#8221;</p>
+<p>Some people say they need to put logs into db, i always ask this people &ldquo;why not just file? this db will have to write it to this file anyway :)&rdquo;</p>
 
 <h1>Summary</h1>
 
-<p>if you will get email from new relic sales guy, ignore! don&#8217;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
+<p>if you will get email from new relic sales guy, ignore! don&rsquo;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
 
 <p>Cheers!</p>
 </div>
@@ -2210,7 +2221,7 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 </div>
 <aside class="sidebar">
   
-    <section>
+    <a class="coinbase-button" data-code="a093222bb846e484c7f9123c4ec983e5" data-button-style="donation_large" href="https://coinbase.com/checkouts/a093222bb846e484c7f9123c4ec983e5">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
@@ -2219,19 +2230,19 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
       </li>
     
       <li class="post">
-        <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the rescue</a>
+        <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to use twitter for something else than pics of cats</a>
+        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/02/21/if-the-real-game-changer/">&#8216;if&#8217; the real game changer</a>
+        <a href="/blog/2013/02/21/if-the-real-game-changer/">&#8216;If&#8217; the Real Game Changer</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/02/12/recent-rails-security-problems-and-building-software/">Recent Rails security problems and building software</a>
+        <a href="/blog/2013/02/12/recent-rails-security-problems-and-building-software/">Recent Rails Security Problems and Building Software</a>
       </li>
     
   </ul>
@@ -2246,7 +2257,7 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
   <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -2264,23 +2275,6 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
     });
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-<section>
-  <h1>Latest Tweets</h1>
-  <ul id="tweets">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
-  <script type="text/javascript">
-    $.domReady(function(){
-      getTwitterFeed("JakubOboza", 9000, false);
-    });
-  </script>
-  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
-  
-    <a href="http://twitter.com/JakubOboza" class="twitter-follow-button" data-show-count="false">Follow @JakubOboza</a>
-  
 </section>
 
 
@@ -2317,7 +2311,7 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -2328,7 +2322,7 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
+  js = d.createElement(s); js.id = id; js.async = true;
   js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
@@ -2344,29 +2338,16 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
   </script>
 
 
-<script type="text/javascript"><!--
-google_ad_client = "ca-pub-0727620290960762";
-/* blog */
-google_ad_slot = "2802513942";
-google_ad_width = 728;
-google_ad_height = 90;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
 
   <script type="text/javascript">
     (function(){
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
-
 
 
 

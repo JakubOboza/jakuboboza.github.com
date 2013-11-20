@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: ping | No Fucking Idea]]></title>
+  <title><![CDATA[Category: ping | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/ping/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-11-20T11:52:04+00:00</updated>
+  <updated>2013-11-20T12:32:53+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -19,7 +19,7 @@
     <updated>2012-06-07T19:09:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/06/07/pong-tests-are-wrong</id>
     <content type="html"><![CDATA[<p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
-In my opinion pong tests are wrong and do not show real "performance". I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
+In my opinion pong tests are wrong and do not show real &ldquo;performance&rdquo;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
 
 <p>From this gist we can see that his vibe.d benchmark set pong test at 8425.85 req/sec (He used ab and i used httperf).</p>
 
@@ -31,7 +31,7 @@ In my opinion pong tests are wrong and do not show real "performance". I said to
 
 <p>``` haskell pingpong.hs</p>
 
-<p>{-# LANGUAGE OverloadedStrings #-}</p>
+<p>{&ndash;# LANGUAGE OverloadedStrings #&ndash;}</p>
 
 <p>import Network.Wai
 import Network.Wai.Handler.Warp
@@ -55,12 +55,12 @@ run port app
     x -&gt; index x
 </code></pre>
 
-<p>pong = ResponseBuilder status200 [ ("Content-Type", "text/plain") ] $ mconcat $ map copyByteString</p>
+<p>pong = ResponseBuilder status200 [ (&ldquo;Content-Type&rdquo;, &ldquo;text/plain&rdquo;) ] $ mconcat $ map copyByteString</p>
 
 <pre><code>[ "pong" ]
 </code></pre>
 
-<p>index x = ResponseBuilder status200 [("Content-Type", "text/html")] $ mconcat $ map copyByteString</p>
+<p>index x = ResponseBuilder status200 [(&ldquo;Content-Type&rdquo;, &ldquo;text/html&rdquo;)] $ mconcat $ map copyByteString</p>
 
 <pre><code>[ "&lt;p&gt;Hello from ", BU.fromString $ show x, "!&lt;/p&gt;"
 , "&lt;p&gt;&lt;a href='http://no-fucking-idea.com/pong'&gt;pong&lt;/a&gt;&lt;/p&gt;\n" ]
@@ -75,9 +75,9 @@ run port app
 <p>I prepared results to show how big lie is pong test. Because in this type of test / showoff all you test is how fast really you can accept connections. Single thread will always win :). But lets look at results:</p>
 
 <ul>
-<li>Multi threaded - 50 threads   - Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
-<li>Multi threaded - 4 threads ( on for each core ) - Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
-<li>Single threaded - default compilation  - Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
+<li>Multi threaded &ndash; 50 threads   &ndash; Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
+<li>Multi threaded &ndash; 4 threads ( on for each core ) &ndash; Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
+<li>Single threaded &ndash; default compilation  &ndash; Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
 </ul>
 
 
@@ -89,7 +89,7 @@ run port app
 
 <h2>So how to test ?!</h2>
 
-<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday... users are really testing performance of our db ;>... or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
+<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&hellip; users are really testing performance of our db ;>&hellip; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
 ]]></content>
   </entry>
   

@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: erlang | No Fucking Idea]]></title>
+  <title><![CDATA[Category: erlang | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/erlang/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-11-20T11:52:04+00:00</updated>
+  <updated>2013-11-20T12:32:53+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,17 +18,17 @@
     <link href="http://no-fucking-idea.com/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/"/>
     <updated>2013-10-21T20:09:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang</id>
-    <content type="html"><![CDATA[<p>Today I got my hands on <a href="http://pragprog.com/book/jaerlang2/programming-erlang">Programming Erlang 2ed</a>. And i have to make a spoiler now. The book is great. I remember the times when i was reading "Programing Erlang" and it was a great book. I enjoyed it and it made me get into erlang I was a really happy person.</p>
+    <content type="html"><![CDATA[<p>Today I got my hands on <a href="http://pragprog.com/book/jaerlang2/programming-erlang">Programming Erlang 2ed</a>. And i have to make a spoiler now. The book is great. I remember the times when i was reading &ldquo;Programing Erlang&rdquo; and it was a great book. I enjoyed it and it made me get into erlang I was a really happy person.</p>
 
 <p>This book is talking about R17. From what i read R17 should be named Erlang 2.0 the changes are just amazing.</p>
 
-<p>My face after reading changes...</p>
+<p>My face after reading changes&hellip;</p>
 
 <p><img src="http://i.imgur.com/fbC4hQ7.png" alt="Vomiting Rainbow" /></p>
 
 <h1>Page 75 Maps</h1>
 
-<p>This chapter hits you in the face! I don't have yet E17 to check more stuff but this looks amazing. Ok lets have a look. In Erlang E17 they are introducing MAPS. Also known as key-val's / hashes / assoccs / dictionary. Basically a data structure that lets you store a value with a key and retrieve the value if you know the right key.</p>
+<p>This chapter hits you in the face! I don&rsquo;t have yet E17 to check more stuff but this looks amazing. Ok lets have a look. In Erlang E17 they are introducing MAPS. Also known as key-val&rsquo;s / hashes / assoccs / dictionary. Basically a data structure that lets you store a value with a key and retrieve the value if you know the right key.</p>
 
 <p>Lets have a look at the syntax.</p>
 
@@ -51,11 +51,11 @@ This creates a map with 3 elements a,b and c. Easy. Of course maps are immutable
 λ&gt; 2
 </code></p>
 
-<p>Isn't this amazing!? You can use maps like in ruby and pattern match on them. And i was just about to scream from joy when...</p>
+<p>Isn&rsquo;t this amazing!? You can use maps like in ruby and pattern match on them. And i was just about to scream from joy when&hellip;</p>
 
 <p>i saw this.</p>
 
-<h2>Maps ->  Json</h2>
+<h2>Maps &ndash;>  Json</h2>
 
 <p>Yes you can serialize and deserialize maps to json. WTF ?! Yes.</p>
 
@@ -80,11 +80,11 @@ Gives you option to load maps from binaries! C'mon! this is amazing. Safe versio
 
 <h1>Addition of Dializer and Rebar</h1>
 
-<p>This is great from empiric point of view as Joe shows how to use rebar and build real life code using github. This is a great thing and worth reading. I love it :) You get real life example... i get here everything i lacked in previous book.</p>
+<p>This is great from empiric point of view as Joe shows how to use rebar and build real life code using github. This is a great thing and worth reading. I love it :) You get real life example&hellip; i get here everything i lacked in previous book.</p>
 
 <h1>Summary</h1>
 
-<p>Every single new thing in the book is great. Stuff about E17 version of Erlang is just great. I don't have E17 yet on my box but this will be by far best release of Erlang.  In chapter about maps he talks about looking at ruby. I think it is a bit inspired by ruby builtin syntax for hashes by yet again. This is amazing and in future this will resolve so many problems and make many API's much more useful. You don't have to type anymore ton of _ if you want to pattern match on big tuple. You can match on a key.</p>
+<p>Every single new thing in the book is great. Stuff about E17 version of Erlang is just great. I don&rsquo;t have E17 yet on my box but this will be by far best release of Erlang.  In chapter about maps he talks about looking at ruby. I think it is a bit inspired by ruby builtin syntax for hashes by yet again. This is amazing and in future this will resolve so many problems and make many API&rsquo;s much more useful. You don&rsquo;t have to type anymore ton of _ if you want to pattern match on big tuple. You can match on a key.</p>
 
 <p>I spend an hour reading the book on the train from London to Epsom and all I can say. It is great!. I love it and i love new changes!</p>
 ]]></content>
@@ -95,11 +95,11 @@ Gives you option to load maps from binaries! C'mon! this is amazing. Safe versio
     <link href="http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang/"/>
     <updated>2013-02-05T20:20:00+00:00</updated>
     <id>http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang</id>
-    <content type="html"><![CDATA[<p>I'm preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don't want to build whole app in C because i know how this can end when you are 1500 - 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
+    <content type="html"><![CDATA[<p>I&rsquo;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&rsquo;t want to build whole app in C because i know how this can end when you are 1500 &ndash; 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
 
 <h1>Ports</h1>
 
-<p>Firt thought was to build small C program that will check stuff periodically or just "check stuff" in SHT1x and just print it out to output. So my first attempt was</p>
+<p>Firt thought was to build small C program that will check stuff periodically or just &ldquo;check stuff&rdquo; in SHT1x and just print it out to output. So my first attempt was</p>
 
 <p>For the example here i will use <code>/proc/cpuinfo</code></p>
 
@@ -107,21 +107,21 @@ Gives you option to load maps from binaries! C'mon! this is amazing. Safe versio
 -module(mycpuinfo).
 -export([info/0]).</p>
 
-<p>-define(CMD, "cat /proc/cpuinfo").</p>
+<p>-define(CMD, &ldquo;cat /proc/cpuinfo&rdquo;).</p>
 
-<p>info() -></p>
+<p>info() &ndash;></p>
 
 <pre><code>Port = open_port({spawn, ?CMD}, [{packet, 1}, use_stdio, exit_status, binary]),
 port_command(Port, &lt;&lt;&gt;&gt;),
 receive
 </code></pre>
 
-<p>  {Port, {data, Response}} -></p>
+<p>  {Port, {data, Response}} &ndash;></p>
 
 <pre><code>  {ok, {cpuinfo, Response}};
 </code></pre>
 
-<p>  _  -> error</p>
+<p>  _  &ndash;> error</p>
 
 <pre><code>end.
 </code></pre>
@@ -134,7 +134,7 @@ receive
 
 <p>The thing i found is called erl_interface and it is designed for FFI. This is it! What you do is you build process like thing in C and micro module in erlang that handles this. (It is just to make it look nice). But there are few glitches!</p>
 
-<p>This is my module posting back "pong" on "ping" message</p>
+<p>This is my module posting back &ldquo;pong&rdquo; on &ldquo;ping&rdquo; message</p>
 
 <p>``` c lolpong.c</p>
 
@@ -146,9 +146,9 @@ receive
 
 <h1>include &lt;netinet/in.h></h1>
 
-<h1>include "erl_interface.h"</h1>
+<h1>include &ldquo;erl_interface.h&rdquo;</h1>
 
-<h1>include "ei.h"</h1>
+<h1>include &ldquo;ei.h&rdquo;</h1>
 
 <h1>define BUFFSIZE 100</h1>
 
@@ -162,14 +162,14 @@ receive
 
 <p>  erl_init(NULL, 0);</p>
 
-<p>  if(erl_connect_init(1, "cookie",  0) == -1){</p>
+<p>  if(erl_connect_init(1, &ldquo;cookie&rdquo;,  0) == -1){</p>
 
 <pre><code>erl_err_quit("init failed");
 </code></pre>
 
 <p>  }</p>
 
-<p>  if((fd = erl_connect("emu@raspberrypi")) &lt; 0 ){</p>
+<p>  if((fd = erl_connect(&ldquo;emu@raspberrypi&rdquo;)) &lt; 0 ){</p>
 
 <pre><code>erl_err_quit("Emus could won war with australia but you still can't connect to emu :(");
 </code></pre>
@@ -209,7 +209,7 @@ else {
 <p>}
 ```</p>
 
-<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called "emu@raspberrypi" and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means "memory leak".</p>
+<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called &ldquo;emu@raspberrypi&rdquo; and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means &ldquo;memory leak&rdquo;.</p>
 
 <p>But most important thing is how to build this and run.</p>
 
@@ -227,19 +227,19 @@ else {
 
 <h2>Running everything.</h2>
 
-<p>No how to make everything work... we need module</p>
+<p>No how to make everything work&hellip; we need module</p>
 
 <p>``` erlang lolpong.erl
 -module(lolpong).
 -export([ping/0]).</p>
 
-<p>ping() -></p>
+<p>ping() &ndash;></p>
 
 <pre><code>{any, 'c1@raspberrypi'} ! {self(), ping},
 receive
 </code></pre>
 
-<p>  R -> {ok, R}</p>
+<p>  R &ndash;> {ok, R}</p>
 
 <pre><code>end.
 </code></pre>
@@ -247,11 +247,11 @@ receive
 <p>````
 This c1 is for c extension 1 not super obvious :) cN will be for c extension N =).</p>
 
-<p>And finally we need to spawn our node...
+<p>And finally we need to spawn our node&hellip;
 <code>bash
 λ  erl -sname "emu" -setcookie "cookie"
 </code>
-This spawns node named emu@raspberrypi on my mini box with cookie "cookie" now ... i said finally... but it was not final step.</p>
+This spawns node named emu@raspberrypi on my mini box with cookie &ldquo;cookie&rdquo; now &hellip; i said finally&hellip; but it was not final step.</p>
 
 <p>Final step is to run out <code>lolpong</code> binary. It is important to run it after node is up because it will try to connect to this node.</p>
 
@@ -280,7 +280,7 @@ Works!</p>
     <link href="http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/"/>
     <updated>2013-01-22T19:42:00+00:00</updated>
     <id>http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang</id>
-    <content type="html"><![CDATA[<p>Recently with friends we are building side project called "Midway" its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
+    <content type="html"><![CDATA[<p>Recently with friends we are building side project called &ldquo;Midway&rdquo; its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
 
 <h1>Making request</h1>
 
@@ -294,10 +294,10 @@ inets:start().
 <p>Ok i generalized using httpc to really simple thing</p>
 
 <p>``` erlang
-post(URL, ContentType, Body) -> request(post, {URL, [], ContentType, Body}).
-get(URL)                     -> request(get,  {URL, []}).</p>
+post(URL, ContentType, Body) &ndash;> request(post, {URL, [], ContentType, Body}).
+get(URL)                     &ndash;> request(get,  {URL, []}).</p>
 
-<p>request(Method, Body) -></p>
+<p>request(Method, Body) &ndash;></p>
 
 <pre><code>httpc:request(Method, Body, [], []).
 </code></pre>
@@ -307,8 +307,8 @@ get(URL)                     -> request(get,  {URL, []}).</p>
 <p>So if you will a call you will get something like this</p>
 
 <p>``` erlang
-httpc:request(get, {"http://www.youtube.com/watch?v=JvxG3zl_WhU", []}, [], []).
-{ok,{{"HTTP/1.1",200,"OK"},</p>
+httpc:request(get, {&ldquo;<a href="http://www.youtube.com/watch?v=JvxG3zl_WhU">http://www.youtube.com/watch?v=JvxG3zl_WhU</a>&rdquo;, []}, [], []).
+{ok,{ {&ldquo;HTTP/1.1&rdquo;,200,&ldquo;OK&rdquo;},</p>
 
 <pre><code> [{"cache-control","no-cache"},
   {"date","Tue, 22 Jan 2013 20:36:16 GMT"},
@@ -344,10 +344,10 @@ httpc:request(get, {"http://www.youtube.com/watch?v=JvxG3zl_WhU", []}, [], []).
 <p>So after calling it on response we can get body</p>
 
 <p>``` erlang
-  Response = httpc:request(get, {"http://www.youtube.com/watch?v=JvxG3zl_WhU", []}, [], []).
+  Response = httpc:request(get, {&ldquo;<a href="http://www.youtube.com/watch?v=JvxG3zl_WhU">http://www.youtube.com/watch?v=JvxG3zl_WhU</a>&rdquo;, []}, [], []).
   Body = response_body(Response).
-  io:format("~s~n",[Body]).
-  &lt;!DOCTYPE html><html lang="en"><head> ...</p>
+  io:format(&ldquo;~s~n&rdquo;,[Body]).
+  &lt;!DOCTYPE html><html lang="en"><head> &hellip;</p>
 
 <p>```</p>
 
@@ -365,12 +365,12 @@ mochijson2:endcode(STUFF).
 </code>
 One thing worth mentioning is that it expects input in a bit structured format.</p>
 
-<p>So typycaly it will use "struct" symbol for json "{}" objects.</p>
+<p>So typycaly it will use &ldquo;struct&rdquo; symbol for json &ldquo;{}&rdquo; objects.</p>
 
 <p><code>erlang
 {struct, [{name, &lt;&lt;"jakub"&gt;&gt;}, {age, 27}, {ids, [1,2]}]}
 </code>
-So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use...</p>
+So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use&hellip;</p>
 
 <h2>Jiffy</h2>
 
@@ -386,7 +386,7 @@ Eshell V5.8.2  (abort with ^G)
 &lt;&lt;"{\"foo\":[\"bing\",2.2999999999999998224,true]}"&gt;&gt;
 </code></p>
 
-<p>This shows how nice it is to use :D no 'struct' pure love!</p>
+<p>This shows how nice it is to use :D no &lsquo;struct&rsquo; pure love!</p>
 
 <p>You can get it here <a href="https://github.com/davisp/jiffy">https://github.com/davisp/jiffy</a></p>
 
@@ -402,20 +402,20 @@ Eshell V5.8.2  (abort with ^G)
     <updated>2012-11-20T19:20:00+00:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/11/20/erlang-digraph</id>
     <content type="html"><![CDATA[<ul>
-<li>This is more "note to self" type of post rather than tutorial thing.</li>
-<li>It's hard to write blog posts when you are trying to take over the world :)</li>
+<li>This is more &ldquo;note to self&rdquo; type of post rather than tutorial thing.</li>
+<li>It&rsquo;s hard to write blog posts when you are trying to take over the world :)</li>
 </ul>
 
 
 <h1>Why ?</h1>
 
-<p>Recently in "professor Toons" :)  computer club was a task that was ideal to solve as graph. It was one of this "find path" tasks. Yesterday just before going to bed I thought "Why not solve it in Erlang".  And this are my thoughts about erlang digraph: library.</p>
+<p>Recently in &ldquo;professor Toons&rdquo; :)  computer club was a task that was ideal to solve as graph. It was one of this &ldquo;find path&rdquo; tasks. Yesterday just before going to bed I thought &ldquo;Why not solve it in Erlang&rdquo;.  And this are my thoughts about erlang digraph: library.</p>
 
 <h2>Task</h2>
 
 <p>First of all <a href="http://erldocs.com/">http://erldocs.com/</a> is the way to go when working with documentation.</p>
 
-<p>Second "the Task". It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
+<p>Second &ldquo;the Task&rdquo;. It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
 
 <p>example.</p>
 
@@ -426,7 +426,7 @@ BAC
 ACB
 BBA</p>
 
-<p>And you want to find playlist from ABC to BAC you will get ABC -> CBA -> ACB -> BAC. Easy</p>
+<p>And you want to find playlist from ABC to BAC you will get ABC &ndash;> CBA &ndash;> ACB &ndash;> BAC. Easy</p>
 
 <h2>Digraph</h2>
 
@@ -481,11 +481,11 @@ Path = digraph:get_path(Graph, VertexStart, VertexEnd).
 
 <p>``` erlang
 G = digraph:new(),
-V1 = digraph:add_vertex(G, "Andrychow"),
-V2 = digraph:add_vertex(G, "Krakow"),
-V3 = digraph:add_vertex(G, "London"),
-V4 = digraph:add_vertex(G, "Warsaw"),
-V5 = digraph:add_vertex(G, "Paris"),</p>
+V1 = digraph:add_vertex(G, &ldquo;Andrychow&rdquo;),
+V2 = digraph:add_vertex(G, &ldquo;Krakow&rdquo;),
+V3 = digraph:add_vertex(G, &ldquo;London&rdquo;),
+V4 = digraph:add_vertex(G, &ldquo;Warsaw&rdquo;),
+V5 = digraph:add_vertex(G, &ldquo;Paris&rdquo;),</p>
 
 <p>digraph:add_edge(G, V1, V2),
 digraph:add_edge(G, V2, V4),
@@ -497,7 +497,7 @@ digraph:add_edge(G, V2, V1),</p>
 
 <p>PathHome = digraph:get_path(G, V3, V1).
 <code>``
-This gives you back</code>["London","Krakow","Andrychow"]` so Win! we are at home!</p>
+This gives you back</code>[&ldquo;London&rdquo;,&ldquo;Krakow&rdquo;,&ldquo;Andrychow&rdquo;]` so Win! we are at home!</p>
 
 <h1>Summary</h1>
 
@@ -520,7 +520,7 @@ This gives you back</code>["London","Krakow","Andrychow"]` so Win! we are at hom
 
 <p>Basic template is made from one or many <code>.erl</code> files written with <code>mustache</code> style <code>{ { } }</code> code and <code>.template</code> file describing what to do with files.</p>
 
-<h2>Let's build gen_server template</h2>
+<h2>Let&rsquo;s build gen_server template</h2>
 
 <p>So my first file will be <code>gen_server.erl</code>
 ``` bash gen_server.erl
@@ -531,37 +531,37 @@ This gives you back</code>["London","Krakow","Andrychow"]` so Win! we are at hom
 <p>-module( { {name } }).
 -behaviour(gen_server).</p>
 
-<p>-author(' { {author_name } } &lt;{ {author_email } }>').</p>
+<p>-author(&lsquo; { {author_name } } &lt;{ {author_email } }>&rsquo;).</p>
 
 <p>-export([start_link/1]).
 -export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1]).</p>
 
 <p>% public api</p>
 
-<p>start_link(_Args) ->
+<p>start_link(_Args) &ndash;>
   gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).</p>
 
 <p>% state should be change with State that you will pass
-init([]) ->
+init([]) &ndash;>
   {ok, state}.</p>
 
-<p>stop(_Pid) ->
+<p>stop(_Pid) &ndash;>
   stop().</p>
 
-<p>stop() ->
+<p>stop() &ndash;>
   gen_server:cast(?MODULE, stop).</p>
 
-<p>handle_call({method_name_and_params}, _From, State) ->
+<p>handle_call({method_name_and_params}, _From, State) &ndash;>
   Response = ok,
   {reply, Response, State};</p>
 
-<p>handle_call(<em>Message, </em>From, State) ->
+<p>handle_call(<em>Message, </em>From, State) &ndash;>
   {reply, error, State}.</p>
 
-<p>handle_cast(<em>Message, State) -> {noreply, State}.
-handle_info(</em>Message, State) -> {noreply, State}.
-terminate(<em>Reason, </em>State) -> ok.
-code_change(<em>OldVersion, State, </em>Extra) -> {ok, State}.
+<p>handle_cast(<em>Message, State) &ndash;> {noreply, State}.
+handle_info(</em>Message, State) &ndash;> {noreply, State}.
+terminate(<em>Reason, </em>State) &ndash;> ok.
+code_change(<em>OldVersion, State, </em>Extra) &ndash;> {ok, State}.
 <code>``
 This is the template, i know a bit long i tried to cut out all comments, euint etc and narrow it to minimum. I posted it to show how much you can save :). Now you will need the</code>transformation file`. All this things in { { something } } will be replaced by things we will type in command line or defaults from template file.</p>
 
@@ -592,7 +592,7 @@ Viola!</p>
 
 <h1>important</h1>
 
-<p>When i was looking at this post i saw that {{ is converted in a wrong way by octopress so i added spaces between them! check repo for correct code!</p>
+<p>When i was looking at this post i saw that { { is converted in a wrong way by octopress so i added spaces between them! check repo for correct code!</p>
 
 <h1>My own templates</h1>
 

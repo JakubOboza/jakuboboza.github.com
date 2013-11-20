@@ -5,7 +5,7 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>No Fucking Idea</title>
+  <title>No F*cking Idea</title>
   <meta name="author" content="Jakub Oboza">
 
   
@@ -19,13 +19,14 @@ And it is very easy to &hellip;">
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://no-fucking-idea.com/blog/page/3/">
+  <link rel="canonical" href="http://no-fucking-idea.com/blog/page/3">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="No F*cking Idea" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="No Fucking Idea" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -48,7 +49,7 @@ And it is very easy to &hellip;">
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">No Fucking Idea</a></h1>
+  <h1><a href="/">No F*cking Idea</a></h1>
   
     <h2>Common answer to everything</h2>
   
@@ -102,7 +103,8 @@ And it is very easy to &hellip;">
 
 <time datetime="2012-04-29T20:16:00+01:00" pubdate data-updated="true">Apr 29<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/04/29/setting-up-replication-with-redis/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/04/29/setting-up-replication-with-redis/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/04/29/setting-up-replication-with-redis/">Comments</a>
         
       </p>
     
@@ -206,7 +208,7 @@ Sounds easy :). Lets think about most basic scenario.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Here the important thing really is <code>slaveof 127.0.0.1 6379</code> where we set where is our master. <code>port 7789</code> important if we are using few redis instances on one box and <code>dir ./replica_dir</code> be sure to not point this to master node db path if you do&#8230; you will suffer eternal flame.</p>
+<p>Here the important thing really is <code>slaveof 127.0.0.1 6379</code> where we set where is our master. <code>port 7789</code> important if we are using few redis instances on one box and <code>dir ./replica_dir</code> be sure to not point this to master node db path if you do&hellip; you will suffer eternal flame.</p>
 
 <p>Now just start the node <code>redis-server redis-replica.conf</code> and he will start syncing.</p>
 
@@ -285,7 +287,8 @@ Sounds easy :). Lets think about most basic scenario.</p>
 
 <time datetime="2012-04-23T21:28:00+01:00" pubdate data-updated="true">Apr 23<span>rd</span>, 2012</time>
         
-         | <a href="/blog/2012/04/23/building-node-dot-js-module-using-npm/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/04/23/building-node-dot-js-module-using-npm/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/04/23/building-node-dot-js-module-using-npm/">Comments</a>
         
       </p>
     
@@ -379,12 +382,12 @@ example output:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This will create for us <code>package.json</code>. Now we have fully functional module and we could stop now&#8230;. but</p>
+<p>This will create for us <code>package.json</code>. Now we have fully functional module and we could stop now&hellip;. but</p>
 
 <h1>package.json</h1>
 
 <p>This file is description of our package. It is in form of json so it should be easy to read and change.
-Most of this fields don&#8217;t need a lot of description because keys are self explaining but things that we should look at is <code>"scripts"</code> where we defined <code>"test"</code> key. If we will now run <code>npm test</code> he will execute this command that is very useful.</p>
+Most of this fields don&rsquo;t need a lot of description because keys are self explaining but things that we should look at is <code>"scripts"</code> where we defined <code>"test"</code> key. If we will now run <code>npm test</code> he will execute this command that is very useful.</p>
 
 <p>Engines defined on what version of <code>node.js</code> our code will work leaving it to <code>*</code> is a bit hazard. You can set it to something specific if you want.</p>
 
@@ -403,7 +406,7 @@ Most of this fields don&#8217;t need a lot of description because keys are self 
 
 <h1>Code</h1>
 
-<p>Ok but we don&#8217;t have any code yet ;/. Yes lets start coding.</p>
+<p>Ok but we don&rsquo;t have any code yet ;/. Yes lets start coding.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -437,7 +440,7 @@ Most of this fields don&#8217;t need a lot of description because keys are self 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Everything passed, that is expected because we don&#8217;t have any tests :) Now lets add to <code>package.json</code> one more thing development dependency for <code>should.js</code> it will enable us to use mocha in a bit <code>rspec</code> bdd style. Like this:</p>
+<p>Everything passed, that is expected because we don&rsquo;t have any tests :) Now lets add to <code>package.json</code> one more thing development dependency for <code>should.js</code> it will enable us to use mocha in a bit <code>rspec</code> bdd style. Like this:</p>
 
 <figure class='code'><figcaption><span>package.json</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -630,7 +633,8 @@ Cheers!</p>
 
 <time datetime="2012-04-16T19:54:00+01:00" pubdate data-updated="true">Apr 16<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/04/16/setting-up-redis-cluster/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/04/16/setting-up-redis-cluster/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/04/16/setting-up-redis-cluster/">Comments</a>
         
       </p>
     
@@ -643,7 +647,7 @@ Cheers!</p>
 
 <h1>redis.conf</h1>
 
-<p>Regular nodes can&#8217;t be part of cluster :( so you have to prepare separate redis configs for your cluster servers.
+<p>Regular nodes can&rsquo;t be part of cluster :( so you have to prepare separate redis configs for your cluster servers.
 Most important thing is to setup <code>cluster-enabled</code> and <code>cluster-config-file</code> I decided to name my config files <code>redis-cluster-&lt;port&gt;.conf</code>. I used ports 4444, 4445 4446
 Here is my sample config</p>
 
@@ -738,7 +742,7 @@ Here is my sample config</p>
 
 <h1>redis-tribe.rb</h1>
 
-<p>In <code>src/</code> directory of source you can find ruby script for creating and managing cluster. But first you need to have ruby installed with <code>redis</code> gem. i just did <code>gem install redis</code> but if you don&#8217;t have ruby you have to google how to install it etc (hint: get 1.9.2).</p>
+<p>In <code>src/</code> directory of source you can find ruby script for creating and managing cluster. But first you need to have ruby installed with <code>redis</code> gem. i just did <code>gem install redis</code> but if you don&rsquo;t have ruby you have to google how to install it etc (hint: get 1.9.2).</p>
 
 <p>now you can run the script. <code>./redis-tribe.rb</code> and see</p>
 
@@ -757,7 +761,7 @@ Here is my sample config</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>To start cluster we will type &#8220;create&#8221; (useless comment)</p>
+<p>To start cluster we will type &ldquo;create&rdquo; (useless comment)</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -813,7 +817,7 @@ Here is my sample config</p>
 
 <h1>Smart clients</h1>
 
-<p>In redis doc we can read that you will require &#8220;smart client&#8221; to make it low latency. Yes, you can read from output that it was moved so you will have to cache where the key is now and reset temp cache when it will be moved (resharding)</p>
+<p>In redis doc we can read that you will require &ldquo;smart client&rdquo; to make it low latency. Yes, you can read from output that it was moved so you will have to cache where the key is now and reset temp cache when it will be moved (resharding)</p>
 
 <h1>Fire!</h1>
 
@@ -856,7 +860,7 @@ Here is my sample config</p>
 
 <h1>Summary</h1>
 
-<p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don&#8217;t work as intended and some keys are not pushed. But it is pulled from unstable branch so i&#8217;m crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
+<p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don&rsquo;t work as intended and some keys are not pushed. But it is pulled from unstable branch so i&rsquo;m crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
 </div>
   
   
@@ -887,18 +891,19 @@ Here is my sample config</p>
 
 <time datetime="2012-04-12T21:07:00+01:00" pubdate data-updated="true">Apr 12<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/">Comments</a>
         
       </p>
     
   </header>
 
 
-  <div class="entry-content"><p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&#8217;s really worth reading) and i thought &#8220;it&#8217;s nice&#8221;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&#8217;s ORM&#8217;s is not so common topic across web.</p>
+  <div class="entry-content"><p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&rsquo;s really worth reading) and i thought &ldquo;it&rsquo;s nice&rdquo;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&rsquo;s ORM&rsquo;s is not so common topic across web.</p>
 
 <h1>Aim</h1>
 
-<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&#8217;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &#8220;Muppet&#8221;. Name describes the project :).</p>
+<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&rsquo;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &ldquo;Muppet&rdquo;. Name describes the project :).</p>
 
 <h3>Virtus</h3>
 
@@ -1025,10 +1030,10 @@ All this specs are stripped to minimum to enhance readability.</p>
 </span><span class='line'>
 </span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should be configurable&quot;</span> <span class="k">do</span>
 </span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
-</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">configure</span> <span class="p">{{</span>
-</span><span class='line'>          <span class="n">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
-</span><span class='line'>          <span class="n">port</span><span class="p">:</span> <span class="mi">27017</span><span class="p">,</span>
-</span><span class='line'>          <span class="n">database</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span>
+</span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">configure</span> <span class="p">\{</span> <span class="p">\{</span>
+</span><span class='line'>          <span class="ss">host</span><span class="p">:</span> <span class="s2">&quot;localhost&quot;</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">port</span><span class="p">:</span> <span class="mi">27017</span><span class="p">,</span>
+</span><span class='line'>          <span class="ss">database</span><span class="p">:</span> <span class="s2">&quot;test&quot;</span>
 </span><span class='line'>        <span class="p">}}</span>
 </span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">.</span><span class="n">should</span> <span class="n">be_a</span><span class="p">(</span><span class="no">Hash</span><span class="p">)</span>
 </span><span class='line'>        <span class="no">Muppet</span><span class="o">.</span><span class="n">config</span><span class="o">[</span><span class="ss">:host</span><span class="o">].</span><span class="n">should</span> <span class="n">eql</span><span class="p">(</span><span class="s2">&quot;localhost&quot;</span><span class="p">)</span>
@@ -1059,7 +1064,7 @@ All this specs are stripped to minimum to enhance readability.</p>
 </span><span class='line'>    <span class="n">it</span> <span class="s2">&quot;should insert values to database&quot;</span> <span class="k">do</span>
 </span><span class='line'>      <span class="n">pending</span>
 </span><span class='line'>      <span class="nb">lambda</span> <span class="k">do</span>
-</span><span class='line'>        <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Jakub&quot;</span><span class="p">,</span> <span class="n">age</span><span class="p">:</span> <span class="mi">27</span> <span class="p">)</span>
+</span><span class='line'>        <span class="n">user</span> <span class="o">=</span> <span class="no">User</span><span class="o">.</span><span class="n">new</span><span class="p">(</span><span class="nb">name</span><span class="p">:</span> <span class="s2">&quot;Jakub&quot;</span><span class="p">,</span> <span class="ss">age</span><span class="p">:</span> <span class="mi">27</span> <span class="p">)</span>
 </span><span class='line'>        <span class="n">user</span><span class="o">.</span><span class="n">save</span><span class="o">.</span><span class="n">should</span> <span class="n">be_true</span>
 </span><span class='line'>      <span class="k">end</span><span class="o">.</span><span class="n">should</span> <span class="n">change</span><span class="p">(</span><span class="no">User</span><span class="p">,</span> <span class="ss">:count</span><span class="p">)</span>
 </span><span class='line'>    <span class="k">end</span>
@@ -1102,7 +1107,7 @@ All this specs are stripped to minimum to enhance readability.</p>
 <h1>Third step: layouting Muppet!</h1>
 
 <p>At this moment we should have ready specs, that fail hard throwing errors on unknown tokens. Its good.
-What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&#8217;s.</p>
+What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&rsquo;s.</p>
 
 <figure class='code'><figcaption><span>muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1196,7 +1201,7 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 
 <h1>Forth step: support for quering and inserting</h1>
 
-<p>Now lets remove pending marks from specs that  are in &#8220;describes&#8221; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.</p>
+<p>Now lets remove pending marks from specs that  are in &ldquo;describes&rdquo; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.</p>
 
 <figure class='code'><figcaption><span>lib/muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1218,11 +1223,11 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 </span><span class='line'><span class="nb">require</span> <span class="s2">&quot;muppet/document&quot;</span>
 </span><span class='line'>
 </span><span class='line'><span class="k">module</span> <span class="nn">Muppet</span>
-</span><span class='line'>  <span class="kp">extend</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Setup</span>
-</span><span class='line'>  <span class="kp">include</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Document</span><span class="o">::</span><span class="no">InstanceMethods</span>
+</span><span class='line'>  <span class="kp">extend</span> <span class="ss">Muppet</span><span class="p">:</span><span class="ss">:Setup</span>
+</span><span class='line'>  <span class="kp">include</span> <span class="ss">Muppet</span><span class="p">:</span><span class="ss">:Document</span><span class="o">::</span><span class="no">InstanceMethods</span>
 </span><span class='line'>
 </span><span class='line'>  <span class="k">def</span> <span class="nc">self</span><span class="o">.</span><span class="nf">included</span><span class="p">(</span><span class="n">base</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="no">Muppet</span><span class="o">::</span><span class="no">Document</span><span class="o">::</span><span class="no">ClassMethods</span> <span class="p">)</span>
+</span><span class='line'>    <span class="n">base</span><span class="o">.</span><span class="n">extend</span><span class="p">(</span> <span class="ss">Muppet</span><span class="p">:</span><span class="ss">:Document</span><span class="o">::</span><span class="no">ClassMethods</span> <span class="p">)</span>
 </span><span class='line'>  <span class="k">end</span>
 </span><span class='line'>
 </span><span class='line'><span class="k">end</span>
@@ -1320,7 +1325,7 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I could not think of a way to implement it in a more simple way. We have to &#8220;sections&#8221; first is class methods where we define</p>
+<p>I could not think of a way to implement it in a more simple way. We have to &ldquo;sections&rdquo; first is class methods where we define</p>
 
 <ul>
 <li>collection_name this method says to us what is the collection name (we can override it in model)</li>
@@ -1333,14 +1338,14 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 
 <p>Instance methods are only two <code>save</code> and <code>destroy</code> save is raw and simple, takes all attributes from using virtues and saves them using mongo native driver. destroy acts in the same way.</p>
 
-<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&#8217;s and remove.</p>
+<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&rsquo;s and remove.</p>
 
 <h1>Summary</h1>
 
 <p>I really enjoyed writing this code and blog post :).
 You can find code for this blog post here <a href="https://github.com/JakubOboza/muppet">https://github.com/JakubOboza/muppet</a></p>
 
-<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &#8220;Muppet&#8221;</p>
+<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &ldquo;Muppet&rdquo;</p>
 
 <p>-Cheers</p>
 </div>
@@ -1373,7 +1378,8 @@ You can find code for this blog post here <a href="https://github.com/JakubOboza
 
 <time datetime="2012-04-11T20:09:00+01:00" pubdate data-updated="true">Apr 11<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/04/11/building-gem-with-bundler/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/04/11/building-gem-with-bundler/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/04/11/building-gem-with-bundler/">Comments</a>
         
       </p>
     
@@ -1914,7 +1920,8 @@ Fingers crossed :)</p>
 
 <time datetime="2012-04-05T21:01:00+01:00" pubdate data-updated="true">Apr 5<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/04/05/testing-handlebars-with-mocha/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/04/05/testing-handlebars-with-mocha/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/04/05/testing-handlebars-with-mocha/">Comments</a>
         
       </p>
     
@@ -1955,7 +1962,7 @@ One of them was mocha and at that time i needed something to test my backend cod
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I really like this <code>app.should.be.an.instanceof(Application);</code> syntax. But if you don&#8217;t like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
+<p>I really like this <code>app.should.be.an.instanceof(Application);</code> syntax. But if you don&rsquo;t like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
 
 <h1>Handlebars</h1>
 
@@ -1978,7 +1985,7 @@ One of them was mocha and at that time i needed something to test my backend cod
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in <code>is getting interpolated. so in this example ` class= ` mans that if in rendering context we have class variable render `class=value_of_class_variable_in_context` as part of li element.</code> will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg. <code>underscore.js</code> templates explode if you don&#8217;t have any param that you use inside of them.</p>
+<p>This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in <code>is getting interpolated. so in this example ` class= ` mans that if in rendering context we have class variable render `class=value_of_class_variable_in_context` as part of li element.</code> will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg. <code>underscore.js</code> templates explode if you don&rsquo;t have any param that you use inside of them.</p>
 
 <h1>Both tools in action</h1>
 
@@ -2026,7 +2033,7 @@ Lets write some implementation to satisfy out spec.</p>
 
 <p><img src="http://img833.imageshack.us/img833/1738/screenshot20120405at215.png" alt="Success spec" />
 Bang everything works fine :). Lets make it do something useful, render some templates!
-First lets write a spec for it -></p>
+First lets write a spec for it &ndash;></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -2115,7 +2122,8 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
 
 <time datetime="2012-04-01T23:05:00+01:00" pubdate data-updated="true">Apr 1<span>st</span>, 2012</time>
         
-         | <a href="/blog/2012/04/01/using-map-reduce-with-mongodb/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/04/01/using-map-reduce-with-mongodb/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/04/01/using-map-reduce-with-mongodb/">Comments</a>
         
       </p>
     
@@ -2139,7 +2147,7 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In map function you have to emit key -> values from document, eg. for each document emit urls and counts of them.</p>
+<p>In map function you have to emit key &ndash;> values from document, eg. for each document emit urls and counts of them.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -2163,7 +2171,7 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This will run <code>generate_report.js</code> script on database <code>canis_production</code> on db node <code>localhost:27017</code>. You don&#8217;t need to do it, but its easiet to write it into file then type each time functions ;).</p>
+<p>This will run <code>generate_report.js</code> script on database <code>canis_production</code> on db node <code>localhost:27017</code>. You don&rsquo;t need to do it, but its easiet to write it into file then type each time functions ;).</p>
 
 <h1>Example Map reduce query</h1>
 
@@ -2196,7 +2204,7 @@ adding values for the same key so this way we will know how many occurrences of 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>To run mapReduce we are using <code>mapReduce</code> function on collection (this example uses collection named &#8220;sites&#8221;), first argument is map function, second is reduce function and third is option but very useful, it is output collection where results will be stored in form of documents. This option lets us run the query at eg. night and see results in the morning :).</p>
+<p>To run mapReduce we are using <code>mapReduce</code> function on collection (this example uses collection named &ldquo;sites&rdquo;), first argument is map function, second is reduce function and third is option but very useful, it is output collection where results will be stored in form of documents. This option lets us run the query at eg. night and see results in the morning :).</p>
 
 <h2>Lets test it</h2>
 
@@ -2306,7 +2314,8 @@ adding values for the same key so this way we will know how many occurrences of 
 
 <time datetime="2012-03-31T20:18:00+01:00" pubdate data-updated="true">Mar 31<span>st</span>, 2012</time>
         
-         | <a href="/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/">Comments</a>
         
       </p>
     
@@ -2464,7 +2473,7 @@ I configured the app with my own path/uri and to look for upstream server on por
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>It isn&#8217;t even so long ;)</p>
+<p>It isn&rsquo;t even so long ;)</p>
 
 <h3>upstream</h3>
 
@@ -2552,7 +2561,7 @@ Next we are setting for how long it should be cached. I used 1 minute for 200 an
 
 <h1>Test</h1>
 
-<p>You can test it now. Or wait&#8230; with my config you have to add entry to <code>/etc/hosts</code></p>
+<p>You can test it now. Or wait&hellip; with my config you have to add entry to <code>/etc/hosts</code></p>
 
 <figure class='code'><figcaption><span>hosts</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>127.0.0.1 example_stale.local
@@ -2568,11 +2577,11 @@ Next we are setting for how long it should be cached. I used 1 minute for 200 an
 Next requests
 <img src="http://img4.imageshack.us/img4/1484/screenshot20120331at211.png" alt="few ms after" /></p>
 
-<p>-> <a href="http://www.youtube.com/watch?v=lgoXUzIwXk0">http://www.youtube.com/watch?v=lgoXUzIwXk0</a></p>
+<p>&ndash;> <a href="http://www.youtube.com/watch?v=lgoXUzIwXk0">http://www.youtube.com/watch?v=lgoXUzIwXk0</a></p>
 
 <h1>Cheers</h1>
 
-<p>How you can use it? Depends on your app architecture, but for every bit of content that you create which is &#8220;static&#8221; it is great thing to have. I like this feature of nginx and i hope this post will help you ;).</p>
+<p>How you can use it? Depends on your app architecture, but for every bit of content that you create which is &ldquo;static&rdquo; it is great thing to have. I like this feature of nginx and i hope this post will help you ;).</p>
 </div>
   
   
@@ -2603,7 +2612,8 @@ Next requests
 
 <time datetime="2012-03-29T18:55:00+01:00" pubdate data-updated="true">Mar 29<span>th</span>, 2012</time>
         
-         | <a href="/blog/2012/03/29/rebar-swiss-army-knife/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/03/29/rebar-swiss-army-knife/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/03/29/rebar-swiss-army-knife/">Comments</a>
         
       </p>
     
@@ -2639,7 +2649,7 @@ Next requests
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>So you will be able to use it like other command lines tools from &#8220;global namespace&#8221;.
+<p>So you will be able to use it like other command lines tools from &ldquo;global namespace&rdquo;.
 Now you should have working rebar installation. Just to test that everything is ok you can run <code>rebar</code> like this.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -2704,7 +2714,7 @@ to compile it just run <code>rebar compile</code></p>
 
 <h1>Me gusta</h1>
 
-<p>This is all fine but that don&#8217;t eliminate a lot, sweet things are behind the corner :).</p>
+<p>This is all fine but that don&rsquo;t eliminate a lot, sweet things are behind the corner :).</p>
 
 <h3>eunit</h3>
 
@@ -2885,7 +2895,8 @@ to compile it just run <code>rebar compile</code></p>
 
 <time datetime="2012-03-23T23:28:00+00:00" pubdate data-updated="true">Mar 23<span>rd</span>, 2012</time>
         
-         | <a href="/blog/2012/03/23/using-eredis-in-erlang/#disqus_thread">Comments</a>
+           | <a href="/blog/2012/03/23/using-eredis-in-erlang/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/">Comments</a>
         
       </p>
     
@@ -2910,9 +2921,9 @@ to compile it just run <code>rebar compile</code></p>
 
 
 <p>
-Client is the &#8220;connection / state&#8221; we will be using with rest of queries.</p>
+Client is the &ldquo;connection / state&rdquo; we will be using with rest of queries.</p>
 
-<p>To query things with redis we will use <code>q</code> method from eredis module which takes &#8220;Connection / Client&#8221; state and list with params.
+<p>To query things with redis we will use <code>q</code> method from eredis module which takes &ldquo;Connection / Client&rdquo; state and list with params.
 This api is very simple here are two most basic examples of get and set.
 GET:</p>
 
@@ -2928,11 +2939,11 @@ GET:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass &#8220;Connection / Client&#8221; as state and also we will build some &#8220;key&#8221; serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
+<p>From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass &ldquo;Connection / Client&rdquo; as state and also we will build some &ldquo;key&rdquo; serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
 
 <h1>Free Api wrapper</h1>
 
-<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server&#8217;s and applications.</p>
+<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server&rsquo;s and applications.</p>
 
 <figure class='code'><figcaption><span>example_db.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -3113,7 +3124,7 @@ In most cases when i had to make app scale problem of having code that was glues
 
 <h2>eunit tests</h2>
 
-<p>At line 60. starts the declaration of tests, using <code>rebar</code> and <code>eunit</code> is very easy and it is always good to have test coverage in case of refactoring. I&#8217;m a fan of test driven development so i like to cover in tests first things that i will use or i think they might be error prone. Here is used &#8220;test generators&#8221; to just to show how to write tests for gen_server.</p>
+<p>At line 60. starts the declaration of tests, using <code>rebar</code> and <code>eunit</code> is very easy and it is always good to have test coverage in case of refactoring. I&rsquo;m a fan of test driven development so i like to cover in tests first things that i will use or i think they might be error prone. Here is used &ldquo;test generators&rdquo; to just to show how to write tests for gen_server.</p>
 
 <h1>Rebar</h1>
 
@@ -3284,7 +3295,7 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
 
 <p>and make it executable with <code>chmod +x start.sh</code></p>
 
-<p>And lets rock &#8216;n&#8217; roll</p>
+<p>And lets rock &lsquo;n&rsquo; roll</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -3331,7 +3342,7 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
 </div>
 <aside class="sidebar">
   
-    <section>
+    <a class="coinbase-button" data-code="a093222bb846e484c7f9123c4ec983e5" data-button-style="donation_large" href="https://coinbase.com/checkouts/a093222bb846e484c7f9123c4ec983e5">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
@@ -3340,19 +3351,19 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
       </li>
     
       <li class="post">
-        <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the rescue</a>
+        <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to use twitter for something else than pics of cats</a>
+        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/02/21/if-the-real-game-changer/">&#8216;if&#8217; the real game changer</a>
+        <a href="/blog/2013/02/21/if-the-real-game-changer/">&#8216;If&#8217; the Real Game Changer</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/02/12/recent-rails-security-problems-and-building-software/">Recent Rails security problems and building software</a>
+        <a href="/blog/2013/02/12/recent-rails-security-problems-and-building-software/">Recent Rails Security Problems and Building Software</a>
       </li>
     
   </ul>
@@ -3367,7 +3378,7 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
   <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -3385,23 +3396,6 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
     });
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-<section>
-  <h1>Latest Tweets</h1>
-  <ul id="tweets">
-    <li class="loading">Status updating&#8230;</li>
-  </ul>
-  <script type="text/javascript">
-    $.domReady(function(){
-      getTwitterFeed("JakubOboza", 9000, false);
-    });
-  </script>
-  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
-  
-    <a href="http://twitter.com/JakubOboza" class="twitter-follow-button" data-show-count="false">Follow @JakubOboza</a>
-  
 </section>
 
 
@@ -3438,7 +3432,7 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -3449,7 +3443,7 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
+  js = d.createElement(s); js.id = id; js.async = true;
   js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
@@ -3465,29 +3459,16 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
   </script>
 
 
-<script type="text/javascript"><!--
-google_ad_client = "ca-pub-0727620290960762";
-/* blog */
-google_ad_slot = "2802513942";
-google_ad_width = 728;
-google_ad_height = 90;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
 
   <script type="text/javascript">
     (function(){
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
-
 
 
 

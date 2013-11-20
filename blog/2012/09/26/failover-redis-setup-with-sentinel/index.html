@@ -5,11 +5,11 @@
 <!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
 <head>
   <meta charset="utf-8">
-  <title>Failover Redis setup with Sentinel - No Fucking Idea</title>
+  <title>Failover Redis Setup With Sentinel - No F*cking Idea</title>
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at &#107;&#x75;&#98;&# &hellip;">
+  <meta name="description" content="Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at &#107;&#x75;&#x62;&# &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -18,13 +18,14 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
 
   
-  <link rel="canonical" href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/">
+  <link rel="canonical" href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel">
   <link href="/favicon.png" rel="icon">
   <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="No F*cking Idea" type="application/atom+xml">
   <script src="/javascripts/modernizr-2.0.js"></script>
-  <script src="/javascripts/ender.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
   <script src="/javascripts/octopress.js" type="text/javascript"></script>
-  <link href="/atom.xml" rel="alternate" title="No Fucking Idea" type="application/atom+xml">
   <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
 <link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
 <link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
@@ -47,7 +48,7 @@
 
 <body   >
   <header role="banner"><hgroup>
-  <h1><a href="/">No Fucking Idea</a></h1>
+  <h1><a href="/">No F*cking Idea</a></h1>
   
     <h2>Common answer to everything</h2>
   
@@ -98,16 +99,17 @@
 
 <time datetime="2012-09-26T20:54:00+01:00" pubdate data-updated="true">Sep 26<span>th</span>, 2012</time>
         
-         | <a href="#disqus_thread">Comments</a>
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com">Comments</a>
         
       </p>
     
   </header>
 
 
-<div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#x69;&#108;&#x74;&#111;&#58;&#x6b;&#117;&#x62;&#x61;&#64;&#x6c;&#97;&#109;&#98;&#x64;&#97;&#x63;&#117;&#x2e;&#98;&#x65;">&#107;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#x6d;&#98;&#100;&#97;&#99;&#117;&#x2e;&#98;&#x65;</a> =)</p>
+<div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#116;&#111;&#x3a;&#x6b;&#x75;&#98;&#x61;&#64;&#108;&#97;&#109;&#98;&#x64;&#97;&#x63;&#117;&#x2e;&#98;&#101;">&#107;&#x75;&#x62;&#97;&#64;&#108;&#x61;&#109;&#x62;&#100;&#97;&#x63;&#117;&#46;&#98;&#x65;</a> =)</p>
 
-<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
+<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
 <h1>Auto failover</h1>
 
@@ -119,7 +121,7 @@
 
 <h1>Setup</h1>
 
-<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &#8220;master&#8221; and &#8220;replica servers&#8221; with this configs
+<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &ldquo;master&rdquo; and &ldquo;replica servers&rdquo; with this configs
 (ofc turn daemonize to yes in production lol)</p>
 
 <p>Standard Master setup with default script on port 6379 and replica with</p>
@@ -287,7 +289,7 @@ with</p>
 
 <p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
 
-<h1>when you do this&#8230;</h1>
+<h1>when you do this&hellip;</h1>
 
 <p>You will see beefy</p>
 
@@ -308,7 +310,7 @@ with</p>
 
 <h1>Summary</h1>
 
-<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&#8230;</p>
+<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&hellip;</p>
 
 <p>I like it!</p>
 
@@ -349,7 +351,7 @@ with</p>
     
       <div class="sharing">
   
-  <a href="http://twitter.com/share" class="twitter-share-button" data-url="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/" data-via="JakubOboza" data-counturl="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/" >Tweet</a>
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/" data-via="JakubOboza" data-counturl="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/" >Tweet</a>
   
   
   <div class="g-plusone" data-size="medium"></div>
@@ -381,7 +383,7 @@ with</p>
 
 <aside class="sidebar">
   
-    <section>
+    <a class="coinbase-button" data-code="a093222bb846e484c7f9123c4ec983e5" data-button-style="donation_large" href="https://coinbase.com/checkouts/a093222bb846e484c7f9123c4ec983e5">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script><section>
   <h1>Recent Posts</h1>
   <ul id="recent_posts">
     
@@ -390,19 +392,19 @@ with</p>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the rescue</a>
+        <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to use twitter for something else than pics of cats</a>
+        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/02/21/if-the-real-game-changer/">'if' the real game changer</a>
+        <a href="/blog/2013/02/21/if-the-real-game-changer/">'If' the Real Game Changer</a>
       </li>
     
       <li class="post">
-        <a href="/blog/2013/02/12/recent-rails-security-problems-and-building-software/">Recent Rails security problems and building software</a>
+        <a href="/blog/2013/02/12/recent-rails-security-problems-and-building-software/">Recent Rails Security Problems and Building Software</a>
       </li>
     
   </ul>
@@ -417,7 +419,7 @@ with</p>
   <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
   
   <script type="text/javascript">
-    $.domReady(function(){
+    $(document).ready(function(){
         if (!window.jXHR){
             var jxhr = document.createElement('script');
             jxhr.type = 'text/javascript';
@@ -435,23 +437,6 @@ with</p>
     });
   </script>
   <script src="/javascripts/github.js" type="text/javascript"> </script>
-</section>
-
-
-<section>
-  <h1>Latest Tweets</h1>
-  <ul id="tweets">
-    <li class="loading">Status updating...</li>
-  </ul>
-  <script type="text/javascript">
-    $.domReady(function(){
-      getTwitterFeed("JakubOboza", 9000, false);
-    });
-  </script>
-  <script src="/javascripts/twitter.js" type="text/javascript"> </script>
-  
-    <a href="http://twitter.com/JakubOboza" class="twitter-follow-button" data-show-count="false">Follow @JakubOboza</a>
-  
 </section>
 
 
@@ -492,7 +477,7 @@ with</p>
       
     (function () {
       var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-      dsq.src = 'http://' + disqus_shortname + '.disqus.com/' + disqus_script;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
       (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
     }());
 </script>
@@ -503,7 +488,7 @@ with</p>
 <script>(function(d, s, id) {
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) {return;}
-  js = d.createElement(s); js.id = id;
+  js = d.createElement(s); js.id = id; js.async = true;
   js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
@@ -519,29 +504,16 @@ with</p>
   </script>
 
 
-<script type="text/javascript"><!--
-google_ad_client = "ca-pub-0727620290960762";
-/* blog */
-google_ad_slot = "2802513942";
-google_ad_width = 728;
-google_ad_height = 90;
-//-->
-</script>
-<script type="text/javascript"
-src="http://pagead2.googlesyndication.com/pagead/show_ads.js">
-</script>
 
   <script type="text/javascript">
     (function(){
       var twitterWidgets = document.createElement('script');
       twitterWidgets.type = 'text/javascript';
       twitterWidgets.async = true;
-      twitterWidgets.src = 'http://platform.twitter.com/widgets.js';
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
       document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
     })();
   </script>
-
-
 
 
 
