@@ -109,6 +109,8 @@
 
 <div class="entry-content"><p>This post is sponsored by <code>forkIO</code> function and <code>newChan</code> in <code>Haskell</code></p>
 
+<p><img src="http://i.imgur.com/5yQNQxs.png" alt="Catz" /></p>
+
 <h1>What is this forkIO ?</h1>
 
 <p>forkIO is part of <code>Control.Concurrent</code> package and as it says it:</p>
@@ -127,11 +129,11 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <h1>Channels to help !</h1>
 
-<p>forkIO would be enough to start working on stuff but to make a real us of them we need a way of communicating with our threads. This actually opens design of our code to new stuff like eg. building workers. There are other ways of communicating with threads like mVar but IMHO channels wins hard.</p>
+<p>forkIO would be enough to start working on stuff but to make a real use of them we need a way of communicating with our threads. This actually opens design of our code to new stuff like building workers. There are other ways of communicating with threads like mVar but IMHO channels win hard.</p>
 
 <p>Channels are part of <code>Control.Concurrent.Chan</code> package and are typable! Typed communication Yay!</p>
 
-<p>Channels functions we need types are:</p>
+<p>Channels functions we need have the following type signatures:</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -142,11 +144,11 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And that actually all we need. Lets make some stuff working.</p>
+<p>And that&rsquo;s actually all we need. Let&rsquo;s make some stuff working.</p>
 
 <h1>Ok So lets get this party started :)</h1>
 
-<p>I think most of the time its better to explain stuff on examples.</p>
+<p>I think most of the time it&rsquo;s better to explain stuff on examples.</p>
 
 <h2>Just spawn!</h2>
 
@@ -167,7 +169,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This is a very simple way to spawn light weight thread via forkIO doing something :>. As you can see it is a normal action so you can go dirty!</p>
+<p>This is a very simple way to spawn a light weight thread via forkIO :>. As you can see it is a normal action so you can go dirty!</p>
 
 <p>forkIO takes actions and give you back IO ThreadId so you can keep track / kill threads you don&rsquo;t like</p>
 
@@ -246,7 +248,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 <p>After launching it you can see how each thread is spamming its prints ;> So it work until you will hit enter. Cool so we have something working.</p>
 
 <p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &ldquo;thread&rdquo; function in separation.
-Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it a bit simplier.</p>
+Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it simpler.</p>
 
 <figure class='code'><figcaption><span>crazy_gals3.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -291,7 +293,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <p>Cool so now we have some basics how to spawn a thread using forkIO but to have something that we actually can use in real life we need to have some sort of communication. I wanna present something i feel would be useful in almost every haskell program. Channel combined with forkIO.</p>
 
-<p>If you programmed every in <code>Erlang</code> or <code>Go</code> you will know what i&rsquo;m talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can&rsquo;t predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
+<p>If you programmed ever in <code>Erlang</code> or <code>Go</code> you will know what i&rsquo;m talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can&rsquo;t predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
 
 <p>Channels are amazing because they are flexible :) And very natural. Basic principle is simple you write in one thread to the channel and read in other :)</p>
 

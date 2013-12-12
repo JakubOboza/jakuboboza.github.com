@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: redis | No F*cking Idea]]></title>
+  <title><![CDATA[Category: Redis | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/redis/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-12T19:14:08+00:00</updated>
+  <updated>2013-12-12T19:35:54+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -14,765 +14,267 @@
 
   
   <entry>
-    <title type="html"><![CDATA[Redis SETEX to the rescue]]></title>
-    <link href="http://no-fucking-idea.com/blog/2013/07/02/redis-setex-to-the-rescue/"/>
-    <updated>2013-07-02T23:33:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2013/07/02/redis-setex-to-the-rescue</id>
-    <content type="html"><![CDATA[<p>This is next mini entry about small thing that makes me happy in terms of changes in redis. Nothing new :D but still nice :D.</p>
+    <title type="html"><![CDATA[Using eredis, redis with erlang]]></title>
+    <link href="http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/"/>
+    <updated>2012-03-23T23:28:00+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang</id>
+    <content type="html"><![CDATA[<p>Recently i decided to move my blog from <code>tumblr.com</code> to <code>octopress engine</code> because it is just easier for me to maintain it and it looks nicer. The old blog is under <a href="http://no-fucking-idea.tumblr.com">http://no-fucking-idea.tumblr.com</a>. My first post on new blog is dedicated to using redis with erlang.</p>
 
-<h1>SET, EXPIRE, CHECK, ???, REPEAT</h1>
+<h1>Eredis</h1>
 
-<p>While using redis there is very common task we do. It is <code>SET</code> followed by <code>EXPIRE</code>. We do this when we want to cache for some period of time some data.</p>
+<p>Wooga created a really nice (performance driven) redis driver for erlang. You can get it here <a href="https://github.com/wooga/eredis">https://github.com/wooga/eredis</a>. It is really easy and nice.</p>
 
-<p><code>bash
-SET "user:1:token" "kuba"
-EXPIRE "user:1:token" 5
-</code></p>
+<h1>Initial sample</h1>
 
-<p>This will set key <code>user:1:token</code> to value <code>"kuba"</code> and next set it to expire in 5 seconds. We can check Time to live on this key by using ttl command.</p>
+<p>On project page you can find simple examples how to use eredis. Examples there are all you need (but i need something for front page of my new blog so i will rewrite them and explain them :) ).</p>
 
-<p><code>bash
-TTL "user:1:token"
+<h2>First you need to start your eredis application</h2>
+
+<p><code>erlang initialization
+{ok, Client} = eredis:start_link().
 </code>
-this will return number of seconds that this key will be valid for or an negative number if its not valid anymore.</p>
+Client is the &ldquo;connection / state&rdquo; we will be using with rest of queries.</p>
 
-<h1>SETEX</h1>
-
-<p>SETEX Introduced in redis 2.0.0 command, lets you do both things SET and EXPIRE in one go. How do we use it ? Its simple!</p>
-
-<p><code>bash
-SETEX &lt;key&gt; &lt;seconds&gt; &lt;value&gt;
-</code></p>
-
-<p>It is not key, value seconds! :D:D example usage:</p>
-
-<p><code>bash
-SETEX "key:to:home" 1500 "4b234ferg34ret34rasd32rs"
-</code></p>
-
-<p>This will set for 1500 seconds key &ldquo;key:to:home&rdquo; to value &ldquo;4b234ferg34ret34rasd32rs&rdquo;. Pretty easy thing to do.</p>
-
-<h2>PSETEX</h2>
-
-<p>Since Redis 2.6.0 we can use new command it is PSETEX <key> <milliseconds> <value> this is same as SETEX except it takes miliseconds not seconds so you can be more accurate in low latency / time situations</p>
-
-<p><code>bash
-PSETEX "key:to:home" 15000 "4b234ferg34ret34rasd32rs"
-</code></p>
-
-<p>Will set &ldquo;key:to:home&rdquo; to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
-
-<p>Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Building up Queue system]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/10/14/building-up-queue-system/"/>
-    <updated>2012-10-14T21:16:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/10/14/building-up-queue-system</id>
-    <content type="html"><![CDATA[<p>Queue = FIFO, First in, First Out.</p>
-
-<p>Many people use adds queue system to their products. Some of them do legendary things with it to make it extremely unreliable products :). Most of this solutions may seem trolling but they actually exists in some products.</p>
-
-<h1>Rolling out own queue system</h1>
-
-<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don&rsquo;t have constraint that data can never be lost!</p>
-
-<h2>Can lose data in queue</h2>
-
-<p>If you use queue just to communicate between processes you can use something like unix name pipe. In reality this is just a file. Actually in Unix everything is a file and this is best ever design (if you neglect it you should die!).</p>
-
-<p><code>bash name_pipe
-mkfifo oldschool_pipe
-gzip -9 -c &lt; oldschool_pipe &gt; out.gz &amp;
-</code></p>
-
-<p>And next you can use it to push stuff into it eg.</p>
-
-<p><code>bash example
-eacho "oldschoolllzzzz!!!!" &gt; oldschool_pipe
+<p>To query things with redis we will use <code>q</code> method from eredis module which takes &ldquo;Connection / Client&rdquo; state and list with params.
+This api is very simple here are two most basic examples of get and set.
+GET:
+<code>erlang get
+{ok, &lt;&lt;"OK"&gt;&gt;} = eredis:q(Client, ["SET", "name", "kuba"]).
 </code>
-but this is shell example, you could create it and just read/write it in your processes.</p>
+and SET:
+<code>erlang set
+{ok, &lt;&lt;"kuba"&gt;&gt;} = eredis:q(Client, ["GET", "name"]).
+</code>
+From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass &ldquo;Connection / Client&rdquo; as state and also we will build some &ldquo;key&rdquo; serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
 
-<p>That is cool. And this is the last point where we will not see problems :)))</p>
+<h1>Free Api wrapper</h1>
 
-<h2>But we are programmers!</h2>
+<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server&rsquo;s and applications.</p>
 
-<p>Yes we are programmers and most of us are young and full of energy nobody remembers 70' i was born in 85 so i technically would be quite mad if i would remember 70'.</p>
+<p>``` erlang example_db.erl
+-module(example_db).
+-behaviour(gen_server).</p>
 
-<p>So how we approach problems so of us would create inside of their code queue.</p>
+<p>-author(&ldquo;<a href="&#109;&#97;&#x69;&#x6c;&#116;&#111;&#x3a;&#x6a;&#x61;&#x6b;&#x75;&#x62;&#x2e;&#x6f;&#98;&#111;&#122;&#x61;&#64;&#103;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#111;&#x6d;">&#106;&#x61;&#107;&#117;&#98;&#x2e;&#x6f;&#98;&#x6f;&#122;&#x61;&#64;&#103;&#109;&#x61;&#x69;&#108;&#x2e;&#x63;&#111;&#x6d;</a>&rdquo;).
+-define(Prefix, &ldquo;example&rdquo;).</p>
 
-<p>In C it would be simply array wrapped with mutex'es but this is unreliable and its long to write and and and&hellip;</p>
+<p>-export([start_link/0]).
+-export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1]).
+-export([get_script/2, save_script/3]).</p>
 
-<p>So what people do ? They try use READY products.</p>
+<p>% public api</p>
 
-<h2>First big mistake</h2>
+<p>start_link() &ndash;>
+  gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).</p>
 
-<p>Use key-value store as queue.
-&ndash; Lets serialize array into XYZ and set it into key.
-&ndash; That&rsquo;s good idea! Only one thing will write to it!</p>
+<p>init([]) &ndash;>
+  {ok, Redis} = eredis:start_link(),
+  {ok, Redis}.</p>
 
-<p>WRONG!</p>
+<p>stop(_Pid) &ndash;>
+  stop().</p>
 
-<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know &ldquo;agile says XYZ now&rdquo;&hellip; actually &ldquo;agile&rdquo; don&rsquo;t say &ldquo;take drugs an yolo because tomorrow you can die&rdquo; but &ldquo;TAKE RISKY THINGS FIRST&rdquo; and this is risky thing. Should be implemented well.</p>
+<p>stop() &ndash;></p>
 
-<p>What happens in this case ? Someone gets a great idea that product should scale adds another daemon and this f*cks up queue you lose messages.</p>
+<pre><code>gen_server:cast(?MODULE, stop).
+</code></pre>
 
-<p>Some dbms can handle this problem, but wrapping it into transaction will not solve the problem.</p>
+<p>%% public client api</p>
 
-<p>Scenario is:
-Process a)</p>
+<p>get_script(Api, Method) &ndash;>
+  gen_server:call(?MODULE, {get_script, Api, Method}).</p>
 
-<ul>
-<li>reads queue</li>
-<li>process is (makes a pop or push)</li>
-<li>saves the serialised queue</li>
-</ul>
+<p>save_script(Api, Method, Script) &ndash;>
+  gen_server:call(?MODULE, {save_script, Api, Method, Script}).</p>
 
+<p>%% genserver handles</p>
 
-<p>Now imagine process b) does the same. Everything is blazing fast and you get f*cked.</p>
+<p>handle_call({get_script, Api, Method}, _From, Redis) &ndash;>
+  Response = eredis:q(Redis, [ &ldquo;GET&rdquo;, get_key(Api, Method) ]),
+  {reply, Response, Redis};</p>
 
-<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don&rsquo;t know how to resolve this issue but at least you would know&hellip; but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
+<p>handle_call({save_script, Api, Method, Script}, _From, Redis) &ndash;>
+  Response = eredis:q(Redis, [&ldquo;SET&rdquo;, get_key(Api, Method), Script]),
+  {reply, Response, Redis};</p>
 
-<h2>Redis list as queue</h2>
+<p>handle_call(<em>Message, </em>From, Redis) &ndash;>
+  {reply, error, Redis}.</p>
 
-<p>Redis is great tool to build a lot of stuff. And it has built in data structures. I think this is ground breaking because previous solutions like RDBMS most commonly use or other NoSQL solutions. Redis is great how to make queue within redis ?</p>
+<p>handle_cast(<em>Message, Redis) &ndash;> {noreply, Redis}.
+handle_info(</em>Message, Redis) &ndash;> {noreply, Redis}.
+terminate(<em>Reason, </em>Redis) &ndash;> ok.
+code_change(<em>OldVersion, Redis, </em>Extra) &ndash;> {ok, Redis}.</p>
 
-<p><code>bash queue
-lpush queue_name value -&gt; push
-rpop queue_name -&gt; pop
-</code></p>
+<p>%% helper methods</p>
 
-<p>example like this</p>
+<p>get_key(Api, Method) &ndash;>
+  generate_key([Api, Method]).</p>
 
-<p><code>bash redis_example
-redis 127.0.0.1:6379&gt; lpush queue 1
-(integer) 1
-redis 127.0.0.1:6379&gt; lpush queue 2
-(integer) 2
-redis 127.0.0.1:6379&gt; lpush queue 7
-(integer) 3
-redis 127.0.0.1:6379&gt; rpop queue
-"1"
-redis 127.0.0.1:6379&gt; rpop queue
-"2"
-redis 127.0.0.1:6379&gt; rpop queue
-"7"
-redis 127.0.0.1:6379&gt; rpop queue
-(nil)
-</code></p>
+<p>generate_key(KeysList) &ndash;>
+  lists:foldl(fun(Key, Acc) &ndash;> Acc ++ &ldquo;:&rdquo; ++ Key end, ?Prefix, KeysList).</p>
 
-<p>Cool ! Works great and any process can access it in atomic way isn&rsquo;t it great ? best thing ever ?!</p>
+<p>% tests</p>
 
-<p>Actually it is very good. But there is one thing you just missed! Redis do a flush of keys every 60 sec if 10k keys did change by default. What does it mean ? You can get screwed if redis will instantly die!</p>
+<p>-ifdef(TEST).
+-include_lib(&ldquo;eunit/include/eunit.hrl&rdquo;).
+-endif.</p>
 
-<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section &ldquo;Append-only file&rdquo;</p>
+<p>-ifdef(TEST).</p>
 
-<p><code>bash redis_config.fix
-- appendonly no
-+ appendonly yes
-</code></p>
+<p>generate_key_test() &ndash;>
+  Key = generate_key([&ldquo;one&rdquo;, &ldquo;two&rdquo;, &ldquo;three&rdquo;]),
+  ?assertEqual(&ldquo;example:one:two:three&rdquo;, Key).</p>
 
-<p>Man you just did it, you lost some performance but you did it. Who would knew ? You just saved the world.
-How much we just cut performance ? &ldquo;fsync every time a new command is appended to the AOF. Very very slow, very safe.&rdquo; that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
+<p>server_test<em>() &ndash;>
+  {setup, fun() &ndash;> example_db:start_link() end,
+   fun(</em>Pid) &ndash;> example_db:stop(_Pid) end,
+   fun generate_example_db_tests/1}.</p>
 
-<h2>Can&rsquo;t lose any data! Redis plus Mysql/Postgres</h2>
+<p>generate_example_db_tests(_Pid) &ndash;>
+  [</p>
 
-<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on &ldquo;appendonly yes&rdquo;. Also it makes things hell more complicated and forces you to do updates in both system.</p>
+<pre><code>?_assertEqual({ok,&lt;&lt;"OK"&gt;&gt;}, example_db:save_script("jakub", "oboza", &lt;&lt;"yo dwang"&gt;&gt;) ),
+?_assertEqual({ok,&lt;&lt;"yo dwang"&gt;&gt;}, example_db:get_script("jakub", "oboza") )
+</code></pre>
 
-<p>Is this system cure for cancer ? No! You have to have very good queue fail recovery / startup system. Simply empty list and make query
-<code>bash startup
-select * jobs where done = false
-</code></p>
+<p>  ].</p>
 
-<p>next you have to clean redis queue and push new data. Is this safe ? No you don&rsquo;t know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
-
-<p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
-
-<h1>Why not MongoDB</h1>
-
-<p>You can&rsquo;t atomically pop stuff. Don&rsquo;t think about pop/push/pushall on array in document!
-If you will have this idea check my gist <a href="https://gist.github.com/2071805">https://gist.github.com/2071805</a> run it and see what happens :) what you get back.</p>
-
-<h1>RabbitMQ / ZeroMQ</h1>
-
-<p>When you will visit ZeroMQ page you will see</p>
-
-<p><code>bash intro
-ØMQ \zeromq\:
- Ø  The socket library that acts as a concurrency framework.
- Ø  Faster than TCP, for clustered products and supercomputing.
- Ø  Carries messages across inproc, IPC, TCP, and multicast.
- Ø  Connect N-to-N via fanout, pubsub, pipeline, request-reply.
- Ø  Asynch I/O for scalable multicore message-passing apps.
- Ø  Large and active open source community.
- Ø  30+ languages including C, C++, Java, .NET, Python.
- Ø  Most OSes including Linux, Windows, OS X.
- Ø  LGPL free software with full commercial support from iMatix.
-</code></p>
-
-<p>Nothing about consistency FASTERN THAN (this has to be good) TCP but can use TCP (i wonder if it can be faster than TCP even using TCP /trollface). Anyway you see a lot of stuff. I started some search on zeromq losing data and what i found <a href="http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver">http://zguide.zeromq.org/page:all#Missing-Message-Problem-Solver</a> a nice image.</p>
-
-<p><a href="https://github.com/imatix/zguide/raw/master/images/fig9.png">Problem resolution diagram</a></p>
-
-<p>Big thing :)</p>
-
-<p>If you will visit rabbitmq page <a href="http://www.rabbitmq.com/">http://www.rabbitmq.com/</a> you will see a lot of nice things like tutorial etc. Page is nice and has useful knowledge. Both solutions have client in Erlang (massive plus) and other languages. And even while setting up whole thing may be a pain i think this is a solid option both ZeromMQ and RabbitMQ.</p>
-
-<h1>Why do we use Queues ?</h1>
-
-<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain&rsquo;t doing our job properly.</p>
-
-<p>What makes things hard.</p>
-
-<ul>
-<li>Locks if we use them, they will bite you back</li>
-<li>Many points where we store same data in different way</li>
-<li>Yes, locks will bite you back</li>
-</ul>
-
-
-<h1>So what is the best way to go ?</h1>
-
-<p>I think the best way to go is just to start a new movement called Unix Archeology because we seems to be reinventing the wheel too many times. But really</p>
-
-<ul>
-<li>Make a list of solution</li>
-<li>Ask your self if your idea is really good</li>
-</ul>
-
-
-<p>I&rsquo;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
-
-<p>Loads of things can be brilliant queue choices eg. Redis, ZeroMQ, RabbitMQ or even named pipes but not serialized array in key-value store.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Failover Redis setup with Sentinel]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
-    <updated>2012-09-26T20:54:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#116;&#x6f;&#58;&#107;&#x75;&#x62;&#x61;&#64;&#x6c;&#x61;&#x6d;&#98;&#100;&#97;&#x63;&#x75;&#46;&#98;&#101;">&#107;&#x75;&#98;&#x61;&#x40;&#108;&#97;&#109;&#x62;&#x64;&#97;&#99;&#x75;&#46;&#98;&#x65;</a> =)</p>
-
-<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
-
-<h1>Auto failover</h1>
-
-<p>Every database wants to have auto failover mechanism. This is a great marketing pitch! haha :) Main thing about is that one of your server can go down and you still are operating as normal and when he will go up again everything is fine.. unless your routing server will go down :D ofc.</p>
-
-<h1>2.4.16 / 2.6</h1>
-
-<p>Since Redis 2.4 and 2.6 there was this idea of adding it. Antirez wrote a draft spec for it and implemented it as experimental feature. It is really well described here <a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a> so i will just write a short note how did i setup it and how does it feel.</p>
-
-<h1>Setup</h1>
-
-<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &ldquo;master&rdquo; and &ldquo;replica servers&rdquo; with this configs
-(ofc turn daemonize to yes in production lol)</p>
-
-<p>Standard Master setup with default script on port 6379 and replica with</p>
-
-<p>``` bash
-daemonize no
-timeout 0
-loglevel notice
-logfile stdout
-databases 16
-save 900 1
-save 300 10
-save 60 10000
-stop-writes-on-bgsave-error yes
-rdbcompression yes
-rdbchecksum yes
-dbfilename dump.rdb
-dir ./replica_dir
-slave-serve-stale-data yes
-slave-read-only yes
-appendonly no
-appendfsync everysec
-no-appendfsync-on-rewrite no
-auto-aof-rewrite-percentage 100
-auto-aof-rewrite-min-size 64mb
-lua-time-limit 5000</p>
-
-<p>pidfile /var/run/redis-replica-7789.pid
-port 7789</p>
-
-<h1>replication config</h1>
-
-<p>slaveof 127.0.0.1 6379</p>
-
-<p>slowlog-log-slower-than 10000
-slowlog-max-len 1024
-hash-max-ziplist-entries 512
-hash-max-ziplist-value 64
-list-max-ziplist-entries 512
-list-max-ziplist-value 64
-set-max-intset-entries 512
-zset-max-ziplist-entries 128
-zset-max-ziplist-value 64
-activerehashing yes
-client-output-buffer-limit normal 0 0 0
-client-output-buffer-limit slave 256mb 64mb 60
-client-output-buffer-limit pubsub 32mb 8mb 60
+<p>-endif
 ```</p>
 
-<p>So i had master and slave running :) that was cool next thing i did was! configure and turn on the sentinel!</p>
+<h2>Public Api</h2>
 
-<p>``` bash
-sentinel monitor mymaster 127.0.0.1 6379 1
-sentinel down-after-milliseconds mymaster 60000
-sentinel failover-timeout mymaster 900000
-sentinel can-failover mymaster yes
-sentinel parallel-syncs mymaster 1</p>
+<p>This code listing has two important parts first at top it starts at line 26.
+This is the public API which will be used by developer. This is this free api. Later on i will explain how to change redis to mongodb and probably to other db engines without doing changes in rest of our app. From my perspective this is awesome feature.
+In most cases when i had to make app scale problem of having code that was glues to one db engine was heavy.</p>
 
-<p>sentinel monitor resque 127.0.0.1 7789 1
-sentinel down-after-milliseconds resque 10000
-sentinel failover-timeout resque 900000
-sentinel can-failover resque yes
-sentinel parallel-syncs resque 5
-```</p>
+<h2>eunit tests</h2>
 
-<p>And i turned him on!
-with
-<code>bash
-redis-server sentinel-my.conf --sentinel
-</code>
-And stuff started to work :D</p>
+<p>At line 60. starts the declaration of tests, using <code>rebar</code> and <code>eunit</code> is very easy and it is always good to have test coverage in case of refactoring. I&rsquo;m a fan of test driven development so i like to cover in tests first things that i will use or i think they might be error prone. Here is used &ldquo;test generators&rdquo; to just to show how to write tests for gen_server.</p>
 
-<h1>Carnage!!!</h1>
+<h1>Rebar</h1>
 
-<p>So i started easy
-<code>bash
-redis 127.0.0.1:6379&gt; get "hello"
-"hello"
-redis 127.0.0.1:6379&gt; set "hello" "lulz"
-OK
-</code></p>
-
-<p>Works! I killed master and connected on 26379 to sentinel master did query</p>
+<p>Before i will explain more i need to say little about <code>rebar</code>. It is a command line tool that was developed by <code>basho</code> to help create app. it is by far the best thing i found learning erlang to help me do boring stuff and eliminate a lot of rage writing <code>app.src</code> files. To get rebar simply do (you can always go to <a href="https://github.com/basho/rebar">https://github.com/basho/rebar</a> to get most up to date informations about building it)</p>
 
 <p><code>bash
- sentinel masters
+λ  git clone git://github.com/basho/rebar.git
+λ  cd rebar
+λ  ./bootstrap
+</code></p>
+
+<p>I use my own set of zsh scripts so all i did to add it to my path was to edit <code>.furby</code> file in my home dir. I strongly suggest also adding it to <code>$PATH</code> just to make your life easier.</p>
+
+<h1>Back to example_db!</h1>
+
+<p>To create app using rebar you just need to
+<code>bash
+λ mkdir example_db
+λ rebar create-app appid=example_db
+==&gt; example_db (create-app)
+Writing src/example_db.app.src
+Writing src/example_db_app.erl
+Writing src/example_db_sup.erl
 </code>
-and got
+This command created <code>src</code> folder with scaffold of <code>application</code> OTP pattern and <code>supervisor</code> thats almost all we need :).
+Now you can compile it using <code>rebar compile</code> and run tests using <code>rebar compile eunit</code> in out app currently we will see
+<code>bash rebar compile eunit
+λ rebar compile eunit
+==&gt; example_db (compile)
+Compiled src/example_db_app.erl
+Compiled src/example_db_sup.erl
+==&gt; example_db (eunit)
+Compiled src/example_db_app.erl
+Compiled src/example_db_sup.erl
+  There were no tests to run.
+</code>
+Nothing to do because its empty. Lets add our db module.
+But before this we need to add dependencies for eredis module. Lets create <code>rebar.config</code> file and add it.
 ``` bash
-1)  1) &ldquo;name&rdquo;</p>
+λ emacs rebar.config
+λ cat rebar.config
+%%&ndash;<em>&ndash; mode: erlang &ndash;</em>&ndash;</p>
 
-<pre><code>2) "resque"
-3) "ip"
-4) "127.0.0.1"
-5) "port"
-6) "7789"
-...
+<p>{erl_opts, []}.
+{cover_enabled, true}.</p>
+
+<p>{deps,
+  [</p>
+
+<pre><code>{eredis, ".*", {git, "https://github.com/wooga/eredis.git", "HEAD"}}
 </code></pre>
 
-<p>```</p>
-
-<p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
-
-<h1>when you do this&hellip;</h1>
-
-<p>You will see beefy
-<code>bash
-[36373] 26 Sep 21:15:03.441 # Error condition on socket for SYNC: Connection refused
-[36373] 26 Sep 21:15:04.521 * Connecting to MASTER...
-[36373] 26 Sep 21:15:04.521 * MASTER &lt;-&gt; SLAVE sync started
-[36373] 26 Sep 21:15:04.521 # Error condition on socket for SYNC: Connection refused
-[36373] 26 Sep 21:15:05.128 * MASTER MODE enabled (user request)
-</code>
-On the initial slave :) things just went from bad to good :D</p>
-
-<h1>Summary</h1>
-
-<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&hellip;</p>
-
-<p>I like it!</p>
-
-<p>THIS IS EXPERIMENTAL FEATURE and much more info about it you can finde here <a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a>. Especially about pub/sub way of watching stuff / events while they occur.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Designing Twitter clone in redis]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/07/31/designing-twitter-clone-in-redis/"/>
-    <updated>2012-07-31T14:02:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/07/31/designing-twitter-clone-in-redis</id>
-    <content type="html"><![CDATA[<p>Ont he official redis site <a href="http://redis.io">http://redis.io</a>  you can find this <a href="http://redis.io/topics/twitter-clone/">http://redis.io/topics/twitter-clone/</a> post about building twitter clone in redis. I based my design post partially on it but i would like to go more deep into building timeline and posts.</p>
-
-<h1>Quick review</h1>
-
-<p>I used similar approach to store followers and following so i will just go fast through the keys and design.</p>
-
-<p><code>bash
-  twtr:&lt;user_id&gt;:follows -&gt; set of ids this user follows
-  twtr:&lt;user_id&gt;:followers -&gt; set of id's  that follows this user
-</code></p>
-
-<p>What happens when i click &ldquo;follow&rdquo;
-<code>bash example
-redis 127.0.0.1:6379&gt; SADD twtr:kuba:following amelia
-(integer) 1
-redis 127.0.0.1:6379&gt; SADD twtr:amelia:followers kuba
-(integer) 1
-redis 127.0.0.1:6379&gt; SADD twtr:kuba:following dan
-(integer) 1
-redis 127.0.0.1:6379&gt; SADD twtr:dan:followers kuba
-(integer) 1
-redis 127.0.0.1:6379&gt; SADD twtr:kuba:following ben
-(integer) 1
-redis 127.0.0.1:6379&gt; SADD twtr:ben:followers kuba
-(integer) 1
-redis 127.0.0.1:6379&gt; SMEMBERS twtr:kuba:following
-1) "ben"
-2) "amelia"
-3) "dan"
-</code>
-So now i follow amelia, ben and dan.</p>
-
-<p>What happens when amelia click followers!
-<code>bash example
-redis 127.0.0.1:6379&gt; SMEMBERS twtr:amelia:followers
-1) "kuba"
-</code></p>
-
-<p>This way for each user we can see set of people who follow him and those who he follows. Thats all we need like in tutorial.</p>
-
-<h1>Post</h1>
-
-<p>So i think it is not waste if we will decide to keep post in form of 2 keys</p>
-
-<p><code>bash
-  twtr:&lt;user_id&gt;:post:&lt;post_id&gt; -&gt; content text of post
-  twtr:&lt;user_id&gt;:post:&lt;post_id&gt;:created_at -&gt; creation time of post
-  twtr:post_owner:&lt;post_id&gt; -&gt; id of post creator.
-</code>
-Why this approach and not compacting all the things into pipe separate key? Both solutions seems to be ok, this just leaves little bit more flexibility. I know that it will generate 2 x times more pickups to redis then previous so you can consider doing</p>
-
-<p><code>bash
-  twtr:&lt;user_id&gt;:post:&lt;post_id&gt; -&gt; (timestamp|text)
-</code></p>
-
-<p>Both solutions have a pros and cones, first one will require 2 x lookups and second one will require parsing data in app layer. Still i prefer first one.</p>
-
-<h2>Post id</h2>
-
-<p>This is hard topic, because in future we would want to scale ( lol ) . Generating post id is not easy task in this case. We could just use auto incrementing counter like this</p>
-
-<p><code>bash
-  twtr:post_id:next -&gt; auto incr
-</code></p>
-
-<p>But to have something more flexible you should look at something like snowflake <a href="http://engineering.twitter.com/2010/06/announcing-snowflake.html">http://engineering.twitter.com/2010/06/announcing-snowflake.html</a>.</p>
-
-<h1>Post list</h1>
-
-<p>For each user we will store a list of posts he wrote. Initially i thought that we could just pump everything into list. But this is not optimal. This is single point which will grow like crazy and we will be not able to decide how and when to archive parts that are not used. Eg. posts did by user 8 months ago are not really relevant today because if we will make assumption that on average person posts few times a week this 8 month old entry will be way forgotten. We want to archive it, also it will be healthier for memory to store short lists.</p>
-
-<p>I see here two scenarios:</p>
-
-<ul>
-<li>user looks at his last few posts &lt; 100</li>
-<li>user is infinite scrolling through all posts.</li>
-</ul>
-
-
-<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&rsquo;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
-
-<p><code>bash
-  twtr:&lt;user_id&gt;:lists -&gt; list of lits id's only LPUSH id and LRANGE 0 number.
-  twtr:&lt;user_id&gt;:list_next -&gt; auto incr counter for lists id's
-  twtr:&lt;user_id&gt;:list:&lt;list_id&gt; -&gt; list with 100 posts
-</code>
-So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH'ed so should be semi ordered. (we don&rsquo;t really care about order). adding stuff to time line is bit tricky.</p>
-
-<p>we need to do it like this
-<code>LRANGE &lt;key&gt; 0 1</code> current list id, next we need to <code>LLEN &lt;key&gt;</code> to check size and if it is &lt; SIZE ( for our example 100 ) we just <code>LPUSH &lt;key&gt; &lt;value&gt;</code> and job done, if size is > 100 we need to <code>INCR &lt;list counter&gt;</code> and LPUSH its result on list of lists and next we need to <code>LPUSH &lt;key&gt; &lt;value&gt;</code> on the new list.</p>
-
-<p>And all of this in application layer. But this is the hardest bit to do. May seem to be complicated but if this seems to be not optimal you can add one more list</p>
-
-<p><code>bash
-  twtr:&lt;user_id&gt;:list:current -&gt; list of current 100 posts
-</code>
-This list is just the most current posts of particular user. How does this list work ? Algorithm is simple</p>
-
-<ul>
-<li>LPUSH new post id&rsquo;s</li>
-<li>RPOP if SIZE > 100</li>
-</ul>
-
-
-<p>This could be useful to reduce number of hits you get against redis.</p>
-
-<h2>Time line</h2>
-
-<p>Now the time line. Time line is exactly the same as user post list. we will just one &ldquo;bit&rdquo; about adding posts.</p>
-
-<p>Algorithm here is when you add a post you have to pick all id&rsquo;s of people who follow you. (example from top if you are adding post as amelia)
-<code>bash
-SMEMBERS twtr:&lt;user_id&gt;:followers
-</code>
-And you need to push your post id into their time line posts list. Thats all. Ofc one thing that we need to add are keys for time line</p>
-
-<p><code>bash
-  twtr:&lt;user_id&gt;:timeline:lists -&gt; list of lits id's only LPUSH id and LRANGE 0 number.
-  twtr:&lt;user_id&gt;:timeline:list_next -&gt; auto incr counter for lists id's
-  twtr:&lt;user_id&gt;:timeline:list:&lt;list_id&gt; -&gt; list with 100 posts
-  twtr:&lt;user_id&gt;:timeline:current -&gt; LPUSH, RPOP &gt; SIZE current list cache
-</code></p>
-
-<h1>Summary</h1>
-
-<p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys &lt;user_id> this could be skiped but in my opinion it is not bad. IF you will use &lt;user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
-
-<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &ldquo;lazy way&rdquo; you can minimize number of hits to around 10.</p>
-
-<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &ldquo;sharding&rdquo; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
-
-<p>Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Designing todo app backend using redis and mongodb]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/"/>
-    <updated>2012-07-26T18:06:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb</id>
-    <content type="html"><![CDATA[<h2>side note</h2>
-
-<p>Upgrading octopress is a @!#!@pain! :></p>
-
-<h1>What is this post about :)</h1>
-
-<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &ldquo;how i would design it in different databases&rdquo;. (i&rsquo;m taking only about data model)</p>
-
-<h2>Requirements</h2>
-
-<p>What we know:</p>
-
-<ul>
-<li>User has some sort of id. (number, email, hash of something)</li>
-<li>We need to be able to have different todo lists</li>
-<li>User can choose his todo list and see tasks ( obvious )</li>
-<li>User can tag tasks!</li>
-<li>User can query tasks in list by tags</li>
-<li>User can see all tags.</li>
-</ul>
-
-
-<h1>Design using Redis</h1>
-
-<p>How to do it with redis ? :)</p>
-
-<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &ldquo;todoapp&rdquo;.</p>
-
-<p>So lets start with user and his list of todo lists :). This gives us first key</p>
-
-<p><code>bash
-todo:&lt;user_id&gt;:todolist:next =&gt; auto incrementing counter for lists id
-todo:&lt;user_id&gt;:todolists =&gt; [LIST]
-todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:name =&gt; list name
-</code></p>
-
-<p>Here we have two keys, first is  list id counter that we will bump to get new list counter :), second is list of todolists ids. Why do it this way ? Well people can add and remove todo lists.</p>
-
-<p>Ok so how to create new list ?</p>
-
-<p><code>bash example
-redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:next
-(integer) 1
-redis 127.0.0.1:6379&gt; RPUSH todo:kuba:todolists 1
-(integer) 1
-redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolists 0 -1
-1) "1"
-redis 127.0.0.1:6379&gt; SET todo:kuba:todolist:1:name "things to do"
-OK
-</code>
-Hey ! we just added id of our first list to list of our todo lists (lots of list word here!). Ok so now lets add a task.</p>
-
-<p>list:
-<code>bash
-todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:next =&gt; auto incrementing counter for tasks id
-todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt; =&gt; [LIST]
-</code>
-and task:
-<code>bash
-todo:&lt;user_id&gt;:task:&lt;task_id&gt; =&gt; content of task eg. "finish blog post"
-todo:&lt;user_id&gt;:task:&lt;task_id&gt;:created_at =&gt; epoch time when it was created handled by app
-todo:&lt;user_id&gt;:task:&lt;task_id&gt;:updated_at =&gt; epoch time when it was last updated handled by app
-</code></p>
-
-<p>Ok so how to i add task to my list
-<code>bash adding task
-redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:1:next
-(integer) 1
-redis 127.0.0.1:6379&gt; LPUSH todo:kuba:todolist:1 1
-(integer) 1
-redis 127.0.0.1:6379&gt; SET todo:kuba:task:1 "finish blog post"
-OK
-redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:created_at  1343324314
-OK
-redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:updated_at  1343324315
-OK
-</code>
-And we have our first task in. How do we get tasks from out todo list simple!
-<code>bash peeking task
-redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
-1) "1"
-redis 127.0.0.1:6379&gt; GET todo:kuba:task:1
-"finish blog post"
-redis 127.0.0.1:6379&gt; GET todo:kuba:task:1:created_at
-"1343324314"
-</code>
-Ok so now we have very simple todo lists with tasks, well at least overview. Ofc you can use sets for todo lists or zsets but lets stay with lists to keep it simple for now.</p>
-
-<p>How ro remove task from the list ?
-<code>bash removing task
-redis 127.0.0.1:6379&gt; LREM todo:kuba:todolist:1 -1 1
-(integer) 1
-redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
-(empty list or set)
-</code>
-Good, now we can add tasks, remove tasks, same sotry with adding todo lists and removing todo lists.
-One last thing is to add tags!. Simply here each task will have list of tags and each tag will have list of tasks related with.
-<code>bash
-todo:&lt;user_id&gt;:task:&lt;task_id&gt;:tags =&gt; [LIST]
-todo:&lt;user_id&gt;:tag:&lt;tag&gt;:tasks =&gt; [LIST]
-</code>
-So how we will add tags to tasks ? Simple!
-<code>bash tagging
-redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags "redis"
-(integer) 1
-redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags "design"
-(integer) 2
-redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:redis:tasks 1
-(integer) 1
-redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:design:tasks 1
-(integer) 1
-redis 127.0.0.1:6379&gt; LRANGE todo:kuba:tag:design:tasks 0 -1
-1) "1"
-redis 127.0.0.1:6379&gt; LRANGE todo:kuba:task:1:tags 0 -1
-1) "design"
-2) "redis"
-</code>
-This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &ldquo;redis&rdquo; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
-
-<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &ldquo;ultimate&rdquo;  non splittable lists.</p>
-
-<h1>Design using Mongodb</h1>
-
-<p>Well this case upfront is easier to grasp because for each list we can use single document or collection of documents lets talk about both solutions.</p>
-
-<h2>Todolist = Document</h2>
-
-<p>In this example we will use built in &ldquo;array&rdquo; operators</p>
-
-<p>``` javascript  creating</p>
-
-<blockquote><p>db.todolists.save({name: &ldquo;House work&rdquo;, tasks: []})
-&ldquo;ok&rdquo;
-db.todolists.find({name: &ldquo;House work&rdquo;})
-[
-  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
-
-<pre><code>  "tasks" : [   ]   }
+<p>  ]
+}.
+<code>
+Now just run `rebar get-deps` to get all dependencies downloaded.
+After adding our `example_db.erl` into `src` directory we can run `rebar compile eunit` to compile and run tests. We have added `{cover_enabled, true}` in rebar.conf so also test code coverage will be generated for us.
+</code> bash
+λ rebar compile eunit
+==> eredis (compile)
+==> example_db (compile)
+Compiled src/example_db.erl
+==> eredis (eunit)</p>
+
+<p>=ERROR REPORT==== 28-Mar-2012::22:19:35 ===
+<strong> Generic server &lt;0.263.0> terminating
+</strong> Last message in was {tcp,#Port&lt;0.4516>,</p>
+
+<pre><code>                        &lt;&lt;"*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$2\r\n12\r\n"&gt;&gt;}
 </code></pre>
 
-<p>]
-```</p></blockquote>
+<p>** When Server state == {state,&ldquo;127.0.0.1&rdquo;,6379,&lt;&lt;>>,100,#Port&lt;0.4516>,</p>
 
-<p>So lets add a task :)
-``` javascript
-db.todolists.update({name: &ldquo;House work&rdquo;},{$push:{&ldquo;tasks&rdquo;:{&ldquo;name&rdquo;:&ldquo;finish blog post&rdquo;, &ldquo;tags&rdquo;:[&ldquo;mongo&rdquo;] } } })
-&ldquo;ok&rdquo;</p>
-
-<blockquote><blockquote><p>db.todolists.find({name: &ldquo;House work&rdquo;})
-[
-  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
-
-<pre><code>  "tasks" : [  
-   {   "name" : "finish blog post",   "tags" : [   "mongo" ]   }
-  ]   }
+<pre><code>                           {pstate,undefined,undefined},
+                           [&lt;&lt;"foo"&gt;&gt;],
+                           {#Ref&lt;0.0.0.4058&gt;,&lt;0.180.0&gt;},
+                           {[{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"11"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"10"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"9"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"8"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"7"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"6"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"5"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"4"&gt;&gt;,&lt;0.263.0&gt;},
+                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"3"&gt;&gt;,&lt;0.263.0&gt;}],
+                            [{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"2"&gt;&gt;,&lt;0.263.0&gt;}]},
+                           10,exit,need_ack}
 </code></pre>
 
-<p>]
-```</p></blockquote></blockquote>
-
-<p>this will create empty todo list with name &ldquo;House work&rdquo; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &ldquo;lists&rdquo; while doing search.</p>
-
-<p>Lets try it out how to find out mongo tagged entries?</p>
-
-<p>``` javascript find by tag</p>
-
-<blockquote><p>db.todolists.find({&ldquo;tasks.tags&rdquo;: { $in : [&ldquo;mongo&rdquo;] } })</p></blockquote>
-
-<p>[
-  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
-
-<pre><code>  "tasks" : [ 
-    {   "name" : "finish blog post",   "tags" : [   "mongo" ]   }
-  ]   }
-</code></pre>
-
-<p>]
-```</p>
-
-<p>This way we can find whole todolist with task that contains tag &ldquo;mongo&rdquo; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this
-``` javascript  todo list structure
-{
- user: &ldquo;user id&rdquo;,
- name: &ldquo;<name>&rdquo;,
- tasks: [
-   {</p>
-
-<pre><code>text : "todo text",
-tags : [
-  "Tag1", "Tag2"
-]
-created_at : Time,
-updated_at : Time
-</code></pre>
-
-<p>   }
- ]
-}
-```
-Using redis we could wrapp stuff into MULTI command while using mongodb &ldquo;array&rdquo; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
-
-<h2>Todolist = many documents</h2>
-
-<p>Using this approach we can leverage more of our stuff on mongodb search in this approach each task will be a different document.
-With structure like this
-``` javascript task structure
-{
-  todo_list: &ldquo;todo list id&rdquo;,
-  user: &ldquo;user id&rdquo;,
-  text: &ldquo;todo text&rdquo;,
-  tags: [&ldquo;Tag1&rdquo;, &ldquo;Tag2&rdquo;]
-}</p>
-
-<p><code>
-This way we will have a lot of documents, more disk space consumption and still we will have to have second collection with with objects with structure like this
-</code> javascript structure of todolist
-{
-  todo_list: &ldquo;todo list id&rdquo;,
-  name: &ldquo;todo list name&rdquo;,
-  user: &ldquo;user id&rdquo;,
-  // tasks: [Tasks OBjectID Array] you could have this and remove todo_list id from tasks choice is yours :)
-}
+<p><strong> Reason for termination ==
+</strong> max_queue_size
+  All 53 tests passed.
+Cover analysis: /private/tmp/example_db/deps/eredis/.eunit/index.html
+==> example_db (eunit)
+Compiled src/example_db.erl
+  All 3 tests passed.
+Cover analysis: /private/tmp/example_db/.eunit/index.html
+<code>
+All seems to be fine! lets create file called  `start.sh` to test it out
+</code> bash
+λ cat start.sh
+erl -pa ebin -pa deps/*/ebin
 <code>``
-And this way we can use</code>find` tool very easy and get documents fast.</p>
+and make it executable with</code>chmod +x start.sh`</p>
 
-<h1>Summary</h1>
+<p>And lets rock &lsquo;n&rsquo; roll</p>
 
-<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &ldquo;strucutres&rdquo; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
+<p>``` bash
+ λ ./start.sh
+Erlang R15B (erts-5.9) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] [kernel-poll:false]</p>
 
-<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&rsquo;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &ldquo;rawly&rdquo; in redis hiredis client.</p>
+<p>Eshell V5.9  (abort with ^G)
+1> example_db:start_link().
+{ok,&lt;0.33.0>}
+2> example_db:save_script(&ldquo;example&rdquo;, &ldquo;script&rdquo;, &ldquo;puts &lsquo;2+2&rsquo;&rdquo;).
+{ok,&lt;&lt;&ldquo;OK&rdquo;>>}
+3> example_db:get_script(&ldquo;example&rdquo;, &ldquo;script&rdquo;).
+{ok,&lt;&lt;&ldquo;puts &lsquo;2+2&rsquo;&rdquo;>>}
+```
+Have fun :) Hope it was useful. You can download code for this blog post here <a href="https://github.com/JakubOboza/example_db-code">https://github.com/JakubOboza/example_db-code</a></p>
 
-<p>btw i jsut wrote this from &ldquo;top of my head&rdquo; so it may contain typos and i&rsquo;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
+<h3>Huh ^___^</h3>
 
-<p>Cheers!</p>
+<p>that was my first post on new blog ;)</p>
 ]]></content>
   </entry>
   
