@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <feed xmlns="http://www.w3.org/2005/Atom">
 
-  <title><![CDATA[Category: Rebar | No F*cking Idea]]></title>
+  <title><![CDATA[Category: rebar | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/rebar/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-12T19:35:54+00:00</updated>
+  <updated>2013-12-12T19:37:01+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -14,434 +14,102 @@
 
   
   <entry>
-    <title type="html"><![CDATA[rebar -> swiss army knife]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/03/29/rebar-swiss-army-knife/"/>
-    <updated>2012-03-29T18:55:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/03/29/rebar-swiss-army-knife</id>
-    <content type="html"><![CDATA[<h1>Intro</h1>
+    <title type="html"><![CDATA[Rebar templates]]></title>
+    <link href="http://no-fucking-idea.com/blog/2012/05/29/rebar-templates/"/>
+    <updated>2012-05-29T21:38:00+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2012/05/29/rebar-templates</id>
+    <content type="html"><![CDATA[<p>First question when i need to add new blog to my code I ask is, do i remember all the boilerplate and how many times i will make a mistake this time. No more :). Rebar has a nice thing built in it is templating language that lets us build our own templates.</p>
 
-<p>Rebar is a great command line tool for building your Erlang apps. It was developed by guys from <code>basho</code> <a href="http://basho.com/">http://basho.com/</a>. If you want to build Erlang app or module you can skip a lot of config / boilerplate code but using rebar.</p>
+<h1>Custom template ?</h1>
 
-<h1>Wait what? How do i get it ?</h1>
+<p>I always end up looking at old projects and copying parts like <code>gen_server</code> and reusing them. I always knew rebar has option to write them but never had time to look at it. Today lol, i wanted to do some cleaning at home so every thing seems to be a good excuse to not do any cleaning :D.</p>
 
-<p>To obtain rebar all you have to do is clone source using
-<code>bash
-λ git clone git://github.com/basho/rebar.git
-</code>
-after obtaining source go into directory and bootstrap it.
-<code>bash
-λ cd rebar
-λ ./bootstrap
-</code>
-This will build rebar script if everything is successful. Last thing i suggest is adding this directory to your path.
-<code>bash
-λ export PATH=/path/to/rebar:$PATH
-</code>
-So you will be able to use it like other command lines tools from &ldquo;global namespace&rdquo;.
-Now you should have working rebar installation. Just to test that everything is ok you can run <code>rebar</code> like this.
-``` bash
-λ rebar
-No command to run specified!
-Usage: rebar [-h] [-c] [-v <verbose>] [-V] [-f] [-D <defines>] [-j <jobs>] [-C <config>] [-p] [var=value,&hellip;] &lt;command,&hellip;></p>
+<h2>What i need to know</h2>
 
-<p>  -h, &mdash;help        Show the program options
-  -c, &mdash;commands    Show available commands
-  -v, &mdash;verbose     Verbosity level (-v, -vv, -vvv, &mdash;verbose 3). Default: 0
-  -V, &mdash;version     Show version information
-  -f, &mdash;force       Force
-  -D            Define compiler macro
-  -j, &mdash;jobs        Number of concurrent workers a command may use. Default: 3
-  -C, &mdash;config      Rebar config file to use
-  -p, &mdash;profile     Profile this run of rebar
-  var=value     rebar global variables (e.g. force=1)
-  command       Command to run (e.g. compile)</p>
+<p>Basic template is made from one or many <code>.erl</code> files written with <code>mustache</code> style <code>{ { } }</code> code and <code>.template</code> file describing what to do with files.</p>
 
-<p>```</p>
+<h2>Let&rsquo;s build gen_server template</h2>
 
-<h1>How do i use it @_@ ?</h1>
+<p>So my first file will be <code>gen_server.erl</code>
+``` bash gen_server.erl
+%%% @author  { {author_name } } &lt;{ {author_email} }>
+%%% @copyright  { {copyright_year } }  { {author_name} }.
+%%% @doc  { {description } }</p>
 
-<p>Two most important things you can generate using <code>rebar</code> are applications and nodes.
-To generate application you just need to create app directory and run <code>rebar create-app</code> command like this.
-``` bash
-mkdir furby<br/>
-λ cd furby
-λ rebar create-app appid=furby
-==> furby (create-app)
-Writing src/furby.app.src
-Writing src/furby_app.erl
-Writing src/furby_sup.erl</p>
-
-<p><code>``
-This has created application scaffold with ready to go supervisor. This is ready to go!
-to compile it just run</code>rebar compile`</p>
-
-<h1>Me gusta</h1>
-
-<p>This is all fine but that don&rsquo;t eliminate a lot, sweet things are behind the corner :).</p>
-
-<h3>eunit</h3>
-
-<p>Rebar enables you to use easy eunit testing framework within your code. Like we did it here <a href="http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/">http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/</a>. To do it just run <code>rebar compile eunit</code> .
-``` bash exmaple_output
-λ rebar compile eunit
-zsh: correct &lsquo;eunit&rsquo; to &lsquo;.eunit&rsquo; [nyae]? n
-==> eredis (compile)
-==> example_db (compile)
-==> eredis (eunit)</p>
-
-<p>=ERROR REPORT==== 29-Mar-2012::19:13:21 ===
-<strong> Generic server &lt;0.259.0> terminating
-</strong> Last message in was {tcp,#Port&lt;0.4549>,</p>
-
-<pre><code>                        &lt;&lt;"*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$2\r\n12\r\n"&gt;&gt;}
-</code></pre>
-
-<p>** When Server state == {state,&ldquo;127.0.0.1&rdquo;,6379,&lt;&lt;>>,100,#Port&lt;0.4549>,</p>
-
-<pre><code>                           {pstate,undefined,undefined},
-                           [&lt;&lt;"foo"&gt;&gt;],
-                           {#Ref&lt;0.0.0.3990&gt;,&lt;0.176.0&gt;},
-                           {[{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"11"&gt;&gt;,&lt;0.259.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"10"&gt;&gt;,&lt;0.259.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"9"&gt;&gt;,&lt;0.259.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"8"&gt;&gt;,&lt;0.259.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"7"&gt;&gt;,&lt;0.259.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"6"&gt;&gt;,&lt;0.259.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"5"&gt;&gt;,&lt;0.259.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"4"&gt;&gt;,&lt;0.259.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"3"&gt;&gt;,&lt;0.259.0&gt;}],
-                            [{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"2"&gt;&gt;,&lt;0.259.0&gt;}]},
-                           10,exit,need_ack}
-</code></pre>
-
-<p><strong> Reason for termination ==
-</strong> max_queue_size
-  All 53 tests passed.
-Cover analysis: /private/tmp/example_db/deps/eredis/.eunit/index.html
-==> example_db (eunit)
-  All 3 tests passed.
-Cover analysis: /private/tmp/example_db/.eunit/index.html
-```</p>
-
-<h3>coverage</h3>
-
-<p>Also if you will fiddle with <code>rebar.config</code> and set some variables like this:
-``` bash
-λ cat rebar.config
-%%&ndash;<em>&ndash; mode: erlang &ndash;</em>&ndash;</p>
-
-<p>{erl_opts, []}.
-{cover_enabled, true}.</p>
-
-<p><code>
-you can get test coverage generated in `.eunit` folder. but this is just the beginning.  lets look at it.
-</code> html example_db.COVER.html
-example_db/.eunit λ cat example_db.COVER.html
-<html>
-<head><title>.eunit/example_db.COVER.html</title></head><body bgcolor=white text=black></p>
-
-<p><pre>
-File generated from /private/tmp/example_db/.eunit/example_db.erl by COVER 2012-03-29 at 19:13:21</p>
-
-<hr />
-
-<pre><code>    |  -module(example_db).
-    |  -behaviour(gen_server).
-    |  
-</code></pre>
-
-<p>&hellip;(and more)
-```</p>
-
-<h3>dependencies</h3>
-
-<p>Last thing i want to mention is dependencies, i love this feature from <code>rebar</code>. You can add dependencies and rebar will do all the magic for you :). just open your <code>rebar.config</code>  and add thme like this:
-``` bash rebar.config
-%%&ndash;<em>&ndash; mode: erlang &ndash;</em>&ndash;</p>
-
-<p>{erl_opts, []}.
-{cover_enabled, true}.</p>
-
-<p>{deps,
-  [</p>
-
-<pre><code>{eredis, ".*", {git, "https://github.com/wooga/eredis.git", "HEAD"}}
-</code></pre>
-
-<p>  ]
-}.</p>
-
-<p><code>``
-Whenever you will type</code>rebar get-deps<code>he will download all dependencies and install them into</code>deps` directory. This makes developing applications using things like mochiweb really easy!</p>
-
-<h1>Summary</h1>
-
-<p>I love this tool, it makes learning and development in <code>Erlang</code> much easier and more rewarding experience. I hope this help you a bit :). Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Using eredis, redis with erlang]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/"/>
-    <updated>2012-03-23T23:28:00+00:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang</id>
-    <content type="html"><![CDATA[<p>Recently i decided to move my blog from <code>tumblr.com</code> to <code>octopress engine</code> because it is just easier for me to maintain it and it looks nicer. The old blog is under <a href="http://no-fucking-idea.tumblr.com">http://no-fucking-idea.tumblr.com</a>. My first post on new blog is dedicated to using redis with erlang.</p>
-
-<h1>Eredis</h1>
-
-<p>Wooga created a really nice (performance driven) redis driver for erlang. You can get it here <a href="https://github.com/wooga/eredis">https://github.com/wooga/eredis</a>. It is really easy and nice.</p>
-
-<h1>Initial sample</h1>
-
-<p>On project page you can find simple examples how to use eredis. Examples there are all you need (but i need something for front page of my new blog so i will rewrite them and explain them :) ).</p>
-
-<h2>First you need to start your eredis application</h2>
-
-<p><code>erlang initialization
-{ok, Client} = eredis:start_link().
-</code>
-Client is the &ldquo;connection / state&rdquo; we will be using with rest of queries.</p>
-
-<p>To query things with redis we will use <code>q</code> method from eredis module which takes &ldquo;Connection / Client&rdquo; state and list with params.
-This api is very simple here are two most basic examples of get and set.
-GET:
-<code>erlang get
-{ok, &lt;&lt;"OK"&gt;&gt;} = eredis:q(Client, ["SET", "name", "kuba"]).
-</code>
-and SET:
-<code>erlang set
-{ok, &lt;&lt;"kuba"&gt;&gt;} = eredis:q(Client, ["GET", "name"]).
-</code>
-From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass &ldquo;Connection / Client&rdquo; as state and also we will build some &ldquo;key&rdquo; serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
-
-<h1>Free Api wrapper</h1>
-
-<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server&rsquo;s and applications.</p>
-
-<p>``` erlang example_db.erl
--module(example_db).
+<p>-module( { {name } }).
 -behaviour(gen_server).</p>
 
-<p>-author(&ldquo;<a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#x6a;&#x61;&#107;&#x75;&#x62;&#x2e;&#x6f;&#x62;&#111;&#x7a;&#x61;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#46;&#x63;&#x6f;&#109;">&#106;&#97;&#x6b;&#117;&#98;&#x2e;&#x6f;&#x62;&#111;&#122;&#x61;&#x40;&#103;&#109;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#x6d;</a>&rdquo;).
--define(Prefix, &ldquo;example&rdquo;).</p>
+<p>-author(&lsquo; { {author_name } } &lt;{ {author_email } }>&rsquo;).</p>
 
-<p>-export([start_link/0]).
--export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1]).
--export([get_script/2, save_script/3]).</p>
+<p>-export([start_link/1]).
+-export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1]).</p>
 
 <p>% public api</p>
 
-<p>start_link() &ndash;>
+<p>start_link(_Args) &ndash;>
   gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).</p>
 
-<p>init([]) &ndash;>
-  {ok, Redis} = eredis:start_link(),
-  {ok, Redis}.</p>
+<p>% state should be change with State that you will pass
+init([]) &ndash;>
+  {ok, state}.</p>
 
 <p>stop(_Pid) &ndash;>
   stop().</p>
 
-<p>stop() &ndash;></p>
+<p>stop() &ndash;>
+  gen_server:cast(?MODULE, stop).</p>
 
-<pre><code>gen_server:cast(?MODULE, stop).
-</code></pre>
+<p>handle_call({method_name_and_params}, _From, State) &ndash;>
+  Response = ok,
+  {reply, Response, State};</p>
 
-<p>%% public client api</p>
+<p>handle_call(<em>Message, </em>From, State) &ndash;>
+  {reply, error, State}.</p>
 
-<p>get_script(Api, Method) &ndash;>
-  gen_server:call(?MODULE, {get_script, Api, Method}).</p>
+<p>handle_cast(<em>Message, State) &ndash;> {noreply, State}.
+handle_info(</em>Message, State) &ndash;> {noreply, State}.
+terminate(<em>Reason, </em>State) &ndash;> ok.
+code_change(<em>OldVersion, State, </em>Extra) &ndash;> {ok, State}.
+<code>``
+This is the template, i know a bit long i tried to cut out all comments, euint etc and narrow it to minimum. I posted it to show how much you can save :). Now you will need the</code>transformation file`. All this things in { { something } } will be replaced by things we will type in command line or defaults from template file.</p>
 
-<p>save_script(Api, Method, Script) &ndash;>
-  gen_server:call(?MODULE, {save_script, Api, Method, Script}).</p>
+<p><code>bash gen_server.template
+{variables, [
+  {name, "template"},
+  {copyright_year, "2012"},
+  {author_name, "jakub Oboza"},
+  {author_email, "jakub.oboza@gmail.com"}
+]}.
+{template, "gen_server.erl", "src/{ {name} }.erl"}.
+</code>
+For me it looks like this, we have few default definitions and at the bottom. template! This is important part it says which file he has to copy where and what will be the name of new file. Now everything should be clear!</p>
 
-<p>%% genserver handles</p>
+<h2>Injet it into rebar!</h2>
 
-<p>handle_call({get_script, Api, Method}, _From, Redis) &ndash;>
-  Response = eredis:q(Redis, [ &ldquo;GET&rdquo;, get_key(Api, Method) ]),
-  {reply, Response, Redis};</p>
+<p>All you need now to do is symlink your template folders to <code>~/.rebar/templates</code> and you can use them!
+(you can symlink your folder or just create one there :) )</p>
 
-<p>handle_call({save_script, Api, Method, Script}, _From, Redis) &ndash;>
-  Response = eredis:q(Redis, [&ldquo;SET&rdquo;, get_key(Api, Method), Script]),
-  {reply, Response, Redis};</p>
-
-<p>handle_call(<em>Message, </em>From, Redis) &ndash;>
-  {reply, error, Redis}.</p>
-
-<p>handle_cast(<em>Message, Redis) &ndash;> {noreply, Redis}.
-handle_info(</em>Message, Redis) &ndash;> {noreply, Redis}.
-terminate(<em>Reason, </em>Redis) &ndash;> ok.
-code_change(<em>OldVersion, Redis, </em>Extra) &ndash;> {ok, Redis}.</p>
-
-<p>%% helper methods</p>
-
-<p>get_key(Api, Method) &ndash;>
-  generate_key([Api, Method]).</p>
-
-<p>generate_key(KeysList) &ndash;>
-  lists:foldl(fun(Key, Acc) &ndash;> Acc ++ &ldquo;:&rdquo; ++ Key end, ?Prefix, KeysList).</p>
-
-<p>% tests</p>
-
-<p>-ifdef(TEST).
--include_lib(&ldquo;eunit/include/eunit.hrl&rdquo;).
--endif.</p>
-
-<p>-ifdef(TEST).</p>
-
-<p>generate_key_test() &ndash;>
-  Key = generate_key([&ldquo;one&rdquo;, &ldquo;two&rdquo;, &ldquo;three&rdquo;]),
-  ?assertEqual(&ldquo;example:one:two:three&rdquo;, Key).</p>
-
-<p>server_test<em>() &ndash;>
-  {setup, fun() &ndash;> example_db:start_link() end,
-   fun(</em>Pid) &ndash;> example_db:stop(_Pid) end,
-   fun generate_example_db_tests/1}.</p>
-
-<p>generate_example_db_tests(_Pid) &ndash;>
-  [</p>
-
-<pre><code>?_assertEqual({ok,&lt;&lt;"OK"&gt;&gt;}, example_db:save_script("jakub", "oboza", &lt;&lt;"yo dwang"&gt;&gt;) ),
-?_assertEqual({ok,&lt;&lt;"yo dwang"&gt;&gt;}, example_db:get_script("jakub", "oboza") )
-</code></pre>
-
-<p>  ].</p>
-
-<p>-endif
-```</p>
-
-<h2>Public Api</h2>
-
-<p>This code listing has two important parts first at top it starts at line 26.
-This is the public API which will be used by developer. This is this free api. Later on i will explain how to change redis to mongodb and probably to other db engines without doing changes in rest of our app. From my perspective this is awesome feature.
-In most cases when i had to make app scale problem of having code that was glues to one db engine was heavy.</p>
-
-<h2>eunit tests</h2>
-
-<p>At line 60. starts the declaration of tests, using <code>rebar</code> and <code>eunit</code> is very easy and it is always good to have test coverage in case of refactoring. I&rsquo;m a fan of test driven development so i like to cover in tests first things that i will use or i think they might be error prone. Here is used &ldquo;test generators&rdquo; to just to show how to write tests for gen_server.</p>
-
-<h1>Rebar</h1>
-
-<p>Before i will explain more i need to say little about <code>rebar</code>. It is a command line tool that was developed by <code>basho</code> to help create app. it is by far the best thing i found learning erlang to help me do boring stuff and eliminate a lot of rage writing <code>app.src</code> files. To get rebar simply do (you can always go to <a href="https://github.com/basho/rebar">https://github.com/basho/rebar</a> to get most up to date informations about building it)</p>
+<h2>Use!</h2>
 
 <p><code>bash
-λ  git clone git://github.com/basho/rebar.git
-λ  cd rebar
-λ  ./bootstrap
-</code></p>
-
-<p>I use my own set of zsh scripts so all i did to add it to my path was to edit <code>.furby</code> file in my home dir. I strongly suggest also adding it to <code>$PATH</code> just to make your life easier.</p>
-
-<h1>Back to example_db!</h1>
-
-<p>To create app using rebar you just need to
-<code>bash
-λ mkdir example_db
-λ rebar create-app appid=example_db
-==&gt; example_db (create-app)
-Writing src/example_db.app.src
-Writing src/example_db_app.erl
-Writing src/example_db_sup.erl
+λ rebar create template=gen_server name=example
+==&gt; tmp (create)
+Writing src/example.erl
 </code>
-This command created <code>src</code> folder with scaffold of <code>application</code> OTP pattern and <code>supervisor</code> thats almost all we need :).
-Now you can compile it using <code>rebar compile</code> and run tests using <code>rebar compile eunit</code> in out app currently we will see
-<code>bash rebar compile eunit
-λ rebar compile eunit
-==&gt; example_db (compile)
-Compiled src/example_db_app.erl
-Compiled src/example_db_sup.erl
-==&gt; example_db (eunit)
-Compiled src/example_db_app.erl
-Compiled src/example_db_sup.erl
-  There were no tests to run.
-</code>
-Nothing to do because its empty. Lets add our db module.
-But before this we need to add dependencies for eredis module. Lets create <code>rebar.config</code> file and add it.
-``` bash
-λ emacs rebar.config
-λ cat rebar.config
-%%&ndash;<em>&ndash; mode: erlang &ndash;</em>&ndash;</p>
+Viola!</p>
 
-<p>{erl_opts, []}.
-{cover_enabled, true}.</p>
+<h1>important</h1>
 
-<p>{deps,
-  [</p>
+<p>When i was looking at this post i saw that { { is converted in a wrong way by octopress so i added spaces between them! check repo for correct code!</p>
 
-<pre><code>{eredis, ".*", {git, "https://github.com/wooga/eredis.git", "HEAD"}}
-</code></pre>
+<h1>My own templates</h1>
 
-<p>  ]
-}.
-<code>
-Now just run `rebar get-deps` to get all dependencies downloaded.
-After adding our `example_db.erl` into `src` directory we can run `rebar compile eunit` to compile and run tests. We have added `{cover_enabled, true}` in rebar.conf so also test code coverage will be generated for us.
-</code> bash
-λ rebar compile eunit
-==> eredis (compile)
-==> example_db (compile)
-Compiled src/example_db.erl
-==> eredis (eunit)</p>
+<p>Today i started adding my own templates initially i have only <code>gen_server</code> and <code>webmachine_resource</code> but i will add more :). It is fun it is like building your own anti-boiler plate framework.</p>
 
-<p>=ERROR REPORT==== 28-Mar-2012::22:19:35 ===
-<strong> Generic server &lt;0.263.0> terminating
-</strong> Last message in was {tcp,#Port&lt;0.4516>,</p>
+<p>My templates repo: <a href="https://github.com/JakubOboza/rebar-templates">https://github.com/JakubOboza/rebar-templates</a></p>
 
-<pre><code>                        &lt;&lt;"*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$2\r\n12\r\n"&gt;&gt;}
-</code></pre>
-
-<p>** When Server state == {state,&ldquo;127.0.0.1&rdquo;,6379,&lt;&lt;>>,100,#Port&lt;0.4516>,</p>
-
-<pre><code>                           {pstate,undefined,undefined},
-                           [&lt;&lt;"foo"&gt;&gt;],
-                           {#Ref&lt;0.0.0.4058&gt;,&lt;0.180.0&gt;},
-                           {[{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"11"&gt;&gt;,&lt;0.263.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"10"&gt;&gt;,&lt;0.263.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"9"&gt;&gt;,&lt;0.263.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"8"&gt;&gt;,&lt;0.263.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"7"&gt;&gt;,&lt;0.263.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"6"&gt;&gt;,&lt;0.263.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"5"&gt;&gt;,&lt;0.263.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"4"&gt;&gt;,&lt;0.263.0&gt;},
-                             {message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"3"&gt;&gt;,&lt;0.263.0&gt;}],
-                            [{message,&lt;&lt;"foo"&gt;&gt;,&lt;&lt;"2"&gt;&gt;,&lt;0.263.0&gt;}]},
-                           10,exit,need_ack}
-</code></pre>
-
-<p><strong> Reason for termination ==
-</strong> max_queue_size
-  All 53 tests passed.
-Cover analysis: /private/tmp/example_db/deps/eredis/.eunit/index.html
-==> example_db (eunit)
-Compiled src/example_db.erl
-  All 3 tests passed.
-Cover analysis: /private/tmp/example_db/.eunit/index.html
-<code>
-All seems to be fine! lets create file called  `start.sh` to test it out
-</code> bash
-λ cat start.sh
-erl -pa ebin -pa deps/*/ebin
-<code>``
-and make it executable with</code>chmod +x start.sh`</p>
-
-<p>And lets rock &lsquo;n&rsquo; roll</p>
-
-<p>``` bash
- λ ./start.sh
-Erlang R15B (erts-5.9) [source] [64-bit] [smp:4:4] [async-threads:0] [hipe] [kernel-poll:false]</p>
-
-<p>Eshell V5.9  (abort with ^G)
-1> example_db:start_link().
-{ok,&lt;0.33.0>}
-2> example_db:save_script(&ldquo;example&rdquo;, &ldquo;script&rdquo;, &ldquo;puts &lsquo;2+2&rsquo;&rdquo;).
-{ok,&lt;&lt;&ldquo;OK&rdquo;>>}
-3> example_db:get_script(&ldquo;example&rdquo;, &ldquo;script&rdquo;).
-{ok,&lt;&lt;&ldquo;puts &lsquo;2+2&rsquo;&rdquo;>>}
-```
-Have fun :) Hope it was useful. You can download code for this blog post here <a href="https://github.com/JakubOboza/example_db-code">https://github.com/JakubOboza/example_db-code</a></p>
-
-<h3>Huh ^___^</h3>
-
-<p>that was my first post on new blog ;)</p>
+<p>Hope this helps!
+Cheers!</p>
 ]]></content>
   </entry>
   

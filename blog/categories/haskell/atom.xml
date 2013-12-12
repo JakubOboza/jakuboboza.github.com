@@ -4,7 +4,7 @@
   <title><![CDATA[Category: haskell | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-12T19:35:18+00:00</updated>
+  <updated>2013-12-12T19:37:01+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -277,7 +277,7 @@ main = do
 
 <h1>Summary</h1>
 
-<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don&rsquo;t need to be expert on kislev arrows to use them ;).</p>
+<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don&rsquo;t need to be expert on Kleisli arrows to use them ;).</p>
 
 <p>Cheers!</p>
 ]]></content>
