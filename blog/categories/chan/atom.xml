@@ -1,0 +1,284 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: chan | No F*cking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/chan/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-12-12T19:14:08+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[forkIO and friends]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/12/12/forkio-and-friends/"/>
+    <updated>2013-12-12T17:38:53+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/12/12/forkio-and-friends</id>
+    <content type="html"><![CDATA[<p>This post is sponsored by <code>forkIO</code> function and <code>newChan</code> in <code>Haskell</code></p>
+
+<h1>What is this forkIO ?</h1>
+
+<p>forkIO is part of <code>Control.Concurrent</code> package and as it says it:</p>
+
+<blockquote><p>Sparks off a new thread to run the IO computation passed as the first argument, and returns the ThreadId of the newly created thread.
+The new thread will be a lightweight thread; if you want to use a foreign library that uses thread-local storage, use forkOS instead.</p></blockquote>
+
+<p>This is very neat if your program wants to use all the cores of your CPU or at least be more responsive not waiting for stuff to happen.</p>
+
+<p>forkIO type is:</p>
+
+<p><code>haskell
+forkIO :: IO () -&gt; IO ThreadId
+</code></p>
+
+<h1>Channels to help !</h1>
+
+<p>forkIO would be enough to start working on stuff but to make a real us of them we need a way of communicating with our threads. This actually opens design of our code to new stuff like eg. building workers. There are other ways of communicating with threads like mVar but IMHO channels wins hard.</p>
+
+<p>Channels are part of <code>Control.Concurrent.Chan</code> package and are typable! Typed communication Yay!</p>
+
+<p>Channels functions we need types are:
+<code>haskell
+newChan :: IO (Chan a)
+writeChan :: Chan a -&gt; a -&gt; IO ()
+readChan :: Chan a -&gt; IO a
+</code></p>
+
+<p>And that actually all we need. Lets make some stuff working.</p>
+
+<h1>Ok So lets get this party started :)</h1>
+
+<p>I think most of the time its better to explain stuff on examples.</p>
+
+<h2>Just spawn!</h2>
+
+<p>First thing we want is just to spawn!</p>
+
+<p>``` haskell just_spawn.hs
+import Control.Concurrent</p>
+
+<p>main = do
+  forkIO $ do</p>
+
+<pre><code>putStrLn "Yay! i'm in thread!"
+</code></pre>
+
+<p>  putStrLn &ldquo;I&rsquo;m important i&rsquo;m in Main thread!&rdquo;</p>
+
+<p>```</p>
+
+<p>This is a very simple way to spawn light weight thread via forkIO doing something :>. As you can see it is a normal action so you can go dirty!</p>
+
+<p>forkIO takes actions and give you back IO ThreadId so you can keep track / kill threads you don&rsquo;t like</p>
+
+<h2>Just Spawn</h2>
+
+<p>Previous example was a bit cheating as it showed nothing really important so lets make some crazy threads printing stuff now.</p>
+
+<p>``` haskell crazy_gals.hs</p>
+
+<p>import Control.Concurrent</p>
+
+<p>fanOfGarbage = do
+  putStrLn &ldquo;Garbage is best bad evar!&rdquo;
+  fanOfGarbage</p>
+
+<p>fanOfClassicMusic = do
+  putStrLn &ldquo;Dude Garbage is garbage&rdquo;
+  fanOfClassicMusic</p>
+
+<p>main = do
+  putStrLn &ldquo;hit it guys!&rdquo;
+  forkIO fanOfGarbage
+  forkIO fanOfClassicMusic</p>
+
+<p>```</p>
+
+<p>Well compiling and running this gives you only &ldquo;hit it guys&rdquo; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
+
+<p>``` haskell crazy_gals2.hs</p>
+
+<p>import Control.Concurrent</p>
+
+<p>fanOfGarbage = do
+  putStrLn &ldquo;Garbage is best bad evar!&rdquo;
+  fanOfGarbage</p>
+
+<p>fanOfClassicMusic = do
+  putStrLn &ldquo;Dude Garbage is garbage&rdquo;
+  fanOfClassicMusic</p>
+
+<p>main = do
+  putStrLn &ldquo;hit it guys!&rdquo;
+  forkIO fanOfGarbage
+  forkIO fanOfClassicMusic
+  getLine
+  putStrLn &ldquo;Thank You Sir for stopping them!&rdquo;
+```</p>
+
+<p>After launching it you can see how each thread is spamming its prints ;> So it work until you will hit enter. Cool so we have something working.</p>
+
+<p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &ldquo;thread&rdquo; function in separation.
+Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it a bit simplier.</p>
+
+<p>``` haskell crazy_gals3.hs</p>
+
+<p>import Control.Concurrent
+import Control.Monad (forever)</p>
+
+<p>fanOfGarbage = do
+  forever $ do</p>
+
+<pre><code>putStrLn "Garbage is best bad evar!"
+</code></pre>
+
+<p>fanOfClassicMusic = do
+  forever $ do</p>
+
+<pre><code>putStrLn "Dude Garbage is garbage"
+</code></pre>
+
+<p>main = do
+  putStrLn &ldquo;hit it guys!&rdquo;
+  forkIO fanOfGarbage
+  forkIO fanOfClassicMusic
+  getLine
+  putStrLn &ldquo;Thank You Sir for stopping them!&rdquo;
+```</p>
+
+<p><code>forever</code> is part of <code>Control.Monad</code> as name says it is doing action forever ;) useful for stuff like workers or stuff that has to happen all the time it type is <code>forever :: Monad m =&gt; m a -&gt; m b</code>.</p>
+
+<h2>Something useful, add channels</h2>
+
+<p>Cool so now we have some basics how to spawn a thread using forkIO but to have something that we actually can use in real life we need to have some sort of communication. I wanna present something i feel would be useful in almost every haskell program. Channel combined with forkIO.</p>
+
+<p>If you programmed every in <code>Erlang</code> or <code>Go</code> you will know what i&rsquo;m talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can&rsquo;t predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
+
+<p>Channels are amazing because they are flexible :) And very natural. Basic principle is simple you write in one thread to the channel and read in other :)</p>
+
+<p>But lets make an example that will show how powerful it is.</p>
+
+<p>``` haskell chanz.hs</p>
+
+<p>import Control.Concurrent
+import Control.Monad (forever)
+import Control.Concurrent.Chan</p>
+
+<p>gossipGirl chan = do
+  forever $ do</p>
+
+<pre><code>gossip &lt;- readChan chan
+putStrLn gossip
+</code></pre>
+
+<p>main :: IO ()
+main = do
+  putStrLn &ldquo;Lets do some gossips&rdquo;
+  gossipChan &lt;&ndash; newChan &mdash; lets make new chan
+  forkIO $ gossipGirl gossipChan &mdash; spawn gossipGirl
+  writeChan gossipChan &ldquo;Garbage is garbage!&rdquo;
+  writeChan gossipChan &ldquo;Garbage is garbage for reals!&rdquo;
+  getLine
+  putStrLn &ldquo;Thank You Sir for Info&rdquo;
+```</p>
+
+<p>Nice! What happens here :)  So new things are <code>newChan</code> that create channel which we will use to talk to our gossipGirl. <code>readChan</code> reads data from channel and <code>writeChan</code> writes stuff to channel. This is very simple :) So now lets generalize our worker into something that we can use in next mini tutorials. A worker.</p>
+
+<h2>A Worker</h2>
+
+<p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&rsquo;t got it by now :) )</p>
+
+<p>``` haskell chanz2.hs
+import Control.Concurrent
+import Control.Monad (forever)
+import Control.Concurrent.Chan</p>
+
+<p>worker chan foo = do
+  forkIO $ forever $ foo chan</p>
+
+<p>worker' action = do
+  forkIO $ forever action</p>
+
+<p>gossipGirl chan = do</p>
+
+<pre><code>gossip &lt;- readChan chan
+putStrLn gossip
+</code></pre>
+
+<p>main :: IO ()
+main = do
+  putStrLn &ldquo;Lets do some gossips&rdquo;
+  gossipChan &lt;&ndash; newChan &mdash; lets make new chan
+  gossipChan2 &lt;&ndash; newChan &mdash; lets make new chan
+  worker gossipChan gossipGirl &mdash; spawn gossipGirl</p>
+
+<p>  writeChan gossipChan &ldquo;Garbage is garbage!&rdquo;
+  writeChan gossipChan &ldquo;Garbage is garbage for reals!&rdquo;</p>
+
+<p>  worker' (gossipGirl gossipChan2) &mdash; worker' 2 girl!
+  writeChan gossipChan &ldquo;Umkay&rdquo;
+  writeChan gossipChan &ldquo;Yez!&rdquo;</p>
+
+<p>  getLine
+  putStrLn &ldquo;Thank You Sir for Info&rdquo;</p>
+
+<p>```</p>
+
+<p>Yes you can build workers as you want. I would not spend time on trying to build uber generic worker as it is usually custom and you don&rsquo;t need to spend much time to make one :). Usually you can have worker types for particular tasks eg. databasesWriter, logWriters, counters etc.</p>
+
+<p>Now why would you all this forkIO stuff ? here is there reason. Cat simulation!</p>
+
+<p>``` haskell cat.hs</p>
+
+<p>import Control.Concurrent
+import Control.Monad (forever)
+import Control.Concurrent.Chan</p>
+
+<p>data AskForMeow = GibFood | Smile</p>
+
+<p>meowMe chan chanBack = do
+  niceTry &lt;&ndash; readChan chan
+  case niceTry of</p>
+
+<pre><code>GibFood -&gt; writeChan chanBack "Meow"
+Smile   -&gt; writeChan chanBack "No"
+</code></pre>
+
+<p>cat action = do
+  forkIO $ forever action</p>
+
+<p>main :: IO ()
+main = do
+  putStrLn &ldquo;Hey kitty kitty&rdquo;</p>
+
+<p>  foodInputChan &lt;&ndash; newChan
+  catOutputChan &lt;&ndash; newChan</p>
+
+<p>  cat $ meowMe foodInputChan catOutputChan</p>
+
+<p>  writeChan foodInputChan Smile
+  response &lt;&ndash; readChan catOutputChan
+  putStrLn response</p>
+
+<p>  writeChan foodInputChan GibFood
+  response' &lt;&ndash; readChan catOutputChan
+  putStrLn response'</p>
+
+<p>  getLine
+  return ()</p>
+
+<p>```</p>
+
+<h1>Summary</h1>
+
+<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don&rsquo;t need to be expert on kislev arrows to use them ;).</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>
