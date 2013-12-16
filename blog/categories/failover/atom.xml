@@ -4,7 +4,7 @@
   <title><![CDATA[Category: failover | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/failover/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-13T09:00:50+00:00</updated>
+  <updated>2013-12-16T22:20:09+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,7 +18,7 @@
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#x69;&#x6c;&#x74;&#x6f;&#58;&#107;&#117;&#98;&#97;&#64;&#x6c;&#x61;&#x6d;&#x62;&#x64;&#97;&#99;&#x75;&#x2e;&#x62;&#101;">&#x6b;&#x75;&#x62;&#x61;&#64;&#x6c;&#97;&#109;&#x62;&#100;&#97;&#99;&#x75;&#x2e;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#108;&#116;&#x6f;&#58;&#107;&#117;&#98;&#x61;&#64;&#108;&#97;&#109;&#98;&#x64;&#97;&#99;&#x75;&#x2e;&#x62;&#101;">&#x6b;&#117;&#98;&#97;&#x40;&#108;&#97;&#109;&#x62;&#100;&#x61;&#99;&#x75;&#x2e;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 

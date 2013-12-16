@@ -4,7 +4,7 @@
   <title><![CDATA[No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-12T19:37:03+00:00</updated>
+  <updated>2013-12-16T22:20:09+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,130 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Working With URL Quick Tip Network.Url]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/"/>
+    <updated>2013-12-16T17:59:58+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url</id>
+    <content type="html"><![CDATA[<p>I have bigger text to post but before i will do it i have to split it into smaller parts so it will not be one long post about everything.</p>
+
+<p><img src="http://i.imgur.com/jwI5yqK.png" alt="cat explaining stuff" /></p>
+
+<h1>Working with URL&rsquo;s</h1>
+
+<p>Most of the time when preparing to make an http request in haskell eg. using <code>simpleHTTP</code> we need to build a request. We have several ways to do it, one of them would be to ugly glue strings together but thats not the way to do it in a safe way. Happily for us we have <code>url</code>, <code>(cabal install url)</code> package that adds <code>Network.Url</code> package. And here i will show few quick tips how to use it to work with urls.</p>
+
+<h2>Step one: Import</h2>
+
+<p>First thing we have to do is to import our package :D and string into out url lib.</p>
+
+<figure class='code'><figcaption><span>start.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">import</span> <span class="nn">Network.URL</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">putStrLn</span> <span class="s">&quot;give me some url:&quot;</span>
+</span><span class='line'>  <span class="n">rawUrl</span> <span class="ow">&lt;-</span> <span class="n">getLine</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">maybeUrl</span> <span class="ow">=</span> <span class="n">importURL</span> <span class="n">rawUrl</span> <span class="kr">in</span>
+</span><span class='line'>    <span class="kr">case</span> <span class="n">maybeUrl</span> <span class="kr">of</span>
+</span><span class='line'>    <span class="kt">Just</span> <span class="n">url</span> <span class="ow">-&gt;</span>
+</span><span class='line'>      <span class="n">putStrLn</span> <span class="o">$</span> <span class="n">exportURL</span> <span class="o">$</span> <span class="n">add</span><span class="nf">\</span><span class="n">_param</span> <span class="n">url</span> <span class="p">(</span><span class="s">&quot;param</span><span class="se">\</span><span class="err">_</span><span class="se">n</span><span class="s">ame&quot;</span><span class="p">,</span><span class="s">&quot;param</span><span class="se">\</span><span class="err">_</span><span class="se">v</span><span class="s">alue&quot;</span><span class="p">)</span>
+</span><span class='line'>    <span class="kt">Nothing</span>  <span class="ow">-&gt;</span> <span class="n">putStrLn</span> <span class="s">&quot;Sorry but this doesn&#39;t look like url&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This is the super simple example. But how it work? First of all we have <code>importURL</code> with signature:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">importURL</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Maybe</span> <span class="kt">URL</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will import url in form of string to url library and give us back Maybe URL. This is awesome! So we will have type that we can work on Yay! To exist library and get back string at the end we use <code>exportURL</code> with signature:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">exportURL</span> <span class="ow">::</span> <span class="kt">URL</span> <span class="ow">-&gt;</span> <span class="kt">String</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So we are only doing some simple transformation <code>String -&gt; Maybe URL -&gt; URL -&gt; String</code> thats nothing we can&rsquo;t handle!</p>
+
+<p>Next important bit is <code>add_param</code> function with signature:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="nf">add_param</span> <span class="ow">::</span> <span class="kt">URL</span> <span class="ow">-&gt;</span> <span class="p">(</span><span class="kt">String</span><span class="p">,</span> <span class="kt">String</span><span class="p">)</span> <span class="ow">-&gt;</span> <span class="kt">URL</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This does exactly what we would expect :D add url param to our url. Ofc work inside URL lib so we expect as input URL type.</p>
+
+<h2>Setp two: More detailed example</h2>
+
+<p>I will try to reiterate our first example showing a bit more thing. Or just same things in a different way. Lets try to add two params.</p>
+
+<figure class='code'><figcaption><span>ue2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">import</span> <span class="nn">Network.URL</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">prepareUrl</span> <span class="n">url</span> <span class="ow">=</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">newUrl</span> <span class="ow">=</span> <span class="n">add_param</span> <span class="n">url</span> <span class="p">(</span><span class="s">&quot;query&quot;</span><span class="p">,</span><span class="s">&quot;gimme cats pics&quot;</span><span class="p">)</span> <span class="kr">in</span>
+</span><span class='line'>    <span class="n">add_param</span> <span class="n">newUrl</span> <span class="p">(</span><span class="s">&quot;size&quot;</span><span class="p">,</span> <span class="s">&quot;any&quot;</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">putStrLn</span> <span class="s">&quot;give me some url:&quot;</span>
+</span><span class='line'>  <span class="n">rawUrl</span> <span class="ow">&lt;-</span> <span class="n">getLine</span>
+</span><span class='line'>  <span class="kr">let</span> <span class="n">maybeUrl</span> <span class="ow">=</span> <span class="n">importURL</span> <span class="n">rawUrl</span> <span class="kr">in</span>
+</span><span class='line'>    <span class="kr">case</span> <span class="n">maybeUrl</span> <span class="kr">of</span>
+</span><span class='line'>    <span class="kt">Just</span> <span class="n">url</span> <span class="ow">-&gt;</span>
+</span><span class='line'>      <span class="n">putStrLn</span> <span class="o">$</span> <span class="n">exportURL</span> <span class="o">$</span> <span class="n">prepareUrl</span> <span class="n">url</span>
+</span><span class='line'>    <span class="kt">Nothing</span>  <span class="ow">-&gt;</span> <span class="n">putStrLn</span> <span class="s">&quot;Sorry but this doesn&#39;t look like url&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You should run the code and see something like this:</p>
+
+<figure class='code'><figcaption><span>ue2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'> <span class="err">λ</span> <span class="o">./</span><span class="n">ue2</span>
+</span><span class='line'><span class="nf">give</span> <span class="n">me</span> <span class="n">some</span> <span class="n">url</span><span class="kt">:</span>
+</span><span class='line'><span class="nf">lambdacu</span><span class="o">.</span><span class="n">be</span>
+</span><span class='line'><span class="nf">lambdacu</span><span class="o">.</span><span class="n">be</span><span class="o">?</span><span class="n">size</span><span class="ow">=</span><span class="n">any</span><span class="o">&amp;</span><span class="n">query</span><span class="ow">=</span><span class="n">gimme</span><span class="o">+</span><span class="n">cats</span><span class="o">+</span><span class="n">pics</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Summary</h1>
+
+<p>It is just a quick tip :) <code>Network.URL</code> has few more functions eg. to check if protocl is secure and checking if params are ok.
+But stuff showed above is the main point of lib.</p>
+
+<p>More about this lib ofc on hackage: <a href="http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html">http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html</a></p>
+
+<p>&hellip;.And quick tip should be quick :)</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[forkIO and Friends]]></title>
@@ -88,7 +212,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <p>Previous example was a bit cheating as it showed nothing really important so lets make some crazy threads printing stuff now.</p>
 
-<figure class='code'><figcaption><span>crazy_gals.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>crazygals.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -121,7 +245,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <p>Well compiling and running this gives you only &ldquo;hit it guys&rdquo; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
 
-<figure class='code'><figcaption><span>crazy_gals2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>crazygals2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -161,7 +285,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 <p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &ldquo;thread&rdquo; function in separation.
 Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it simpler.</p>
 
-<figure class='code'><figcaption><span>crazy_gals3.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>crazygals3.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -255,7 +379,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&rsquo;t got it by now :) )</p>
 
-<figure class='code'><figcaption><span>chanz2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -292,7 +416,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span><span class='line'><span class="nf">worker</span> <span class="n">chan</span> <span class="n">foo</span> <span class="ow">=</span> <span class="kr">do</span>
 </span><span class='line'>  <span class="n">forkIO</span> <span class="o">$</span> <span class="n">forever</span> <span class="o">$</span> <span class="n">foo</span> <span class="n">chan</span>
 </span><span class='line'>
-</span><span class='line'><span class="nf">worker&#39;</span> <span class="n">action</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'><span class="nf">worker2</span> <span class="n">action</span> <span class="ow">=</span> <span class="kr">do</span>
 </span><span class='line'>  <span class="n">forkIO</span> <span class="o">$</span> <span class="n">forever</span> <span class="n">action</span>
 </span><span class='line'>
 </span><span class='line'><span class="nf">gossipGirl</span> <span class="n">chan</span> <span class="ow">=</span> <span class="kr">do</span>
@@ -309,9 +433,9 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan</span> <span class="s">&quot;Garbage is garbage!&quot;</span>
 </span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan</span> <span class="s">&quot;Garbage is garbage for reals!&quot;</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="n">worker&#39;</span> <span class="p">(</span><span class="n">gossipGirl</span> <span class="n">gossipChan2</span><span class="p">)</span> <span class="c1">-- worker&#39; 2 girl!</span>
-</span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan</span> <span class="s">&quot;Umkay&quot;</span>
-</span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan</span> <span class="s">&quot;Yez!&quot;</span>
+</span><span class='line'>  <span class="n">worker2</span> <span class="p">(</span><span class="n">gossipGirl</span> <span class="n">gossipChan2</span><span class="p">)</span> <span class="c1">-- woker2 2 girl!</span>
+</span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan2</span> <span class="s">&quot;Umkay&quot;</span>
+</span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan2</span> <span class="s">&quot;Yez!&quot;</span>
 </span><span class='line'>
 </span><span class='line'>  <span class="n">getLine</span>
 </span><span class='line'>  <span class="n">putStrLn</span> <span class="s">&quot;Thank You Sir for Info&quot;</span>
@@ -2645,7 +2769,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#x6f;&#x3a;&#x6b;&#117;&#x62;&#x61;&#x40;&#108;&#97;&#x6d;&#x62;&#x64;&#x61;&#x63;&#117;&#x2e;&#x62;&#x65;">&#x6b;&#117;&#98;&#x61;&#64;&#x6c;&#x61;&#109;&#x62;&#100;&#97;&#99;&#x75;&#x2e;&#x62;&#101;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#105;&#108;&#x74;&#x6f;&#x3a;&#107;&#117;&#x62;&#97;&#x40;&#x6c;&#x61;&#x6d;&#x62;&#100;&#97;&#99;&#117;&#46;&#98;&#x65;">&#x6b;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#98;&#x64;&#97;&#99;&#x75;&#x2e;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
@@ -3588,158 +3712,6 @@ In my opinion pong tests are wrong and do not show real &ldquo;performance&rdquo
 <h2>So how to test ?!</h2>
 
 <p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&hellip; users are really testing performance of our db ;>&hellip; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Rebar Templates]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/05/29/rebar-templates/"/>
-    <updated>2012-05-29T21:38:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/05/29/rebar-templates</id>
-    <content type="html"><![CDATA[<p>First question when i need to add new blog to my code I ask is, do i remember all the boilerplate and how many times i will make a mistake this time. No more :). Rebar has a nice thing built in it is templating language that lets us build our own templates.</p>
-
-<h1>Custom template ?</h1>
-
-<p>I always end up looking at old projects and copying parts like <code>gen_server</code> and reusing them. I always knew rebar has option to write them but never had time to look at it. Today lol, i wanted to do some cleaning at home so every thing seems to be a good excuse to not do any cleaning :D.</p>
-
-<h2>What i need to know</h2>
-
-<p>Basic template is made from one or many <code>.erl</code> files written with <code>mustache</code> style <code>{ { } }</code> code and <code>.template</code> file describing what to do with files.</p>
-
-<h2>Let&rsquo;s build gen_server template</h2>
-
-<p>So my first file will be <code>gen_server.erl</code></p>
-
-<figure class='code'><figcaption><span>gen_server.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>%%% @author  <span class="o">{</span> <span class="o">{</span>author_name <span class="o">}</span> <span class="o">}</span> &lt;<span class="o">{</span> <span class="o">{</span>author_email<span class="o">}</span> <span class="o">}</span>&gt;
-</span><span class='line'>%%% @copyright  <span class="o">{</span> <span class="o">{</span>copyright_year <span class="o">}</span> <span class="o">}</span>  <span class="o">{</span> <span class="o">{</span>author_name<span class="o">}</span> <span class="o">}</span>.
-</span><span class='line'>%%% @doc  <span class="o">{</span> <span class="o">{</span>description <span class="o">}</span> <span class="o">}</span>
-</span><span class='line'>
-</span><span class='line'>-module<span class="o">(</span> <span class="o">{</span> <span class="o">{</span>name <span class="o">}</span> <span class="o">})</span>.
-</span><span class='line'>-behaviour<span class="o">(</span>gen_server<span class="o">)</span>.
-</span><span class='line'>
-</span><span class='line'>-author<span class="o">(</span><span class="s1">&#39; { {author_name } } &lt;{ {author_email } }&gt;&#39;</span><span class="o">)</span>.
-</span><span class='line'>
-</span><span class='line'>-export<span class="o">([</span>start_link/1<span class="o">])</span>.
-</span><span class='line'>-export<span class="o">([</span>init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1<span class="o">])</span>.
-</span><span class='line'>
-</span><span class='line'>% public api
-</span><span class='line'>
-</span><span class='line'>start_link<span class="o">(</span>_Args<span class="o">)</span> -&gt;
-</span><span class='line'>  gen_server:start_link<span class="o">({</span><span class="nb">local</span>, ?MODULE<span class="o">}</span>, ?MODULE, <span class="o">[]</span>, <span class="o">[])</span>.
-</span><span class='line'>
-</span><span class='line'>% state should be change with State that you will pass
-</span><span class='line'>init<span class="o">([])</span> -&gt;
-</span><span class='line'>  <span class="o">{</span>ok, state<span class="o">}</span>.
-</span><span class='line'>
-</span><span class='line'>stop<span class="o">(</span>_Pid<span class="o">)</span> -&gt;
-</span><span class='line'>  stop<span class="o">()</span>.
-</span><span class='line'>
-</span><span class='line'>stop<span class="o">()</span> -&gt;
-</span><span class='line'>  gen_server:cast<span class="o">(</span>?MODULE, stop<span class="o">)</span>.
-</span><span class='line'>
-</span><span class='line'>handle_call<span class="o">({</span>method_name_and_params<span class="o">}</span>, _From, State<span class="o">)</span> -&gt;
-</span><span class='line'>  <span class="nv">Response</span> <span class="o">=</span> ok,
-</span><span class='line'>  <span class="o">{</span>reply, Response, State<span class="o">}</span>;
-</span><span class='line'>
-</span><span class='line'>handle_call<span class="o">(</span>_Message, _From, State<span class="o">)</span> -&gt;
-</span><span class='line'>  <span class="o">{</span>reply, error, State<span class="o">}</span>.
-</span><span class='line'>
-</span><span class='line'>handle_cast<span class="o">(</span>_Message, State<span class="o">)</span> -&gt; <span class="o">{</span>noreply, State<span class="o">}</span>.
-</span><span class='line'>handle_info<span class="o">(</span>_Message, State<span class="o">)</span> -&gt; <span class="o">{</span>noreply, State<span class="o">}</span>.
-</span><span class='line'>terminate<span class="o">(</span>_Reason, _State<span class="o">)</span> -&gt; ok.
-</span><span class='line'>code_change<span class="o">(</span>_OldVersion, State, _Extra<span class="o">)</span> -&gt; <span class="o">{</span>ok, State<span class="o">}</span>.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This is the template, i know a bit long i tried to cut out all comments, euint etc and narrow it to minimum. I posted it to show how much you can save :). Now you will need the <code>transformation file</code>. All this things in { { something } } will be replaced by things we will type in command line or defaults from template file.</p>
-
-<figure class='code'><figcaption><span>gen_server.template</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">{</span>variables, <span class="o">[</span>
-</span><span class='line'>  <span class="o">{</span>name, <span class="s2">&quot;template&quot;</span><span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span>copyright_year, <span class="s2">&quot;2012&quot;</span><span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span>author_name, <span class="s2">&quot;jakub Oboza&quot;</span><span class="o">}</span>,
-</span><span class='line'>  <span class="o">{</span>author_email, <span class="s2">&quot;jakub.oboza@gmail.com&quot;</span><span class="o">}</span>
-</span><span class='line'><span class="o">]}</span>.
-</span><span class='line'><span class="o">{</span>template, <span class="s2">&quot;gen_server.erl&quot;</span>, <span class="s2">&quot;src/{ {name} }.erl&quot;</span><span class="o">}</span>.
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>For me it looks like this, we have few default definitions and at the bottom. template! This is important part it says which file he has to copy where and what will be the name of new file. Now everything should be clear!</p>
-
-<h2>Injet it into rebar!</h2>
-
-<p>All you need now to do is symlink your template folders to <code>~/.rebar/templates</code> and you can use them!
-(you can symlink your folder or just create one there :) )</p>
-
-<h2>Use!</h2>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ rebar create <span class="nv">template</span><span class="o">=</span>gen_server <span class="nv">name</span><span class="o">=</span><span class="nv">example</span>
-</span><span class='line'><span class="o">==</span>&gt; tmp <span class="o">(</span>create<span class="o">)</span>
-</span><span class='line'>Writing src/example.erl
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Viola!</p>
-
-<h1>important</h1>
-
-<p>When i was looking at this post i saw that { { is converted in a wrong way by octopress so i added spaces between them! check repo for correct code!</p>
-
-<h1>My own templates</h1>
-
-<p>Today i started adding my own templates initially i have only <code>gen_server</code> and <code>webmachine_resource</code> but i will add more :). It is fun it is like building your own anti-boiler plate framework.</p>
-
-<p>My templates repo: <a href="https://github.com/JakubOboza/rebar-templates">https://github.com/JakubOboza/rebar-templates</a></p>
-
-<p>Hope this helps!
-Cheers!</p>
 ]]></content>
   </entry>
   

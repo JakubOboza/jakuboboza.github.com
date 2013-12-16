@@ -2,162 +2,168 @@
 <urlset xmlns='http://www.sitemaps.org/schemas/sitemap/0.9'>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/</loc>
-        <lastmod>2013-12-04T23:18:46+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/03/29/rebar-swiss-army-knife/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/
         </loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/04/01/using-map-reduce-with-mongodb/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/04/05/testing-handlebars-with-mocha/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/04/11/building-gem-with-bundler/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/
         </loc>
-        <lastmod>2013-11-20T12:26:53+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/04/16/setting-up-redis-cluster/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2012/04/23/building-node-dot-js-module-using-npm/
         </loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/04/29/setting-up-replication-with-redis/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/
         </loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/05/29/rebar-templates/</loc>
-        <lastmod>2013-11-20T12:26:47+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/06/07/pong-tests-are-wrong/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/
         </loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/
         </loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/07/31/designing-twitter-clone-in-redis/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/09/26/redis-list-internals/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/10/14/building-up-queue-system/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/11/20/erlang-digraph/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/12/11/using-tcpdump/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/12/15/getting-some-clojure/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2012/12/17/gems-hidden-in-the-past/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/
         </loc>
-        <lastmod>2013-11-20T12:26:06+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2013/02/12/recent-rails-security-problems-and-building-software/
         </loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2013/02/21/if-the-real-game-changer/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/
         </loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2013/07/02/redis-setex-to-the-rescue/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>
             http://no-fucking-idea.com/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/
         </loc>
-        <lastmod>2013-12-04T23:20:33+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/2013/12/12/forkio-and-friends/</loc>
-        <lastmod>2013-12-13T08:58:42+00:00</lastmod>
+        <lastmod>2013-12-16T22:07:22+00:00</lastmod>
+    </url>
+    <url>
+        <loc>
+            http://no-fucking-idea.com/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/
+        </loc>
+        <lastmod>2013-12-16T22:17:16+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/blog/archives/</loc>
-        <lastmod>2013-12-13T08:58:42+00:00</lastmod>
+        <lastmod>2013-12-16T22:17:16+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/</loc>
-        <lastmod>2013-12-13T08:58:42+00:00</lastmod>
+        <lastmod>2013-12-16T22:17:16+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/link-lib/</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:07+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/robots.txt</loc>
-        <lastmod>2013-11-20T12:13:35+00:00</lastmod>
+        <lastmod>2013-12-16T21:52:08+00:00</lastmod>
     </url>
 </urlset>

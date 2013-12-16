@@ -4,7 +4,7 @@
   <title><![CDATA[Category: testing | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/testing/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-13T09:00:50+00:00</updated>
+  <updated>2013-12-16T22:20:09+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -51,16 +51,16 @@ I really like this</code>app.should.be.an.instanceof(Application);` syntax. But 
 ``` html
  <script id="list-entry" type="text/x-handlebars-template"></p>
 
-<pre><code>&lt;li {{#if class }} class={{class}} {{/if}}&gt;
-    &lt;span&gt;{{rank}}&lt;/span&gt; -&gt; 
-    &lt;strong&gt;{{username}}&lt;/strong&gt;:&amp;nbsp;
-    &lt;span&gt;{{text}}&lt;/span&gt;
+<pre><code>&lt;li  class= &gt;
+    &lt;span&gt;&lt;/span&gt; -&gt; 
+    &lt;strong&gt;&lt;/strong&gt;:&amp;nbsp;
+    &lt;span&gt;&lt;/span&gt;
 &lt;/li&gt;
 </code></pre>
 
 <p> </script>
 <code>``
-This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in</code>{{}}<code>is getting interpolated. so in this example</code>{{#if class }} class={{class}} {{/if}}<code>mans that if in rendering context we have class variable render</code>class=value_of_class_variable_in_context<code>as part of li element.</code>{{name_of_param_from_context}}<code>will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg.</code>underscore.js` templates explode if you don&rsquo;t have any param that you use inside of them.</p>
+This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in</code><code>is getting interpolated. so in this example</code> class= <code>mans that if in rendering context we have class variable render</code>class=value_of_class_variable_in_context<code>as part of li element.</code><code>will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg.</code>underscore.js` templates explode if you don&rsquo;t have any param that you use inside of them.</p>
 
 <h1>Both tools in action</h1>
 
@@ -109,7 +109,7 @@ Now lets implement this, our template will look like this
 </code> html
  <script id="test-template" type="text/x-handlebars-template"></p>
 
-<pre><code>&lt;p&gt;{{name}}&lt;/p&gt;
+<pre><code>&lt;p&gt;&lt;/p&gt;
 </code></pre>
 
 <p> </script>

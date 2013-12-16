@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Recently i decided to move my blog from tumblr.com to octopress engine because it is just easier for me to maintain it and it looks nicer. The old &hellip;">
+  <meta name="description" content="Intro Rebar is a great command line tool for building your Erlang apps. It was developed by guys from basho http://basho.com/. If you want to build &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,289 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2012/03/29/rebar-swiss-army-knife/">Rebar -> Swiss Army Knife</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-03-29T18:55:00+01:00" pubdate data-updated="true">Mar 29<span>th</span>, 2012</time>
+        
+           | <a href="/blog/2012/03/29/rebar-swiss-army-knife/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/03/29/rebar-swiss-army-knife/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><h1>Intro</h1>
+
+<p>Rebar is a great command line tool for building your Erlang apps. It was developed by guys from <code>basho</code> <a href="http://basho.com/">http://basho.com/</a>. If you want to build Erlang app or module you can skip a lot of config / boilerplate code but using rebar.</p>
+
+<h1>Wait what? How do i get it ?</h1>
+
+<p>To obtain rebar all you have to do is clone source using</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ git clone git://github.com/basho/rebar.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>after obtaining source go into directory and bootstrap it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ <span class="nb">cd </span>rebar
+</span><span class='line'>λ ./bootstrap
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will build rebar script if everything is successful. Last thing i suggest is adding this directory to your path.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ <span class="nb">export </span><span class="nv">PATH</span><span class="o">=</span>/path/to/rebar:<span class="nv">$PATH</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So you will be able to use it like other command lines tools from &ldquo;global namespace&rdquo;.
+Now you should have working rebar installation. Just to test that everything is ok you can run <code>rebar</code> like this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ rebar
+</span><span class='line'>No <span class="nb">command </span>to run specified!
+</span><span class='line'>Usage: rebar <span class="o">[</span>-h<span class="o">]</span> <span class="o">[</span>-c<span class="o">]</span> <span class="o">[</span>-v &lt;verbose&gt;<span class="o">]</span> <span class="o">[</span>-V<span class="o">]</span> <span class="o">[</span>-f<span class="o">]</span> <span class="o">[</span>-D &lt;defines&gt;<span class="o">]</span> <span class="o">[</span>-j &lt;<span class="nb">jobs</span>&gt;<span class="o">]</span> <span class="o">[</span>-C &lt;config&gt;<span class="o">]</span> <span class="o">[</span>-p<span class="o">]</span> <span class="o">[</span><span class="nv">var</span><span class="o">=</span>value,...<span class="o">]</span> &lt;<span class="nb">command</span>,...&gt;
+</span><span class='line'>
+</span><span class='line'>  -h, --help      Show the program options
+</span><span class='line'>  -c, --commands  Show available commands
+</span><span class='line'>  -v, --verbose       Verbosity level <span class="o">(</span>-v, -vv, -vvv, --verbose 3<span class="o">)</span>. Default: 0
+</span><span class='line'>  -V, --version       Show version information
+</span><span class='line'>  -f, --force     Force
+</span><span class='line'>  -D          Define compiler macro
+</span><span class='line'>  -j, --jobs      Number of concurrent workers a <span class="nb">command </span>may use. Default: 3
+</span><span class='line'>  -C, --config        Rebar config file to use
+</span><span class='line'>  -p, --profile       Profile this run of rebar
+</span><span class='line'>  <span class="nv">var</span><span class="o">=</span>value        rebar global variables <span class="o">(</span>e.g. <span class="nv">force</span><span class="o">=</span>1<span class="o">)</span>
+</span><span class='line'>  <span class="nb">command        </span>Command to run <span class="o">(</span>e.g. compile<span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p></p>
+
+<h1>How do i use it @_@ ?</h1>
+
+<p>Two most important things you can generate using <code>rebar</code> are applications and nodes.
+To generate application you just need to create app directory and run <code>rebar create-app</code> command like this.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>mkdir furby
+</span><span class='line'>λ <span class="nb">cd </span>furby
+</span><span class='line'>λ rebar create-app <span class="nv">appid</span><span class="o">=</span><span class="nv">furby</span>
+</span><span class='line'><span class="o">==</span>&gt; furby <span class="o">(</span>create-app<span class="o">)</span>
+</span><span class='line'>Writing src/furby.app.src
+</span><span class='line'>Writing src/furby_app.erl
+</span><span class='line'>Writing src/furby_sup.erl
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This has created application scaffold with ready to go supervisor. This is ready to go!
+to compile it just run <code>rebar compile</code></p>
+
+<h1>Me gusta</h1>
+
+<p>This is all fine but that don&rsquo;t eliminate a lot, sweet things are behind the corner :).</p>
+
+<h3>eunit</h3>
+
+<p>Rebar enables you to use easy eunit testing framework within your code. Like we did it here <a href="http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/">http://no-fucking-idea.com/blog/2012/03/23/using-eredis-in-erlang/</a>. To do it just run <code>rebar compile eunit</code> .</p>
+
+<figure class='code'><figcaption><span>exmaple_output</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ rebar compile eunit
+</span><span class='line'>zsh: correct <span class="s1">&#39;eunit&#39;</span> to <span class="s1">&#39;.eunit&#39;</span> <span class="o">[</span>nyae<span class="o">]</span>? <span class="nv">n</span>
+</span><span class='line'><span class="o">==</span>&gt; eredis <span class="o">(</span>compile<span class="o">)</span>
+</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>compile<span class="o">)</span>
+</span><span class='line'><span class="o">==</span>&gt; eredis <span class="o">(</span>eunit<span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">=</span>ERROR <span class="nv">REPORT</span><span class="o">====</span> 29-Mar-2012::19:13:21 <span class="o">===</span>
+</span><span class='line'>** Generic server &lt;0.259.0&gt; terminating
+</span><span class='line'>** Last message in was <span class="o">{</span>tcp,#Port&lt;0.4549&gt;,
+</span><span class='line'>                            &lt;&lt;<span class="s2">&quot;*3\r\n$7\r\nmessage\r\n$3\r\nfoo\r\n$2\r\n12\r\n&quot;</span>&gt;&gt;<span class="o">}</span>
+</span><span class='line'>** When Server <span class="nv">state</span> <span class="o">==</span> <span class="o">{</span>state,<span class="s2">&quot;127.0.0.1&quot;</span>,6379,&lt;&lt;&gt;&gt;,100,#Port&lt;0.4549&gt;,
+</span><span class='line'>                               <span class="o">{</span>pstate,undefined,undefined<span class="o">}</span>,
+</span><span class='line'>                               <span class="o">[</span>&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;<span class="o">]</span>,
+</span><span class='line'>                               <span class="o">{</span><span class="c">#Ref&lt;0.0.0.3990&gt;,&lt;0.176.0&gt;},</span>
+</span><span class='line'>                               <span class="o">{[{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;11&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;10&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;9&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;8&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;7&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;6&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;5&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;4&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}</span>,
+</span><span class='line'>                                 <span class="o">{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;3&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}]</span>,
+</span><span class='line'>                                <span class="o">[{</span>message,&lt;&lt;<span class="s2">&quot;foo&quot;</span>&gt;&gt;,&lt;&lt;<span class="s2">&quot;2&quot;</span>&gt;&gt;,&lt;0.259.0&gt;<span class="o">}]}</span>,
+</span><span class='line'>                               10,exit,need_ack<span class="o">}</span>
+</span><span class='line'>** Reason <span class="k">for </span><span class="nv">termination</span> <span class="o">==</span>
+</span><span class='line'>** max_queue_size
+</span><span class='line'>  All 53 tests passed.
+</span><span class='line'>Cover analysis: /private/tmp/example_db/deps/eredis/.eunit/index.html
+</span><span class='line'><span class="o">==</span>&gt; example_db <span class="o">(</span>eunit<span class="o">)</span>
+</span><span class='line'>  All 3 tests passed.
+</span><span class='line'>Cover analysis: /private/tmp/example_db/.eunit/index.html
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>coverage</h3>
+
+<p>Also if you will fiddle with <code>rebar.config</code> and set some variables like this:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ cat rebar.config
+</span><span class='line'>%%-*- mode: erlang -*-
+</span><span class='line'>
+</span><span class='line'><span class="o">{</span>erl_opts, <span class="o">[]}</span>.
+</span><span class='line'><span class="o">{</span>cover_enabled, <span class="nb">true</span><span class="o">}</span>.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>you can get test coverage generated in <code>.eunit</code> folder. but this is just the beginning.  lets look at it.</p>
+
+<figure class='code'><figcaption><span>example_db.COVER.html</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+</pre></td><td class='code'><pre><code class='html'><span class='line'>example_db/.eunit λ cat example_db.COVER.html
+</span><span class='line'><span class="nt">&lt;html&gt;</span>
+</span><span class='line'><span class="nt">&lt;head&gt;&lt;title&gt;</span>.eunit/example_db.COVER.html<span class="nt">&lt;/title&gt;&lt;/head&gt;&lt;body</span> <span class="na">bgcolor=</span><span class="s">white</span> <span class="na">text=</span><span class="s">black</span><span class="nt">&gt;</span>
+</span><span class='line'><span class="nt">&lt;pre&gt;</span>
+</span><span class='line'>File generated from /private/tmp/example_db/.eunit/example_db.erl by COVER 2012-03-29 at 19:13:21
+</span><span class='line'>
+</span><span class='line'>****************************************************************************
+</span><span class='line'>
+</span><span class='line'>        |  -module(example_db).
+</span><span class='line'>        |  -behaviour(gen_server).
+</span><span class='line'>        |
+</span><span class='line'>...(and more)
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h3>dependencies</h3>
+
+<p>Last thing i want to mention is dependencies, i love this feature from <code>rebar</code>. You can add dependencies and rebar will do all the magic for you :). just open your <code>rebar.config</code>  and add thme like this:</p>
+
+<figure class='code'><figcaption><span>rebar.config</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>%%-*- mode: erlang -*-
+</span><span class='line'>
+</span><span class='line'><span class="o">{</span>erl_opts, <span class="o">[]}</span>.
+</span><span class='line'><span class="o">{</span>cover_enabled, <span class="nb">true</span><span class="o">}</span>.
+</span><span class='line'>
+</span><span class='line'><span class="o">{</span>deps,
+</span><span class='line'>  <span class="o">[</span>
+</span><span class='line'>    <span class="o">{</span>eredis, <span class="s2">&quot;.*&quot;</span>, <span class="o">{</span>git, <span class="s2">&quot;https://github.com/wooga/eredis.git&quot;</span>, <span class="s2">&quot;HEAD&quot;</span><span class="o">}}</span>
+</span><span class='line'>  <span class="o">]</span>
+</span><span class='line'><span class="o">}</span>.
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Whenever you will type <code>rebar get-deps</code> he will download all dependencies and install them into <code>deps</code> directory. This makes developing applications using things like mochiweb really easy!</p>
+
+<h1>Summary</h1>
+
+<p>I love this tool, it makes learning and development in <code>Erlang</code> much easier and more rewarding experience. I hope this help you a bit :). Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -555,6 +838,10 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/12/forkio-and-friends/">forkIO and Friends</a>
       </li>
     
@@ -568,10 +855,6 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
     
       <li class="post">
         <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/21/if-the-real-game-changer/">&#8216;If&#8217; the Real Game Changer</a>
       </li>
     
   </ul>

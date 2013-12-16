@@ -177,7 +177,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <p>Previous example was a bit cheating as it showed nothing really important so lets make some crazy threads printing stuff now.</p>
 
-<figure class='code'><figcaption><span>crazy_gals.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>crazygals.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -210,7 +210,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <p>Well compiling and running this gives you only &ldquo;hit it guys&rdquo; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
 
-<figure class='code'><figcaption><span>crazy_gals2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>crazygals2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -250,7 +250,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 <p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &ldquo;thread&rdquo; function in separation.
 Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it simpler.</p>
 
-<figure class='code'><figcaption><span>crazy_gals3.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span>crazygals3.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -344,7 +344,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&rsquo;t got it by now :) )</p>
 
-<figure class='code'><figcaption><span>chanz2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
 <span class='line-number'>3</span>
 <span class='line-number'>4</span>
@@ -381,7 +381,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span><span class='line'><span class="nf">worker</span> <span class="n">chan</span> <span class="n">foo</span> <span class="ow">=</span> <span class="kr">do</span>
 </span><span class='line'>  <span class="n">forkIO</span> <span class="o">$</span> <span class="n">forever</span> <span class="o">$</span> <span class="n">foo</span> <span class="n">chan</span>
 </span><span class='line'>
-</span><span class='line'><span class="nf">worker&#39;</span> <span class="n">action</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'><span class="nf">worker2</span> <span class="n">action</span> <span class="ow">=</span> <span class="kr">do</span>
 </span><span class='line'>  <span class="n">forkIO</span> <span class="o">$</span> <span class="n">forever</span> <span class="n">action</span>
 </span><span class='line'>
 </span><span class='line'><span class="nf">gossipGirl</span> <span class="n">chan</span> <span class="ow">=</span> <span class="kr">do</span>
@@ -398,9 +398,9 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan</span> <span class="s">&quot;Garbage is garbage!&quot;</span>
 </span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan</span> <span class="s">&quot;Garbage is garbage for reals!&quot;</span>
 </span><span class='line'>
-</span><span class='line'>  <span class="n">worker&#39;</span> <span class="p">(</span><span class="n">gossipGirl</span> <span class="n">gossipChan2</span><span class="p">)</span> <span class="c1">-- worker&#39; 2 girl!</span>
-</span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan</span> <span class="s">&quot;Umkay&quot;</span>
-</span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan</span> <span class="s">&quot;Yez!&quot;</span>
+</span><span class='line'>  <span class="n">worker2</span> <span class="p">(</span><span class="n">gossipGirl</span> <span class="n">gossipChan2</span><span class="p">)</span> <span class="c1">-- woker2 2 girl!</span>
+</span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan2</span> <span class="s">&quot;Umkay&quot;</span>
+</span><span class='line'>  <span class="n">writeChan</span> <span class="n">gossipChan2</span> <span class="s">&quot;Yez!&quot;</span>
 </span><span class='line'>
 </span><span class='line'>  <span class="n">getLine</span>
 </span><span class='line'>  <span class="n">putStrLn</span> <span class="s">&quot;Thank You Sir for Info&quot;</span>
@@ -541,6 +541,8 @@ Each of them run forever like crazy music fans :). In this place we can make it 
         <a class="basic-alignment left" href="/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/" title="Previous Post: Erlang E17 and Second Edition of Programming Erlang">&laquo; Erlang E17 and Second Edition of Programming Erlang</a>
       
       
+        <a class="basic-alignment right" href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/" title="Next Post: Working with URL quick tip Network.Url">Working with URL quick tip Network.Url &raquo;</a>
+      
     </p>
   </footer>
 </article>
@@ -562,6 +564,10 @@ Each of them run forever like crazy music fans :). In this place we can make it 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/12/forkio-and-friends/">forkIO and Friends</a>
       </li>
     
@@ -575,10 +581,6 @@ Each of them run forever like crazy music fans :). In this place we can make it 
     
       <li class="post">
         <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/02/21/if-the-real-game-changer/">'If' the Real Game Changer</a>
       </li>
     
   </ul>

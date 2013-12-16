@@ -4,7 +4,7 @@
   <title><![CDATA[Category: chan | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/chan/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-13T09:00:50+00:00</updated>
+  <updated>2013-12-16T22:20:09+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -81,7 +81,7 @@ import Control.Concurrent</p>
 
 <p>Previous example was a bit cheating as it showed nothing really important so lets make some crazy threads printing stuff now.</p>
 
-<p>``` haskell crazy_gals.hs</p>
+<p>``` haskell crazygals.hs</p>
 
 <p>import Control.Concurrent</p>
 
@@ -102,7 +102,7 @@ import Control.Concurrent</p>
 
 <p>Well compiling and running this gives you only &ldquo;hit it guys&rdquo; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
 
-<p>``` haskell crazy_gals2.hs</p>
+<p>``` haskell crazygals2.hs</p>
 
 <p>import Control.Concurrent</p>
 
@@ -127,7 +127,7 @@ import Control.Concurrent</p>
 <p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &ldquo;thread&rdquo; function in separation.
 Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it simpler.</p>
 
-<p>``` haskell crazy_gals3.hs</p>
+<p>``` haskell crazygals3.hs</p>
 
 <p>import Control.Concurrent
 import Control.Monad (forever)</p>
@@ -194,15 +194,16 @@ main = do
 
 <p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&rsquo;t got it by now :) )</p>
 
-<p>``` haskell chanz2.hs
-import Control.Concurrent
+<p>``` haskell</p>
+
+<p>import Control.Concurrent
 import Control.Monad (forever)
 import Control.Concurrent.Chan</p>
 
 <p>worker chan foo = do
   forkIO $ forever $ foo chan</p>
 
-<p>worker' action = do
+<p>worker2 action = do
   forkIO $ forever action</p>
 
 <p>gossipGirl chan = do</p>
@@ -221,7 +222,7 @@ main = do
 <p>  writeChan gossipChan &ldquo;Garbage is garbage!&rdquo;
   writeChan gossipChan &ldquo;Garbage is garbage for reals!&rdquo;</p>
 
-<p>  worker' (gossipGirl gossipChan2) &mdash; worker' 2 girl!
+<p>  worker2 (gossipGirl gossipChan2) &mdash; woker2 2 girl!
   writeChan gossipChan2 &ldquo;Umkay&rdquo;
   writeChan gossipChan2 &ldquo;Yez!&rdquo;</p>
 
@@ -271,9 +272,8 @@ main = do
   putStrLn response'</p>
 
 <p>  getLine
-  return ()</p>
-
-<p>```</p>
+  return ()
+```</p>
 
 <h1>Summary</h1>
 

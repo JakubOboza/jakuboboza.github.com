@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: quick | No F*cking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/quick/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2013-12-16T22:20:09+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Working with URL quick tip Network.Url]]></title>
+    <link href="http://no-fucking-idea.com/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/"/>
+    <updated>2013-12-16T17:59:58+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url</id>
+    <content type="html"><![CDATA[<p>I have bigger text to post but before i will do it i have to split it into smaller parts so it will not be one long post about everything.</p>
+
+<p><img src="http://i.imgur.com/jwI5yqK.png" alt="cat explaining stuff" /></p>
+
+<h1>Working with URL&rsquo;s</h1>
+
+<p>Most of the time when preparing to make an http request in haskell eg. using <code>simpleHTTP</code> we need to build a request. We have several ways to do it, one of them would be to ugly glue strings together but thats not the way to do it in a safe way. Happily for us we have <code>url</code>, <code>(cabal install url)</code> package that adds <code>Network.Url</code> package. And here i will show few quick tips how to use it to work with urls.</p>
+
+<h2>Step one: Import</h2>
+
+<p>First thing we have to do is to import our package :D and string into out url lib.</p>
+
+<p>``` haskell start.hs
+import Network.URL</p>
+
+<p>main = do
+  putStrLn &ldquo;give me some url:&rdquo;
+  rawUrl &lt;&ndash; getLine
+  let maybeUrl = importURL rawUrl in</p>
+
+<pre><code>case maybeUrl of
+Just url -&gt;
+  putStrLn $ exportURL $ add\_param url ("param\_name","param\_value")
+Nothing  -&gt; putStrLn "Sorry but this doesn't look like url"
+</code></pre>
+
+<p>```</p>
+
+<p>This is the super simple example. But how it work? First of all we have <code>importURL</code> with signature:</p>
+
+<p><code>haskell
+importURL :: String -&gt; Maybe URL
+</code></p>
+
+<p>This will import url in form of string to url library and give us back Maybe URL. This is awesome! So we will have type that we can work on Yay! To exist library and get back string at the end we use <code>exportURL</code> with signature:</p>
+
+<p><code>haskell
+exportURL :: URL -&gt; String
+</code></p>
+
+<p>So we are only doing some simple transformation <code>String -&gt; Maybe URL -&gt; URL -&gt; String</code> thats nothing we can&rsquo;t handle!</p>
+
+<p>Next important bit is <code>add_param</code> function with signature:</p>
+
+<p><code>haskell
+add_param :: URL -&gt; (String, String) -&gt; URL
+</code></p>
+
+<p>This does exactly what we would expect :D add url param to our url. Ofc work inside URL lib so we expect as input URL type.</p>
+
+<h2>Setp two: More detailed example</h2>
+
+<p>I will try to reiterate our first example showing a bit more thing. Or just same things in a different way. Lets try to add two params.</p>
+
+<p>``` haskell ue2.hs
+import Network.URL</p>
+
+<p>prepareUrl url =
+  let newUrl = add_param url (&ldquo;query&rdquo;,&ldquo;gimme cats pics&rdquo;) in</p>
+
+<pre><code>add_param newUrl ("size", "any")
+</code></pre>
+
+<p>main = do
+  putStrLn &ldquo;give me some url:&rdquo;
+  rawUrl &lt;&ndash; getLine
+  let maybeUrl = importURL rawUrl in</p>
+
+<pre><code>case maybeUrl of
+Just url -&gt;
+  putStrLn $ exportURL $ prepareUrl url
+Nothing  -&gt; putStrLn "Sorry but this doesn't look like url"
+</code></pre>
+
+<p>```</p>
+
+<p>You should run the code and see something like this:
+<code>
+ λ ./ue2
+give me some url:
+lambdacu.be
+lambdacu.be?size=any&amp;query=gimme+cats+pics
+</code></p>
+
+<h1>Summary</h1>
+
+<p>It is just a quick tip :) <code>Network.URL</code> has few more functions eg. to check if protocl is secure and checking if params are ok.
+But stuff showed above is the main point of lib.</p>
+
+<p>More about this lib ofc on hackage: <a href="http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html">http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html</a></p>
+
+<p>&hellip;.And quick tip should be quick :)</p>
+]]></content>
+  </entry>
+  
+</feed>
