@@ -4,7 +4,7 @@
   <title><![CDATA[Category: quick | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/quick/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-16T22:31:18+00:00</updated>
+  <updated>2013-12-16T22:32:38+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -52,7 +52,7 @@ Nothing  -&gt; putStrLn "Sorry but this doesn't look like url"
 importURL :: String -&gt; Maybe URL
 </code></p>
 
-<p>This will import url in form of string to url library and give us back Maybe URL. This is awesome! So we will have type that we can work on Yay! To exist library and get back string at the end we use <code>exportURL</code> with signature:</p>
+<p>This will import url in form of string to url library and give us back Maybe URL. This is awesome! So we will have type that we can work on Yay! To exit library and get back string. We need to use <code>exportURL</code> with signature:</p>
 
 <p><code>haskell
 exportURL :: URL -&gt; String
