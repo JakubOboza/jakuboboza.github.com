@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="I&rsquo;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&rsquo;t &hellip;">
+  <meta name="description" content="I&#8217;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&#8217;t &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -107,11 +107,11 @@
   </header>
 
 
-<div class="entry-content"><p>I&rsquo;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&rsquo;t want to build whole app in C because i know how this can end when you are 1500 &ndash; 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
+<div class="entry-content"><p>I&#8217;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&#8217;t want to build whole app in C because i know how this can end when you are 1500 - 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
 
 <h1>Ports</h1>
 
-<p>Firt thought was to build small C program that will check stuff periodically or just &ldquo;check stuff&rdquo; in SHT1x and just print it out to output. So my first attempt was</p>
+<p>Firt thought was to build small C program that will check stuff periodically or just &#8220;check stuff&#8221; in SHT1x and just print it out to output. So my first attempt was</p>
 
 <p>For the example here i will use <code>/proc/cpuinfo</code></p>
 
@@ -152,7 +152,7 @@
 
 <p>The thing i found is called erl_interface and it is designed for FFI. This is it! What you do is you build process like thing in C and micro module in erlang that handles this. (It is just to make it look nice). But there are few glitches!</p>
 
-<p>This is my module posting back &ldquo;pong&rdquo; on &ldquo;ping&rdquo; message</p>
+<p>This is my module posting back &#8220;pong&#8221; on &#8220;ping&#8221; message</p>
 
 <figure class='code'><figcaption><span>lolpong.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -269,7 +269,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called &ldquo;emu@raspberrypi&rdquo; and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means &ldquo;memory leak&rdquo;.</p>
+<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called &#8220;emu@raspberrypi&#8221; and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means &#8220;memory leak&#8221;.</p>
 
 <p>But most important thing is how to build this and run.</p>
 
@@ -288,7 +288,7 @@
 
 <h2>Running everything.</h2>
 
-<p>No how to make everything work&hellip; we need module</p>
+<p>No how to make everything work&#8230; we need module</p>
 
 <figure class='code'><figcaption><span>lolpong.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -312,14 +312,14 @@
 <p>`
 This c1 is for c extension 1 not super obvious :) cN will be for c extension N =).</p>
 
-<p>And finally we need to spawn our node&hellip;</p>
+<p>And finally we need to spawn our node&#8230;</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>λ  erl -sname <span class="s2">&quot;emu&quot;</span> -setcookie <span class="s2">&quot;cookie&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This spawns node named emu@raspberrypi on my mini box with cookie &ldquo;cookie&rdquo; now &hellip; i said finally&hellip; but it was not final step.</p>
+<p>This spawns node named emu@raspberrypi on my mini box with cookie &#8220;cookie&#8221; now &#8230; i said finally&#8230; but it was not final step.</p>
 
 <p>Final step is to run out <code>lolpong</code> binary. It is important to run it after node is up because it will try to connect to this node.</p>
 
@@ -490,7 +490,7 @@ This c1 is for c extension 1 not super obvious :) cN will be for c extension N =
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Jakub Oboza -
+  Copyright &copy; 2014 - Jakub Oboza -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

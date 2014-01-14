@@ -114,7 +114,7 @@
 
 <p><img src="http://i.imgur.com/jwI5yqK.png" alt="cat explaining stuff" /></p>
 
-<h1>Working with URL&rsquo;s</h1>
+<h1>Working with URL&#8217;s</h1>
 
 <p>Most of the time when preparing to make an http request in haskell eg. using <code>simpleHTTP</code> we need to build a request. We have several ways to do it, one of them would be to ugly glue strings together but thats not the way to do it in a safe way. Happily for us we have <code>url</code>, <code>(cabal install url)</code> package that adds <code>Network.Url</code> package. And here i will show few quick tips how to use it to work with urls.</p>
 
@@ -159,7 +159,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>So we are only doing some simple transformation <code>String ~&gt;~ Maybe URL ~&gt;~ URL ~&gt;~ String</code> thats nothing we can&rsquo;t handle!</p>
+<p>So we are only doing some simple transformation <code>String ~&gt;~ Maybe URL ~&gt;~ URL ~&gt;~ String</code> thats nothing we can&#8217;t handle!</p>
 
 <p>Next important bit is <code>add_param</code> function with signature:</p>
 
@@ -225,7 +225,7 @@ But stuff showed above is the main point of lib.</p>
 
 <p>More about this lib ofc on hackage: <a href="http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html">http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html</a></p>
 
-<p>&hellip;.And quick tip should be quick :)</p>
+<p>&#8230;.And quick tip should be quick :)</p>
 </div>
   
   
@@ -301,11 +301,11 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And that&rsquo;s actually all we need. Let&rsquo;s make some stuff working.</p>
+<p>And that&#8217;s actually all we need. Let&#8217;s make some stuff working.</p>
 
 <h1>Ok So lets get this party started :)</h1>
 
-<p>I think most of the time it&rsquo;s better to explain stuff on examples.</p>
+<p>I think most of the time it&#8217;s better to explain stuff on examples.</p>
 
 <h2>Just spawn!</h2>
 
@@ -328,7 +328,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <p>This is a very simple way to spawn a light weight thread via forkIO :>. As you can see it is a normal action so you can go dirty!</p>
 
-<p>forkIO takes actions and give you back IO ThreadId so you can keep track / kill threads you don&rsquo;t like</p>
+<p>forkIO takes actions and give you back IO ThreadId so you can keep track / kill threads you don&#8217;t like</p>
 
 <h2>Just Spawn</h2>
 
@@ -365,7 +365,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Well compiling and running this gives you only &ldquo;hit it guys&rdquo; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
+<p>Well compiling and running this gives you only &#8220;hit it guys&#8221; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
 
 <figure class='code'><figcaption><span>crazygals2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -404,7 +404,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <p>After launching it you can see how each thread is spamming its prints ;> So it work until you will hit enter. Cool so we have something working.</p>
 
-<p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &ldquo;thread&rdquo; function in separation.
+<p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &#8220;thread&#8221; function in separation.
 Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it simpler.</p>
 
 <figure class='code'><figcaption><span>crazygals3.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -450,7 +450,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <p>Cool so now we have some basics how to spawn a thread using forkIO but to have something that we actually can use in real life we need to have some sort of communication. I wanna present something i feel would be useful in almost every haskell program. Channel combined with forkIO.</p>
 
-<p>If you programmed ever in <code>Erlang</code> or <code>Go</code> you will know what i&rsquo;m talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can&rsquo;t predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
+<p>If you programmed ever in <code>Erlang</code> or <code>Go</code> you will know what i&#8217;m talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can&#8217;t predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
 
 <p>Channels are amazing because they are flexible :) And very natural. Basic principle is simple you write in one thread to the channel and read in other :)</p>
 
@@ -499,7 +499,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <h2>A Worker</h2>
 
-<p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&rsquo;t got it by now :) )</p>
+<p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&#8217;t got it by now :) )</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -564,7 +564,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Yes you can build workers as you want. I would not spend time on trying to build uber generic worker as it is usually custom and you don&rsquo;t need to spend much time to make one :). Usually you can have worker types for particular tasks eg. databasesWriter, logWriters, counters etc.</p>
+<p>Yes you can build workers as you want. I would not spend time on trying to build uber generic worker as it is usually custom and you don&#8217;t need to spend much time to make one :). Usually you can have worker types for particular tasks eg. databasesWriter, logWriters, counters etc.</p>
 
 <p>Now why would you all this forkIO stuff ? here is there reason. Cat simulation!</p>
 
@@ -643,7 +643,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <h1>Summary</h1>
 
-<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don&rsquo;t need to be expert on Kleisli arrows to use them ;).</p>
+<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don&#8217;t need to be expert on Kleisli arrows to use them ;).</p>
 
 <p>Cheers!</p>
 </div>
@@ -684,17 +684,17 @@ Each of them run forever like crazy music fans :). In this place we can make it 
   </header>
 
 
-  <div class="entry-content"><p>Today I got my hands on <a href="http://pragprog.com/book/jaerlang2/programming-erlang">Programming Erlang 2ed</a>. And i have to make a spoiler now. The book is great. I remember the times when i was reading &ldquo;Programing Erlang&rdquo; and it was a great book. I enjoyed it and it made me get into erlang I was a really happy person.</p>
+  <div class="entry-content"><p>Today I got my hands on <a href="http://pragprog.com/book/jaerlang2/programming-erlang">Programming Erlang 2ed</a>. And i have to make a spoiler now. The book is great. I remember the times when i was reading &#8220;Programing Erlang&#8221; and it was a great book. I enjoyed it and it made me get into erlang I was a really happy person.</p>
 
 <p>This book is talking about R17. From what i read R17 should be named Erlang 2.0 the changes are just amazing.</p>
 
-<p>My face after reading changes&hellip;</p>
+<p>My face after reading changes&#8230;</p>
 
 <p><img src="http://i.imgur.com/fbC4hQ7.png" alt="Vomiting Rainbow" /></p>
 
 <h1>Page 75 Maps</h1>
 
-<p>This chapter hits you in the face! I don&rsquo;t have yet E17 to check more stuff but this looks amazing. Ok lets have a look. In Erlang E17 they are introducing MAPS. Also known as key-val&rsquo;s / hashes / assoccs / dictionary. Basically a data structure that lets you store a value with a key and retrieve the value if you know the right key.</p>
+<p>This chapter hits you in the face! I don&#8217;t have yet E17 to check more stuff but this looks amazing. Ok lets have a look. In Erlang E17 they are introducing MAPS. Also known as key-val&#8217;s / hashes / assoccs / dictionary. Basically a data structure that lets you store a value with a key and retrieve the value if you know the right key.</p>
 
 <p>Lets have a look at the syntax.</p>
 
@@ -721,11 +721,11 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Isn&rsquo;t this amazing!? You can use maps like in ruby and pattern match on them. And i was just about to scream from joy when&hellip;</p>
+<p>Isn&#8217;t this amazing!? You can use maps like in ruby and pattern match on them. And i was just about to scream from joy when&#8230;</p>
 
 <p>i saw this.</p>
 
-<h2>Maps &ndash;>  Json</h2>
+<h2>Maps ->  Json</h2>
 
 <p>Yes you can serialize and deserialize maps to json. WTF ?! Yes.</p>
 
@@ -755,11 +755,11 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <h1>Addition of Dializer and Rebar</h1>
 
-<p>This is great from empiric point of view as Joe shows how to use rebar and build real life code using github. This is a great thing and worth reading. I love it :) You get real life example&hellip; i get here everything i lacked in previous book.</p>
+<p>This is great from empiric point of view as Joe shows how to use rebar and build real life code using github. This is a great thing and worth reading. I love it :) You get real life example&#8230; i get here everything i lacked in previous book.</p>
 
 <h1>Summary</h1>
 
-<p>Every single new thing in the book is great. Stuff about E17 version of Erlang is just great. I don&rsquo;t have E17 yet on my box but this will be by far best release of Erlang.  In chapter about maps he talks about looking at ruby. I think it is a bit inspired by ruby builtin syntax for hashes by yet again. This is amazing and in future this will resolve so many problems and make many API&rsquo;s much more useful. You don&rsquo;t have to type anymore ton of _ if you want to pattern match on big tuple. You can match on a key.</p>
+<p>Every single new thing in the book is great. Stuff about E17 version of Erlang is just great. I don&#8217;t have E17 yet on my box but this will be by far best release of Erlang.  In chapter about maps he talks about looking at ruby. I think it is a bit inspired by ruby builtin syntax for hashes by yet again. This is amazing and in future this will resolve so many problems and make many API&#8217;s much more useful. You don&#8217;t have to type anymore ton of _ if you want to pattern match on big tuple. You can match on a key.</p>
 
 <p>I spend an hour reading the book on the train from London to Epsom and all I can say. It is great!. I love it and i love new changes!</p>
 </div>
@@ -838,7 +838,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This will set for 1500 seconds key &ldquo;key:to:home&rdquo; to value &ldquo;4b234ferg34ret34rasd32rs&rdquo;. Pretty easy thing to do.</p>
+<p>This will set for 1500 seconds key &#8220;key:to:home&#8221; to value &#8220;4b234ferg34ret34rasd32rs&#8221;. Pretty easy thing to do.</p>
 
 <h2>PSETEX</h2>
 
@@ -849,7 +849,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Will set &ldquo;key:to:home&rdquo; to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
+<p>Will set &#8220;key:to:home&#8221; to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
 
 <p>Cheers!</p>
 </div>
@@ -890,9 +890,9 @@ Each of them run forever like crazy music fans :). In this place we can make it 
   </header>
 
 
-  <div class="entry-content"><p>So it was long since last post and i have in pipeline many posts on ODM&rsquo;s, Genetic Algorithms, Streaming Algorithms Clojure and Haskell i was working on but nothing is finished ;/. Need time!</p>
+  <div class="entry-content"><p>So it was long since last post and i have in pipeline many posts on ODM&#8217;s, Genetic Algorithms, Streaming Algorithms Clojure and Haskell i was working on but nothing is finished ;/. Need time!</p>
 
-<h1>I&rsquo;m using twitter</h1>
+<h1>I&#8217;m using twitter</h1>
 
 <p>And most of the time it is just updates from friends, sometimes some news from hacker world that potentially could be interesting. I use twitter in a bit odd way first of all i post link to things i read during commute to work :) and i use twitter to post alters from my apps to me.</p>
 
@@ -976,11 +976,11 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <h1>Observations</h1>
 
-<p>I started making mind notes of things that i understand about system i&rsquo;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
+<p>I started making mind notes of things that i understand about system i&#8217;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
 
 <h2>Observation 1</h2>
 
-<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &ldquo;this is simple&rdquo;. We can represent it by list of actions like this</p>
+<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &#8220;this is simple&#8221;. We can represent it by list of actions like this</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span>
@@ -991,7 +991,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <h2>Observation 2</h2>
 
-<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &ldquo;if&rdquo; i WIN !
+<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &#8220;if&#8221; i WIN !
 Lets have a look</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -1009,11 +1009,11 @@ Lets have a look</p>
 
 <h2>Observation 3</h2>
 
-<p>It is not a tree&hellip;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&hellip; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
+<p>It is not a tree&#8230;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&#8230; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
 
 <h1>AST</h1>
 
-<p>I wrote simple grammar and made a parser of a very simple &ldquo;ify&rdquo; language. My language starts like this&hellip;</p>
+<p>I wrote simple grammar and made a parser of a very simple &#8220;ify&#8221; language. My language starts like this&#8230;</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1403,7 +1403,7 @@ Lets have a look</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>But it works&hellip; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
+<p>But it works&#8230; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
 </div>
   
   
@@ -1446,7 +1446,7 @@ Lets have a look</p>
 
 <h1>Startup era</h1>
 
-<p>We live now in startup era and main focus of people building new products is to make them fast. Who is the first to build some solution is most likely to get the market and monetize it. So almost every father of startup is looking for a technology that will help him build thing fast. This is the main reason that Rails are so popular, they are not fast, they consume memory like crazy but they offer you out-of-box something that you can work on. It has all properties you are looking for and everything is there with rich documentation and easy to learn and use conventions. Rails are like a gift to people who wants to &ldquo;prototype&rdquo; application fast, but for 99% of solution out there they never leave prototype stage.</p>
+<p>We live now in startup era and main focus of people building new products is to make them fast. Who is the first to build some solution is most likely to get the market and monetize it. So almost every father of startup is looking for a technology that will help him build thing fast. This is the main reason that Rails are so popular, they are not fast, they consume memory like crazy but they offer you out-of-box something that you can work on. It has all properties you are looking for and everything is there with rich documentation and easy to learn and use conventions. Rails are like a gift to people who wants to &#8220;prototype&#8221; application fast, but for 99% of solution out there they never leave prototype stage.</p>
 
 <h2>Going big!</h2>
 
@@ -1454,11 +1454,11 @@ Lets have a look</p>
 
 <h2>Natural point in life</h2>
 
-<p>Every framework has to go through this type of periods in its life, there is no bug free code. People will find bugs in code base. What is the best way to prevent this ? Have a great team of engineers that follows the trends. But&hellip; most of startup owners wants to cut the costs, they outsource the work and have periods of life of the product that simply nobody cares about it in technical way.  Or it can be even worse, team can be focused so much on features because of the boss pressure that they don&rsquo;t have time for it.</p>
+<p>Every framework has to go through this type of periods in its life, there is no bug free code. People will find bugs in code base. What is the best way to prevent this ? Have a great team of engineers that follows the trends. But&#8230; most of startup owners wants to cut the costs, they outsource the work and have periods of life of the product that simply nobody cares about it in technical way.  Or it can be even worse, team can be focused so much on features because of the boss pressure that they don&#8217;t have time for it.</p>
 
 <h1>Building solution</h1>
 
-<p>Some of startup starters will be technical, more technical or not technical at all, in most cases it is not technical at all and this is a problem. This leads to building every startup base on frameworks like Rails or Django. Scenario looks the same every time. First team spends a lot of time building initial release and next it goes big so they don&rsquo;t have a way to scale it in other way than spaming rails instances and changing database. So if something hits rails it hits whole platform and that hurts. Second scenario is that team is having some sort of engine and just a rails front end this is a smart approach because if something will go really wrong it only will kill front end and this is not bad! But how many teams build solutions in this way ? Not many, mostly polilingual team that know something more than ruby. What i experienced in my career is that people don&rsquo;t wan to do some initial design decisions before start they just want to have product and &ldquo;we will think about it later&rdquo;. This from business point of view is ok but this &ldquo;later&rdquo; is often very early.  Some startups are lucky enough to have engineer that are smart and know how to solve problems using background processing, caching and a bit of cheating (eg. like youtube do with vote count) so make everything work smooth but most of startups are created in a crazy way with big stress on speed of building.</p>
+<p>Some of startup starters will be technical, more technical or not technical at all, in most cases it is not technical at all and this is a problem. This leads to building every startup base on frameworks like Rails or Django. Scenario looks the same every time. First team spends a lot of time building initial release and next it goes big so they don&#8217;t have a way to scale it in other way than spaming rails instances and changing database. So if something hits rails it hits whole platform and that hurts. Second scenario is that team is having some sort of engine and just a rails front end this is a smart approach because if something will go really wrong it only will kill front end and this is not bad! But how many teams build solutions in this way ? Not many, mostly polilingual team that know something more than ruby. What i experienced in my career is that people don&#8217;t wan to do some initial design decisions before start they just want to have product and &#8220;we will think about it later&#8221;. This from business point of view is ok but this &#8220;later&#8221; is often very early.  Some startups are lucky enough to have engineer that are smart and know how to solve problems using background processing, caching and a bit of cheating (eg. like youtube do with vote count) so make everything work smooth but most of startups are created in a crazy way with big stress on speed of building.</p>
 
 <h2>Problems, security and future</h2>
 
@@ -1466,7 +1466,7 @@ Lets have a look</p>
 
 <h1>Summary</h1>
 
-<p>I think problems like rails have now with security are not something we should cry about, it is just another step in becoming mature framework and problems like this can happen always with every framework. We have to embrace it and devise tactics to deal with it in a timely  fashion so we will not be affected. Building software is not cheap, maintaining it is not cheap but&hellip; if you will hit right market you will get the money back.</p>
+<p>I think problems like rails have now with security are not something we should cry about, it is just another step in becoming mature framework and problems like this can happen always with every framework. We have to embrace it and devise tactics to deal with it in a timely  fashion so we will not be affected. Building software is not cheap, maintaining it is not cheap but&#8230; if you will hit right market you will get the money back.</p>
 
 <p>This is how i see startup stage now.</p>
 </div>
@@ -1507,11 +1507,11 @@ Lets have a look</p>
   </header>
 
 
-  <div class="entry-content"><p>I&rsquo;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&rsquo;t want to build whole app in C because i know how this can end when you are 1500 &ndash; 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
+  <div class="entry-content"><p>I&#8217;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&#8217;t want to build whole app in C because i know how this can end when you are 1500 - 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
 
 <h1>Ports</h1>
 
-<p>Firt thought was to build small C program that will check stuff periodically or just &ldquo;check stuff&rdquo; in SHT1x and just print it out to output. So my first attempt was</p>
+<p>Firt thought was to build small C program that will check stuff periodically or just &#8220;check stuff&#8221; in SHT1x and just print it out to output. So my first attempt was</p>
 
 <p>For the example here i will use <code>/proc/cpuinfo</code></p>
 
@@ -1552,7 +1552,7 @@ Lets have a look</p>
 
 <p>The thing i found is called erl_interface and it is designed for FFI. This is it! What you do is you build process like thing in C and micro module in erlang that handles this. (It is just to make it look nice). But there are few glitches!</p>
 
-<p>This is my module posting back &ldquo;pong&rdquo; on &ldquo;ping&rdquo; message</p>
+<p>This is my module posting back &#8220;pong&#8221; on &#8220;ping&#8221; message</p>
 
 <figure class='code'><figcaption><span>lolpong.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1669,7 +1669,7 @@ Lets have a look</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called &ldquo;emu@raspberrypi&rdquo; and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means &ldquo;memory leak&rdquo;.</p>
+<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called &#8220;emu@raspberrypi&#8221; and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means &#8220;memory leak&#8221;.</p>
 
 <p>But most important thing is how to build this and run.</p>
 
@@ -1688,7 +1688,7 @@ Lets have a look</p>
 
 <h2>Running everything.</h2>
 
-<p>No how to make everything work&hellip; we need module</p>
+<p>No how to make everything work&#8230; we need module</p>
 
 <figure class='code'><figcaption><span>lolpong.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1712,14 +1712,14 @@ Lets have a look</p>
 <p>`
 This c1 is for c extension 1 not super obvious :) cN will be for c extension N =).</p>
 
-<p>And finally we need to spawn our node&hellip;</p>
+<p>And finally we need to spawn our node&#8230;</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>λ  erl -sname <span class="s2">&quot;emu&quot;</span> -setcookie <span class="s2">&quot;cookie&quot;</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This spawns node named emu@raspberrypi on my mini box with cookie &ldquo;cookie&rdquo; now &hellip; i said finally&hellip; but it was not final step.</p>
+<p>This spawns node named emu@raspberrypi on my mini box with cookie &#8220;cookie&#8221; now &#8230; i said finally&#8230; but it was not final step.</p>
 
 <p>Final step is to run out <code>lolpong</code> binary. It is important to run it after node is up because it will try to connect to this node.</p>
 
@@ -1782,7 +1782,7 @@ This c1 is for c extension 1 not super obvious :) cN will be for c extension N =
   </header>
 
 
-  <div class="entry-content"><p>Recently with friends we are building side project called &ldquo;Midway&rdquo; its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
+  <div class="entry-content"><p>Recently with friends we are building side project called &#8220;Midway&#8221; its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
 
 <h1>Making request</h1>
 
@@ -1897,14 +1897,14 @@ So first thing to do is to start inets!</p>
 
 <p>One thing worth mentioning is that it expects input in a bit structured format.</p>
 
-<p>So typycaly it will use &ldquo;struct&rdquo; symbol for json &ldquo;{}&rdquo; objects.</p>
+<p>So typycaly it will use &#8220;struct&#8221; symbol for json &#8220;{}&#8221; objects.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">struct</span><span class="p">,</span> <span class="p">[{</span><span class="n">name</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;jakub&quot;</span><span class="o">&gt;&gt;</span><span class="p">},</span> <span class="p">{</span><span class="n">age</span><span class="p">,</span> <span class="mi">27</span><span class="p">},</span> <span class="p">{</span><span class="n">ids</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]}]}</span>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use&hellip;</p>
+<p>So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use&#8230;</p>
 
 <h2>Jiffy</h2>
 
@@ -1927,7 +1927,7 @@ So first thing to do is to start inets!</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This shows how nice it is to use :D no &lsquo;struct&rsquo; pure love!</p>
+<p>This shows how nice it is to use :D no &#8216;struct&#8217; pure love!</p>
 
 <p>You can get it here <a href="https://github.com/davisp/jiffy">https://github.com/davisp/jiffy</a></p>
 
@@ -1972,34 +1972,34 @@ So first thing to do is to start inets!</p>
   </header>
 
 
-  <div class="entry-content"><p>I&rsquo;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with &ldquo;hacker&rdquo; effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are &ldquo;new&rdquo; today like nodejs &ldquo;the new black&rdquo; are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment&hellip;  That is the things i would like to rant about today.</p>
+  <div class="entry-content"><p>I&#8217;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with &#8220;hacker&#8221; effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are &#8220;new&#8221; today like nodejs &#8220;the new black&#8221; are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment&#8230;  That is the things i would like to rant about today.</p>
 
 <h1>New Discoveries</h1>
 
-<p>&ldquo;Theory is the thing we all skip and later on regret skipping&rdquo; (Yes i quoted my self, I heard someone did it before so its not hip). We learn a lot of stuff and some of the things simply slip through and gets forgotten. That is opening for &ldquo;new discoveries&rdquo; or &ldquo;rediscoveries&rdquo; of some solutions. I have a thesis that &ldquo;if something is simple it will get its niche&rdquo; (did it again). This would explain new hipe for Nodejs &lt;nodejs.org>. I don&rsquo;t want to judge technologies I did some stuff in node and i have small portion of experience but this text is not about this, its about technology behind stuff people think it&rsquo;s brilliant and new nowadays.</p>
+<p>&#8220;Theory is the thing we all skip and later on regret skipping&#8221; (Yes i quoted my self, I heard someone did it before so its not hip). We learn a lot of stuff and some of the things simply slip through and gets forgotten. That is opening for &#8220;new discoveries&#8221; or &#8220;rediscoveries&#8221; of some solutions. I have a thesis that &#8220;if something is simple it will get its niche&#8221; (did it again). This would explain new hipe for Nodejs &lt;nodejs.org>. I don&#8217;t want to judge technologies I did some stuff in node and i have small portion of experience but this text is not about this, its about technology behind stuff people think it&#8217;s brilliant and new nowadays.</p>
 
 <h2>Event loop | Evented solutions</h2>
 
-<p>Event loops exists long long and are nothing new. When someone says event loop first thing i think about is not nodejs or eventmachine or twistted but WinAPI. Yes old WinAPI and suddenly everybody realize that every GUI (Graphical User Interface) solution is evented. QT, WinAPI and many other even older solutions. This is nothing new,  so lets take a trip through the cards of history to find other gems that we can rediscover and become new rocket scientists&hellip;or first tech archeologists.</p>
+<p>Event loops exists long long and are nothing new. When someone says event loop first thing i think about is not nodejs or eventmachine or twistted but WinAPI. Yes old WinAPI and suddenly everybody realize that every GUI (Graphical User Interface) solution is evented. QT, WinAPI and many other even older solutions. This is nothing new,  so lets take a trip through the cards of history to find other gems that we can rediscover and become new rocket scientists&#8230;or first tech archeologists.</p>
 
 <h3>Step One: Alternatives to sequencing</h3>
 
 <p>So most common thing people do is sequencing and even if we use brain in other way it is easy to us to think about and form sequences because it is something we understand. This is basic unit of work we think about. So most of people write small function that sequence some action and they build programs from small functions calling small functions in a really big sequence.</p>
 
-<p>Alternative solution to do this is event machine, this solution will enable us to generate a lot of small event and if we will manage to force programmer to make them as small as possible and as fast as possible we can achieve a feeling of multitasking. How does it work ? we have one loop that picks events from event queue and process them and as long as nobody will make event that is blocking everything this will work like charm. Key to this solution is &ldquo;non blocking&rdquo;.</p>
+<p>Alternative solution to do this is event machine, this solution will enable us to generate a lot of small event and if we will manage to force programmer to make them as small as possible and as fast as possible we can achieve a feeling of multitasking. How does it work ? we have one loop that picks events from event queue and process them and as long as nobody will make event that is blocking everything this will work like charm. Key to this solution is &#8220;non blocking&#8221;.</p>
 
 <h4>Achieving Non-blocking</h4>
 
-<p>To do this we need to have a way of &ldquo;wait until will happen and if it happen&#8217;ed trigger event&rdquo; thing. This can be done by many different solutions. For example for file descriptors (everything is a file) we have stuff like <code>select</code>, <code>poll</code>, <code>epoll</code>, <code>kqueue</code>. and this is not new its the 80&#8217;. Later on POSIX first official POSIX thing 1997. 15 years ago! Previously mentioned nodejs is representing this category (ofc from the fresh news!). Does it have flaws ? Yes! People call this async&hellip; its not async, not real async. Real async was also implemented in 80&rsquo;s :D</p>
+<p>To do this we need to have a way of &#8220;wait until will happen and if it happen&#8217;ed trigger event&#8221; thing. This can be done by many different solutions. For example for file descriptors (everything is a file) we have stuff like <code>select</code>, <code>poll</code>, <code>epoll</code>, <code>kqueue</code>. and this is not new its the 80&#8217;. Later on POSIX first official POSIX thing 1997. 15 years ago! Previously mentioned nodejs is representing this category (ofc from the fresh news!). Does it have flaws ? Yes! People call this async&#8230; its not async, not real async. Real async was also implemented in 80&#8217;s :D</p>
 
 <h4>Signals</h4>
 
-<p>Signals are also very old, basically this is similar concept (every concept is similar) You have a slot that handles signal and something that emits signals. It&rsquo;s very handy and was implemented with big success in QT library. Does it has flaws ? basically same as event loop solutions. It&rsquo;s a way of doing &ldquo;message passing&rdquo; pattern.</p>
+<p>Signals are also very old, basically this is similar concept (every concept is similar) You have a slot that handles signal and something that emits signals. It&#8217;s very handy and was implemented with big success in QT library. Does it has flaws ? basically same as event loop solutions. It&#8217;s a way of doing &#8220;message passing&#8221; pattern.</p>
 
 <h4>Message passing</h4>
 
 <p>Message passing really well implemented in Erlang is another way of achieving same result, imho  most clean and good solution in the industry right now. Simply you cast messages and other entities receive them and react. YES THIS IS HOW PEOPLE WORK.
-Most of thins seems to be inspired by nature&hellip; but lets not go this route and start religious war.</p>
+Most of thins seems to be inspired by nature&#8230; but lets not go this route and start religious war.</p>
 
 <h4>Async</h4>
 
@@ -2014,43 +2014,43 @@ Most of thins seems to be inspired by nature&hellip; but lets not go this route 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>You call <code>aio_write</code> and write to a file will happen, sometime in future&hellip; BEFORE END OF THE WORLD, maybe!</p>
+<p>You call <code>aio_write</code> and write to a file will happen, sometime in future&#8230; BEFORE END OF THE WORLD, maybe!</p>
 
-<p>Wow! This is fresh! nobody is using it nowadays! you should make new nodejs on it and call it modejs. Or wait ? Can you ? nobody really know how to use them and not be cluster f@cked after five seconds.  Real async syscalls in unix. That is awesome and its older than your son! Lets dig more&hellip;</p>
+<p>Wow! This is fresh! nobody is using it nowadays! you should make new nodejs on it and call it modejs. Or wait ? Can you ? nobody really know how to use them and not be cluster f@cked after five seconds.  Real async syscalls in unix. That is awesome and its older than your son! Lets dig more&#8230;</p>
 
 <h4>Reactive programming</h4>
 
-<p>This is the sh*t, real event programming, you have real reactor nothing is faked like in eventloop! But its nothing new&hellip; also implemented in 80&rsquo;s.  But what is the difference between reactive programming and event loop ? Not much because this is more conceptual thing around building your reactor. In reactor concept we think about data flows and reacting to changes in them.</p>
+<p>This is the sh*t, real event programming, you have real reactor nothing is faked like in eventloop! But its nothing new&#8230; also implemented in 80&#8217;s.  But what is the difference between reactive programming and event loop ? Not much because this is more conceptual thing around building your reactor. In reactor concept we think about data flows and reacting to changes in them.</p>
 
-<p>We don&rsquo;t have to research things that are found!</p>
+<p>We don&#8217;t have to research things that are found!</p>
 
 <h2>Map Reduce, Google, Smart people</h2>
 
-<p>So how mega smart people in Google work ? I don&rsquo;t know I don&rsquo;t work for google and I&rsquo;m not smart but I assume they want to get sh*t done. And after reading Amazon Dynamo Paper <a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf</a> , Google Big Table paper <a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf">http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf</a> and many other i think they developed it in kitchen. Yes in a kitchen.</p>
+<p>So how mega smart people in Google work ? I don&#8217;t know I don&#8217;t work for google and I&#8217;m not smart but I assume they want to get sh*t done. And after reading Amazon Dynamo Paper <a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf</a> , Google Big Table paper <a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf">http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf</a> and many other i think they developed it in kitchen. Yes in a kitchen.</p>
 
-<p>They sat down, people from google and amazon i imagine 6 engineers took 1 apple (Steve Jobs was serving) and asked them self how to how to cut it into 6 parts so they can eat it. They took knife and sliced into 6 parts and split it to each other. Suddenly one stood up (Amazon guy with headphones in avatar) and said. Each part of apple is exclusive (patent trolls have everything exclusive nowadays) to each of us so we can eat them on our own. LETS MAKE DB USING THIS TECH AND WRITE A PAPER ON IT. Next guy said.. yeah we have limited number of apple parts so it is predictable and we form a RING from it&hellip; and thats how Big Table and Amazon dynamo was born. The Google cook who was slicing apple said, i sliced apple in parts one by one with one knife&hellip; AND HE WROTE MAP REDUCE PAPER.</p>
+<p>They sat down, people from google and amazon i imagine 6 engineers took 1 apple (Steve Jobs was serving) and asked them self how to how to cut it into 6 parts so they can eat it. They took knife and sliced into 6 parts and split it to each other. Suddenly one stood up (Amazon guy with headphones in avatar) and said. Each part of apple is exclusive (patent trolls have everything exclusive nowadays) to each of us so we can eat them on our own. LETS MAKE DB USING THIS TECH AND WRITE A PAPER ON IT. Next guy said.. yeah we have limited number of apple parts so it is predictable and we form a RING from it&#8230; and thats how Big Table and Amazon dynamo was born. The Google cook who was slicing apple said, i sliced apple in parts one by one with one knife&#8230; AND HE WROTE MAP REDUCE PAPER.</p>
 
-<p>They did not invented anything really new, they just approached problem simple. We can&rsquo;t split and scale complex solutions so we will make everything simple. And it happens that most of things can be turned into linear or near linear problem.</p>
+<p>They did not invented anything really new, they just approached problem simple. We can&#8217;t split and scale complex solutions so we will make everything simple. And it happens that most of things can be turned into linear or near linear problem.</p>
 
 <h3>Is Map Reduce really something new ?</h3>
 
-<p>In my opinion not. Map existed in lisp world probably since 70&rsquo;s. Now someone took map and sequence of data that is exclusive and don&rsquo;t depend on each other and said &ldquo;What will happen if i will split this list into two parts and run map on each in two or more threads and then just sum results ?&rdquo; and map reduce was born. Concept is dead simple. But its nothing new! I&rsquo;m not taking here credit from google engineers. I think guys there are very smart and by using simple things in my eyes they are ^2 smart. But is it something ground breaking new ? No.</p>
+<p>In my opinion not. Map existed in lisp world probably since 70&#8217;s. Now someone took map and sequence of data that is exclusive and don&#8217;t depend on each other and said &#8220;What will happen if i will split this list into two parts and run map on each in two or more threads and then just sum results ?&#8221; and map reduce was born. Concept is dead simple. But its nothing new! I&#8217;m not taking here credit from google engineers. I think guys there are very smart and by using simple things in my eyes they are ^2 smart. But is it something ground breaking new ? No.</p>
 
-<p>So maybe we should more often look into past. Maybe we can find more gems like this&hellip; i bet google has technology archeology department :D</p>
+<p>So maybe we should more often look into past. Maybe we can find more gems like this&#8230; i bet google has technology archeology department :D</p>
 
 <h3>Step Two: Type writer</h3>
 
-<p>I&rsquo;m 80&#8217; kid. I remember type writers and the sound so for me understanding how files in OS (Unix or in general) works was simple, but when recently i was explaining it to friend who is 90&#8217; kid he did not got the concept of that well. Why ? Because he is from age where type writers did not exist. For me it was a bit shocking because i thought everybody knows exactly how they work. And when i said why we have \r and what it is i was for a moment happy that I&rsquo;m very very old :D.</p>
+<p>I&#8217;m 80&#8217; kid. I remember type writers and the sound so for me understanding how files in OS (Unix or in general) works was simple, but when recently i was explaining it to friend who is 90&#8217; kid he did not got the concept of that well. Why ? Because he is from age where type writers did not exist. For me it was a bit shocking because i thought everybody knows exactly how they work. And when i said why we have \r and what it is i was for a moment happy that I&#8217;m very very old :D.</p>
 
 <h3>Queues, Interpreters and other stuff.</h3>
 
-<p>Technology archeologiest must be open to new things, read about everything and most of all, never stop thinking &ldquo;this had to be already invented&rdquo;.  When I first suggested Queue as a solution to a problem some people looked at me like i would be snake. FIFO queues, something so basic&hellip; still some people don&rsquo;t even think about them. This is dull example but basic data structures should be well known by everybody still&hellip; things that freezes blood in your veins happens.</p>
+<p>Technology archeologiest must be open to new things, read about everything and most of all, never stop thinking &#8220;this had to be already invented&#8221;.  When I first suggested Queue as a solution to a problem some people looked at me like i would be snake. FIFO queues, something so basic&#8230; still some people don&#8217;t even think about them. This is dull example but basic data structures should be well known by everybody still&#8230; things that freezes blood in your veins happens.</p>
 
-<p>Building DSL and interpreters is good fun, its not easy often I&rsquo;m still learning a lot but this should not be &ldquo;devil&rdquo; to other programmers.</p>
+<p>Building DSL and interpreters is good fun, its not easy often I&#8217;m still learning a lot but this should not be &#8220;devil&#8221; to other programmers.</p>
 
 <h1>Old manuscripts</h1>
 
-<p>There are books that contains tones of cool knowledge, you can be technology archeologist like me! just venture into them and discover &ldquo;Stuff&rdquo;. First book i would recall here is Richard Stevens.</p>
+<p>There are books that contains tones of cool knowledge, you can be technology archeologist like me! just venture into them and discover &#8220;Stuff&#8221;. First book i would recall here is Richard Stevens.</p>
 
 <ul>
 <li>1990 – UNIX Network Programming – ISBN 0-13-949876-1</li>
@@ -2066,21 +2066,21 @@ Most of thins seems to be inspired by nature&hellip; but lets not go this route 
 <p>This guy is amazing, books are very good quality talking about topics that today are more than active in our community. 22 year old books!</p>
 
 <ul>
-<li>1989 &ndash; Genetic Algorithms in Search, Optimization, and Machine Learning</li>
+<li>1989 - Genetic Algorithms in Search, Optimization, and Machine Learning</li>
 </ul>
 
 
-<p>Amazing book, I never was big fan of A.I. (maybe i should, that would give me chance to actually have some of I&hellip;) but this book opened my eyes on how simple this stuff is. How easy and how powerful. When i was at uni this was one of the books i enjoed the most.</p>
+<p>Amazing book, I never was big fan of A.I. (maybe i should, that would give me chance to actually have some of I&#8230;) but this book opened my eyes on how simple this stuff is. How easy and how powerful. When i was at uni this was one of the books i enjoed the most.</p>
 
 <ul>
-<li>1976 &ndash; Algorithms + Data Structures = Programs (Prentice-Hall Series in Automatic Computation) by Wirth.</li>
+<li>1976 - Algorithms + Data Structures = Programs (Prentice-Hall Series in Automatic Computation) by Wirth.</li>
 </ul>
 
 
 <p>Classic this guy guides you through Pascal and shows you how to program and at the end of book implements subset of language. I say 76&#8217; FFS that good books will not be printed after 2006. 44 years ago published. C&#8217;mon!</p>
 
 <ul>
-<li>1988 &ndash; C Programming Language (2nd Edition)</li>
+<li>1988 - C Programming Language (2nd Edition)</li>
 </ul>
 
 
@@ -2089,25 +2089,25 @@ Most of thins seems to be inspired by nature&hellip; but lets not go this route 
 <p>And something fresh</p>
 
 <ul>
-<li>2004 &ndash; The Art of C++  by Herbert Schildt</li>
+<li>2004 - The Art of C++  by Herbert Schildt</li>
 </ul>
 
 
-<p>Really good book, also common pattern in books that i read&hellip; guy is implementing language at the end ( subset of C )</p>
+<p>Really good book, also common pattern in books that i read&#8230; guy is implementing language at the end ( subset of C )</p>
 
 <p>Yes this is good stuff. Old books containing knowledge that industry will discover in 6-10 years.</p>
 
 <h2>But what about current research ?</h2>
 
-<p>Current stuff like dependent types&hellip; i recon we will hear about them in industry after our deaths ;/ next week apocalypse ;/. Yes there are tones of things to rediscover&hellip; and it&rsquo;s fun! lets do it!</p>
+<p>Current stuff like dependent types&#8230; i recon we will hear about them in industry after our deaths ;/ next week apocalypse ;/. Yes there are tones of things to rediscover&#8230; and it&#8217;s fun! lets do it!</p>
 
 <h1>Summary</h1>
 
 <p>I love when i hear about new stuff and suddenly  after inspection it becomes clear it is just old thing on new cogs. I love this. I love technology archeology and i want to bring more examples of this and write about it on my blog.</p>
 
-<p>Yes sending satelite in space is something new&hellip;. another event loop implementation is not.</p>
+<p>Yes sending satelite in space is something new&#8230;. another event loop implementation is not.</p>
 
-<p>Sorry for ranting that much :D&hellip; anyway nobody read this :D.</p>
+<p>Sorry for ranting that much :D&#8230; anyway nobody read this :D.</p>
 </div>
   
   
@@ -2202,7 +2202,7 @@ Most of thins seems to be inspired by nature&hellip; but lets not go this route 
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Jakub Oboza -
+  Copyright &copy; 2014 - Jakub Oboza -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="I&rsquo;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
+  <meta name="description" content="I&#8217;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
 just spammmmmmed, hammered me &hellip;">
   
 
@@ -108,18 +108,18 @@ just spammmmmmed, hammered me &hellip;">
   </header>
 
 
-<div class="entry-content"><p>I&rsquo;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
+<div class="entry-content"><p>I&#8217;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
 just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
 
-<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by &ldquo;entry&rdquo;. Some of the</p>
+<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by &#8220;entry&#8221;. Some of the</p>
 
 <h1>Initial idea</h1>
 
-<p>We will emit single &ldquo;entry&rdquo; so for logs that are build around &ldquo;lines&rdquo; we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
+<p>We will emit single &#8220;entry&#8221; so for logs that are build around &#8220;lines&#8221; we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
 
 <h1>Future toons</h1>
 
-<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can&rsquo;t be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That&rsquo;s ok.</p>
+<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can&#8217;t be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That&#8217;s ok.</p>
 
 <figure class='code'><figcaption><span>lib/toons.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -162,9 +162,9 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don&rsquo;t need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don&rsquo;t wanna lose your &ldquo;instance methods&rdquo; don&rsquo;t you.</p>
+<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don&#8217;t need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don&#8217;t wanna lose your &#8220;instance methods&#8221; don&#8217;t you.</p>
 
-<p>Next nice thing to help users is check of instanceof just at top of &ldquo;constructor&rdquo; function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.</p>
+<p>Next nice thing to help users is check of instanceof just at top of &#8220;constructor&#8221; function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -225,7 +225,7 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This example will show each line of the file prefixed with &ldquo;>&rdquo; symbol and at the end he will print out &ldquo;lol&rdquo;. This is most common case in real world :) you need to optimize &ldquo;lol&rdquo;. And for now thats the whole api.</p>
+<p>This example will show each line of the file prefixed with &#8220;>&#8221; symbol and at the end he will print out &#8220;lol&#8221;. This is most common case in real world :) you need to optimize &#8220;lol&#8221;. And for now thats the whole api.</p>
 
 <h1>Command line interface</h1>
 
@@ -242,11 +242,11 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 
 <h1>Db vs File</h1>
 
-<p>Some people say they need to put logs into db, i always ask this people &ldquo;why not just file? this db will have to write it to this file anyway :)&rdquo;</p>
+<p>Some people say they need to put logs into db, i always ask this people &#8220;why not just file? this db will have to write it to this file anyway :)&#8221;</p>
 
 <h1>Summary</h1>
 
-<p>if you will get email from new relic sales guy, ignore! don&rsquo;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
+<p>if you will get email from new relic sales guy, ignore! don&#8217;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
 
 <p>Cheers!</p>
 </div>
@@ -395,7 +395,7 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Jakub Oboza -
+  Copyright &copy; 2014 - Jakub Oboza -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

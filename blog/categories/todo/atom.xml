@@ -4,7 +4,7 @@
   <title><![CDATA[Category: todo | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/todo/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-16T22:41:08+00:00</updated>
+  <updated>2014-01-14T10:24:56+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -24,7 +24,7 @@
 
 <h1>What is this post about :)</h1>
 
-<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &ldquo;how i would design it in different databases&rdquo;. (i&rsquo;m taking only about data model)</p>
+<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was "how i would design it in different databases". (i'm taking only about data model)</p>
 
 <h2>Requirements</h2>
 
@@ -44,7 +44,7 @@
 
 <p>How to do it with redis ? :)</p>
 
-<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &ldquo;todoapp&rdquo;.</p>
+<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase "todoapp".</p>
 
 <p>So lets start with user and his list of todo lists :). This gives us first key</p>
 
@@ -135,9 +135,9 @@ redis 127.0.0.1:6379&gt; LRANGE todo:kuba:task:1:tags 0 -1
 1) "design"
 2) "redis"
 </code>
-This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &ldquo;redis&rdquo; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
+This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like "redis" you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
 
-<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &ldquo;ultimate&rdquo;  non splittable lists.</p>
+<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of "ultimate"  non splittable lists.</p>
 
 <h1>Design using Mongodb</h1>
 
@@ -145,15 +145,15 @@ This example shows what we need to do to tag a task with something and how to pe
 
 <h2>Todolist = Document</h2>
 
-<p>In this example we will use built in &ldquo;array&rdquo; operators</p>
+<p>In this example we will use built in "array" operators</p>
 
 <p>``` javascript  creating</p>
 
-<blockquote><p>db.todolists.save({name: &ldquo;House work&rdquo;, tasks: []})
-&ldquo;ok&rdquo;
-db.todolists.find({name: &ldquo;House work&rdquo;})
+<blockquote><p>db.todolists.save({name: "House work", tasks: []})
+"ok"
+db.todolists.find({name: "House work"})
 [
-  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
+  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
 
 <pre><code>  "tasks" : [   ]   }
 </code></pre>
@@ -163,12 +163,12 @@ db.todolists.find({name: &ldquo;House work&rdquo;})
 
 <p>So lets add a task :)
 ``` javascript
-db.todolists.update({name: &ldquo;House work&rdquo;},{$push:{&ldquo;tasks&rdquo;:{&ldquo;name&rdquo;:&ldquo;finish blog post&rdquo;, &ldquo;tags&rdquo;:[&ldquo;mongo&rdquo;] } } })
-&ldquo;ok&rdquo;</p>
+db.todolists.update({name: "House work"},{$push:{"tasks":{"name":"finish blog post", "tags":["mongo"] } } })
+"ok"</p>
 
-<blockquote><blockquote><p>db.todolists.find({name: &ldquo;House work&rdquo;})
+<blockquote><blockquote><p>db.todolists.find({name: "House work"})
 [
-  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
+  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
 
 <pre><code>  "tasks" : [  
    {   "name" : "finish blog post",   "tags" : [   "mongo" ]   }
@@ -178,16 +178,16 @@ db.todolists.update({name: &ldquo;House work&rdquo;},{$push:{&ldquo;tasks&rdquo;
 <p>]
 ```</p></blockquote></blockquote>
 
-<p>this will create empty todo list with name &ldquo;House work&rdquo; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &ldquo;lists&rdquo; while doing search.</p>
+<p>this will create empty todo list with name "House work" of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra "lists" while doing search.</p>
 
 <p>Lets try it out how to find out mongo tagged entries?</p>
 
 <p>``` javascript find by tag</p>
 
-<blockquote><p>db.todolists.find({&ldquo;tasks.tags&rdquo;: { $in : [&ldquo;mongo&rdquo;] } })</p></blockquote>
+<blockquote><p>db.todolists.find({"tasks.tags": { $in : ["mongo"] } })</p></blockquote>
 
 <p>[
-  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
+  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
 
 <pre><code>  "tasks" : [ 
     {   "name" : "finish blog post",   "tags" : [   "mongo" ]   }
@@ -197,11 +197,11 @@ db.todolists.update({name: &ldquo;House work&rdquo;},{$push:{&ldquo;tasks&rdquo;
 <p>]
 ```</p>
 
-<p>This way we can find whole todolist with task that contains tag &ldquo;mongo&rdquo; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this
+<p>This way we can find whole todolist with task that contains tag "mongo" but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this
 ``` javascript  todo list structure
 {
- user: &ldquo;user id&rdquo;,
- name: &ldquo;<name>&rdquo;,
+ user: "user id",
+ name: "<name>",
  tasks: [
    {</p>
 
@@ -217,7 +217,7 @@ updated_at : Time
  ]
 }
 ```
-Using redis we could wrapp stuff into MULTI command while using mongodb &ldquo;array&rdquo; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
+Using redis we could wrapp stuff into MULTI command while using mongodb "array" command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
 
 <h2>Todolist = many documents</h2>
 
@@ -225,19 +225,19 @@ Using redis we could wrapp stuff into MULTI command while using mongodb &ldquo;a
 With structure like this
 ``` javascript task structure
 {
-  todo_list: &ldquo;todo list id&rdquo;,
-  user: &ldquo;user id&rdquo;,
-  text: &ldquo;todo text&rdquo;,
-  tags: [&ldquo;Tag1&rdquo;, &ldquo;Tag2&rdquo;]
+  todo_list: "todo list id",
+  user: "user id",
+  text: "todo text",
+  tags: ["Tag1", "Tag2"]
 }</p>
 
 <p><code>
 This way we will have a lot of documents, more disk space consumption and still we will have to have second collection with with objects with structure like this
 </code> javascript structure of todolist
 {
-  todo_list: &ldquo;todo list id&rdquo;,
-  name: &ldquo;todo list name&rdquo;,
-  user: &ldquo;user id&rdquo;,
+  todo_list: "todo list id",
+  name: "todo list name",
+  user: "user id",
   // tasks: [Tasks OBjectID Array] you could have this and remove todo_list id from tasks choice is yours :)
 }
 <code>``
@@ -245,11 +245,11 @@ And this way we can use</code>find` tool very easy and get documents fast.</p>
 
 <h1>Summary</h1>
 
-<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &ldquo;strucutres&rdquo; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
+<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is "strucutres" and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
 
-<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&rsquo;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &ldquo;rawly&rdquo; in redis hiredis client.</p>
+<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i'm sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things "rawly" in redis hiredis client.</p>
 
-<p>btw i jsut wrote this from &ldquo;top of my head&rdquo; so it may contain typos and i&rsquo;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
+<p>btw i jsut wrote this from "top of my head" so it may contain typos and i'm sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
 
 <p>Cheers!</p>
 ]]></content>

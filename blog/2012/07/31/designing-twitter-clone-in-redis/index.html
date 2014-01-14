@@ -120,7 +120,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>What happens when i click &ldquo;follow&rdquo;</p>
+<p>What happens when i click &#8220;follow&#8221;</p>
 
 <figure class='code'><figcaption><span>example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -215,7 +215,7 @@
 </ul>
 
 
-<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&rsquo;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
+<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&#8217;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -226,7 +226,7 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH&#8217;ed so should be semi ordered. (we don&rsquo;t really care about order). adding stuff to time line is bit tricky.</p>
+<p>So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH&#8217;ed so should be semi ordered. (we don&#8217;t really care about order). adding stuff to time line is bit tricky.</p>
 
 <p>we need to do it like this
 <code>LRANGE &lt;key&gt; 0 1</code> current list id, next we need to <code>LLEN &lt;key&gt;</code> to check size and if it is &lt; SIZE ( for our example 100 ) we just <code>LPUSH &lt;key&gt; &lt;value&gt;</code> and job done, if size is > 100 we need to <code>INCR &lt;list counter&gt;</code> and LPUSH its result on list of lists and next we need to <code>LPUSH &lt;key&gt; &lt;value&gt;</code> on the new list.</p>
@@ -241,7 +241,7 @@
 <p>This list is just the most current posts of particular user. How does this list work ? Algorithm is simple</p>
 
 <ul>
-<li>LPUSH new post id&rsquo;s</li>
+<li>LPUSH new post id&#8217;s</li>
 <li>RPOP if SIZE > 100</li>
 </ul>
 
@@ -250,9 +250,9 @@
 
 <h2>Time line</h2>
 
-<p>Now the time line. Time line is exactly the same as user post list. we will just one &ldquo;bit&rdquo; about adding posts.</p>
+<p>Now the time line. Time line is exactly the same as user post list. we will just one &#8220;bit&#8221; about adding posts.</p>
 
-<p>Algorithm here is when you add a post you have to pick all id&rsquo;s of people who follow you. (example from top if you are adding post as amelia)</p>
+<p>Algorithm here is when you add a post you have to pick all id&#8217;s of people who follow you. (example from top if you are adding post as amelia)</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>SMEMBERS twtr:&lt;user_id&gt;:followers
@@ -276,9 +276,9 @@
 
 <p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys &lt;user_id> this could be skiped but in my opinion it is not bad. IF you will use &lt;user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
 
-<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &ldquo;lazy way&rdquo; you can minimize number of hits to around 10.</p>
+<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &#8220;lazy way&#8221; you can minimize number of hits to around 10.</p>
 
-<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &ldquo;sharding&rdquo; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
+<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &#8220;sharding&#8221; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
 
 <p>Cheers!</p>
 </div>
@@ -427,7 +427,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Jakub Oboza -
+  Copyright &copy; 2014 - Jakub Oboza -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

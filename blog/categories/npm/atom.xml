@@ -4,7 +4,7 @@
   <title><![CDATA[Category: npm | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/npm/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-16T22:41:08+00:00</updated>
+  <updated>2014-01-14T10:24:56+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -40,28 +40,28 @@ Package version: (0.0.0)
 Project homepage: (none) no-fucking-idea.com
 Project git repository: (none)
 Author name: Jakub Oboza
-Author email: (none) <a href="&#109;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#106;&#97;&#x6b;&#117;&#98;&#x2e;&#111;&#x62;&#x6f;&#122;&#97;&#64;&#x67;&#109;&#x61;&#105;&#x6c;&#x2e;&#99;&#111;&#x6d;">&#x6a;&#97;&#x6b;&#117;&#x62;&#46;&#x6f;&#98;&#x6f;&#x7a;&#97;&#x40;&#x67;&#109;&#x61;&#105;&#108;&#46;&#99;&#111;&#x6d;</a>
+Author email: (none) jakub.oboza@gmail.com
 Author url: (none) no-fucking-idea.com
 Main module/entry point: (none)
 Test command: (none) mocha -R landing lib/my_first_module.js      <br/>
 About to write to /private/tmp/my_first_module/package.json</p>
 
 <p>{
-  &ldquo;author&rdquo;: &ldquo;Jakub Oboza <a href="&#109;&#97;&#x69;&#108;&#116;&#111;&#x3a;&#106;&#97;&#107;&#117;&#98;&#x2e;&#111;&#x62;&#111;&#x7a;&#x61;&#x40;&#103;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#99;&#111;&#x6d;">&#106;&#97;&#107;&#117;&#98;&#x2e;&#111;&#98;&#x6f;&#x7a;&#x61;&#x40;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#46;&#x63;&#111;&#x6d;</a> (no-fucking-idea.com)&rdquo;,
-  &ldquo;name&rdquo;: &ldquo;my_first_module&rdquo;,
-  &ldquo;description&rdquo;: &ldquo;my first module&rdquo;,
-  &ldquo;version&rdquo;: &ldquo;0.0.0&rdquo;,
-  &ldquo;homepage&rdquo;: &ldquo;no-fucking-idea.com&rdquo;,
-  &ldquo;scripts&rdquo;: {</p>
+  "author": "Jakub Oboza <a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#58;&#106;&#97;&#107;&#x75;&#98;&#46;&#x6f;&#x62;&#x6f;&#122;&#x61;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#x6f;&#109;">&#106;&#97;&#107;&#117;&#98;&#x2e;&#x6f;&#x62;&#x6f;&#x7a;&#97;&#x40;&#x67;&#x6d;&#x61;&#105;&#108;&#46;&#x63;&#111;&#x6d;</a> (no-fucking-idea.com)",
+  "name": "my_first_module",
+  "description": "my first module",
+  "version": "0.0.0",
+  "homepage": "no-fucking-idea.com",
+  "scripts": {</p>
 
 <pre><code>"test": "mocha -R landing lib/my_first_module.js"
 </code></pre>
 
 <p>  },
-  &ldquo;dependencies&rdquo;: {},
-  &ldquo;devDependencies&rdquo;: {},
-  &ldquo;optionalDependencies&rdquo;: {},
-  &ldquo;engines&rdquo;: {</p>
+  "dependencies": {},
+  "devDependencies": {},
+  "optionalDependencies": {},
+  "engines": {</p>
 
 <pre><code>"node": "*"
 </code></pre>
@@ -71,12 +71,12 @@ About to write to /private/tmp/my_first_module/package.json</p>
 
 <p>Is this ok? (yes) yes
 <code>``
-This will create for us</code>package.json`. Now we have fully functional module and we could stop now&hellip;. but</p>
+This will create for us</code>package.json`. Now we have fully functional module and we could stop now.... but</p>
 
 <h1>package.json</h1>
 
 <p>This file is description of our package. It is in form of json so it should be easy to read and change.
-Most of this fields don&rsquo;t need a lot of description because keys are self explaining but things that we should look at is <code>"scripts"</code> where we defined <code>"test"</code> key. If we will now run <code>npm test</code> he will execute this command that is very useful.</p>
+Most of this fields don't need a lot of description because keys are self explaining but things that we should look at is <code>"scripts"</code> where we defined <code>"test"</code> key. If we will now run <code>npm test</code> he will execute this command that is very useful.</p>
 
 <p>Engines defined on what version of <code>node.js</code> our code will work leaving it to <code>*</code> is a bit hazard. You can set it to something specific if you want.</p>
 
@@ -91,7 +91,7 @@ Most of this fields don&rsquo;t need a lot of description because keys are self 
 
 <h1>Code</h1>
 
-<p>Ok but we don&rsquo;t have any code yet ;/. Yes lets start coding.
+<p>Ok but we don't have any code yet ;/. Yes lets start coding.
 <code>bash
 λ mkdir lib
 λ touch index.js
@@ -101,7 +101,7 @@ Ok so we created <code>lib</code> directory with out module code, empty module f
 ``` bash
 λ npm test</p>
 
-<blockquote><p><a href="&#109;&#97;&#105;&#108;&#116;&#111;&#x3a;&#109;&#121;&#95;&#102;&#105;&#x72;&#115;&#x74;&#95;&#x6d;&#x6f;&#100;&#117;&#108;&#x65;&#64;&#x30;&#x2e;&#x30;&#46;&#x30;">&#109;&#121;&#x5f;&#102;&#x69;&#x72;&#115;&#x74;&#x5f;&#x6d;&#x6f;&#x64;&#x75;&#x6c;&#101;&#64;&#x30;&#x2e;&#x30;&#46;&#48;</a> test /private/my_first_module
+<blockquote><p>my_first_module@0.0.0 test /private/my_first_module
 mocha -R landing lib/my_first_module.js</p></blockquote>
 
 <p>  ✔ 0 tests complete (1ms)</p>
@@ -110,7 +110,7 @@ mocha -R landing lib/my_first_module.js</p></blockquote>
 Everything passed, that is expected because we don't have any tests :) Now lets add to</code>package.json<code>one more thing development dependency for</code>should.js<code>it will enable us to use mocha in a bit</code>rspec` bdd style. Like this:</p>
 
 <p>``` javascript package.json
-  &ldquo;devDependencies&rdquo;: {</p>
+  "devDependencies": {</p>
 
 <pre><code>"should": "&gt;= 0.0.0"
 </code></pre>
@@ -131,10 +131,10 @@ function MyFirstFoo(a, b){</p>
 
 <p>module.exports = MyFirstFoo</p>
 
-<p>require(&lsquo;should&rsquo;)</p>
+<p>require('should')</p>
 
-<p>describe(&lsquo;MyFirstFoo&rsquo;, function(){
-  it(&ldquo;should be able to add&rdquo;, function(){</p>
+<p>describe('MyFirstFoo', function(){
+  it("should be able to add", function(){</p>
 
 <pre><code>MyFirstFoo(2, 3).should.be[5];
 </code></pre>
@@ -146,7 +146,7 @@ First we define empty body of function next we have `module.exports =` this is t
 </code> bash
  λ npm test</p>
 
-<blockquote><p><a href="&#x6d;&#x61;&#x69;&#108;&#x74;&#111;&#x3a;&#109;&#x79;&#x5f;&#102;&#x69;&#114;&#115;&#116;&#x5f;&#109;&#x6f;&#x64;&#x75;&#108;&#101;&#64;&#x30;&#46;&#x30;&#x2e;&#x30;">&#109;&#x79;&#95;&#x66;&#105;&#x72;&#x73;&#x74;&#x5f;&#x6d;&#x6f;&#100;&#117;&#x6c;&#101;&#64;&#x30;&#46;&#x30;&#x2e;&#48;</a> test /private/tmp/my_first_module
+<blockquote><p>my_first_module@0.0.0 test /private/tmp/my_first_module
 mocha -R landing lib/my_first_module.js</p>
 
 <hr />
@@ -171,7 +171,7 @@ mocha -R landing lib/my_first_module.js</p>
   at EventEmitter._tickCallback (node.js:192:40)
 </code></pre>
 
-<p>&hellip;
+<p>...
 <code>
 Fails as expected so lets ad implementation to our function.
 </code> javascript lib/my_first_module.js
@@ -181,10 +181,10 @@ function MyFirstFoo(a, b){
 
 <p>module.exports = MyFirstFoo</p>
 
-<p>require(&lsquo;should&rsquo;)</p>
+<p>require('should')</p>
 
-<p>describe(&lsquo;MyFirstFoo&rsquo;, function(){
-  it(&ldquo;should be able to add&rdquo;, function(){</p>
+<p>describe('MyFirstFoo', function(){
+  it("should be able to add", function(){</p>
 
 <pre><code>MyFirstFoo(2, 3).should.be[5];
 </code></pre>
@@ -197,7 +197,7 @@ And run</code>npm test`</p>
 <p>``` bash
 λ npm test</p>
 
-<blockquote><p><a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#x3a;&#109;&#x79;&#x5f;&#102;&#105;&#x72;&#x73;&#x74;&#95;&#109;&#111;&#x64;&#x75;&#108;&#101;&#x40;&#x30;&#46;&#x30;&#x2e;&#48;">&#x6d;&#121;&#95;&#x66;&#x69;&#x72;&#115;&#116;&#x5f;&#109;&#111;&#100;&#x75;&#108;&#101;&#64;&#x30;&#x2e;&#48;&#x2e;&#48;</a> test /private/tmp/lol/my_first_module
+<blockquote><p>my_first_module@0.0.0 test /private/tmp/lol/my_first_module
 mocha -R landing lib/my_first_module.js</p>
 
 <hr />

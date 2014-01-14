@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tutorial | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/tutorial/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-16T22:41:08+00:00</updated>
+  <updated>2014-01-14T10:24:56+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -22,31 +22,31 @@
 
 <h2>Lisp</h2>
 
-<p>Before i tried Clojure i had few &ldquo;trips&rdquo; to Lisp world but i was always stroked by amount of half finished vm&rsquo;s and implementations that are far from being production ready. For example chicken, scsh, sketchy, mit-scheme, bigloo. Some of them are more some less production ready but none of them is ready for anything real. The most production ready lisp thing i saw in my life was <code>elisp</code> YES f*cking <code>EMACS</code> lisp.
-But I&rsquo;m not any expert in lisp world!</p>
+<p>Before i tried Clojure i had few "trips" to Lisp world but i was always stroked by amount of half finished vm's and implementations that are far from being production ready. For example chicken, scsh, sketchy, mit-scheme, bigloo. Some of them are more some less production ready but none of them is ready for anything real. The most production ready lisp thing i saw in my life was <code>elisp</code> YES f*cking <code>EMACS</code> lisp.
+But I'm not any expert in lisp world!</p>
 
 <h2>Scheme</h2>
 
-<p>Scheme is a dialect of Lisp that implements subset of language, in scheme code and data has same form which is a massive game changer. Scheme has super duper hiper mega MACRO building capabilities. And it is probably its biggest problems&hellip;</p>
+<p>Scheme is a dialect of Lisp that implements subset of language, in scheme code and data has same form which is a massive game changer. Scheme has super duper hiper mega MACRO building capabilities. And it is probably its biggest problems...</p>
 
-<h2>Lisp Hacker&rsquo;s</h2>
+<h2>Lisp Hacker's</h2>
 
 <p>I remember when my friend was hacking in lisp, i remember when i was trying to hack stuff in scheme. So scheme is a trap!
-First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when he finishes this he tries to implement scheme interpreter in his interpreter&hellip; Second trap is when he realizes that he wrote enough amount of scheme interpreters and he moves to implementing new features into his interpreter in interpreter in interpreter ( and yes &lsquo;ready&rsquo; means that 8/10 runs stuff passes, some crash and half of features don&rsquo;t even exits so called &ldquo;junk features&rdquo; ). So his dialect gets better than Haskell lazy evaluation, better etc&hellip; at this stage he has self bootstraping half working interpreter of his language that had no docs and nobody except his can use it and even if he can he must be on drags to make the lazy evaluation happen. Next stage of course is starting to do AI in scheme. So the point is that no shit gets done, its all conceptual work. If Da'vinci would program in Lisp he would not cut of his ear, he would cut of his head.</p>
+First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when he finishes this he tries to implement scheme interpreter in his interpreter... Second trap is when he realizes that he wrote enough amount of scheme interpreters and he moves to implementing new features into his interpreter in interpreter in interpreter ( and yes 'ready' means that 8/10 runs stuff passes, some crash and half of features don't even exits so called "junk features" ). So his dialect gets better than Haskell lazy evaluation, better etc... at this stage he has self bootstraping half working interpreter of his language that had no docs and nobody except his can use it and even if he can he must be on drags to make the lazy evaluation happen. Next stage of course is starting to do AI in scheme. So the point is that no shit gets done, its all conceptual work. If Da'vinci would program in Lisp he would not cut of his ear, he would cut of his head.</p>
 
 <h2>Life of ()</h2>
 
-<p>I wrote some borderline rant on lisp hackers and this was supposed to be micro tutorial on scheme. Well i took the Lisp way of &ldquo;getting shit done&rdquo; :D. If you don&rsquo;t know that lisp bread and butter are <code>(</code> and <code>)</code> you should probably run away.</p>
+<p>I wrote some borderline rant on lisp hackers and this was supposed to be micro tutorial on scheme. Well i took the Lisp way of "getting shit done" :D. If you don't know that lisp bread and butter are <code>(</code> and <code>)</code> you should probably run away.</p>
 
 <p>Naow!</p>
 
 <h2>So why Clojure ?</h2>
 
-<p>Clojure seems to be production ready stuff that can &ldquo;get shit done&rdquo;. It support concurrency (with STM &ndash; Software Transactional Memory) it is Scheme'y / Lispy and I have read that its hip in Open Source magazine. Thats enough to start learning yeah ?</p>
+<p>Clojure seems to be production ready stuff that can "get shit done". It support concurrency (with STM - Software Transactional Memory) it is Scheme'y / Lispy and I have read that its hip in Open Source magazine. Thats enough to start learning yeah ?</p>
 
 <p>No! But i want to learn it and write some stuff about it. It seems to be so different from other languages, RP notation and the whole community of Stallman like people.</p>
 
-<p>Clojure runs on JVM ( Java Virtual Machine ) and beside Java being biggest troll language next to C++ ever! JVM is really good. It makes stuff really portable and its good for building stuff like backends for servers. Same goes with Scala using JVM, actually JVM is solid! ( coming from me Java hater ). Its not like some f*cktard writing in &ldquo;Open Source Magazine&rdquo; that C++ enables you to write portable code. No, writing os portable code in C++ is not easy, its hard and full of pain.</p>
+<p>Clojure runs on JVM ( Java Virtual Machine ) and beside Java being biggest troll language next to C++ ever! JVM is really good. It makes stuff really portable and its good for building stuff like backends for servers. Same goes with Scala using JVM, actually JVM is solid! ( coming from me Java hater ). Its not like some f*cktard writing in "Open Source Magazine" that C++ enables you to write portable code. No, writing os portable code in C++ is not easy, its hard and full of pain.</p>
 
 <h1>Getting s*it on your box</h1>
 
@@ -55,8 +55,8 @@ First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when
 <ul>
 <li>Minimum jar needed to start REPL <a href="http://clojure.org/getting_started">http://clojure.org/getting_started</a></li>
 <li>Downloads for latest version <a href="http://clojure.org/downloads">http://clojure.org/downloads</a></li>
-<li>Brew / Macports search &ldquo;clojure&rdquo;</li>
-<li>In case that nothing else work, go to <a href="https://github.com/clojure/clojure">https://github.com/clojure/clojure</a> and look for &ldquo;build from source instructions&rdquo;</li>
+<li>Brew / Macports search "clojure"</li>
+<li>In case that nothing else work, go to <a href="https://github.com/clojure/clojure">https://github.com/clojure/clojure</a> and look for "build from source instructions"</li>
 </ul>
 
 
@@ -69,7 +69,7 @@ First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when
 <p><code>bash
 clj
 </code>
-I mix it with <code>cjl</code>  but thats because i&rsquo;m a noob.
+I mix it with <code>cjl</code>  but thats because i'm a noob.
 This should prompt you with something like this
 <code>bash
 20:59 kuba@kuba:~ λ clj
@@ -92,7 +92,7 @@ user=> (+ 2 6)
 8
 ```</p>
 
-<p>RPN now i should quote link to wikipedia on Reverse Polish Notation. (I&rsquo;m Polish so it is kind'a like looking at my back and trying to read sign on t-shirt). Here you go <a href="http://en.wikipedia.org/wiki/Reverse_Polish_notation">http://en.wikipedia.org/wiki/Reverse_Polish_notation</a> Reverse polish notation simple words is a stack notation. Where you put operator on stack and then arguments. Or so called prefix notation. C, Java, Ruby are all infix notation eg. <code>2 + 6</code> while lisp / scheme is prefix notation aka <code>(+ 2 6)</code> on reality its so cool that you don&rsquo;t have to repeat your self and you put operator, function only  once and a list of arguments eg. <code>(+ 1 2 3 4 5)</code>. So lets try it out.</p>
+<p>RPN now i should quote link to wikipedia on Reverse Polish Notation. (I'm Polish so it is kind'a like looking at my back and trying to read sign on t-shirt). Here you go <a href="http://en.wikipedia.org/wiki/Reverse_Polish_notation">http://en.wikipedia.org/wiki/Reverse_Polish_notation</a> Reverse polish notation simple words is a stack notation. Where you put operator on stack and then arguments. Or so called prefix notation. C, Java, Ruby are all infix notation eg. <code>2 + 6</code> while lisp / scheme is prefix notation aka <code>(+ 2 6)</code> on reality its so cool that you don't have to repeat your self and you put operator, function only  once and a list of arguments eg. <code>(+ 1 2 3 4 5)</code>. So lets try it out.</p>
 
 <p><code>scheme
 user=&gt; (+ 1 2 3 4 5 6)
@@ -130,7 +130,7 @@ user=&gt; (+ (/ 1 3.0) (/ 1 3.0))
 0.6666666666666666
 </code></p>
 
-<p>Not really&hellip;. it should be something like 0.(6) :)</p>
+<p>Not really.... it should be something like 0.(6) :)</p>
 
 <p>So this is how you invoke functions, built in functions. But what if you would want to comment something out ? because its a useful info about new scheme dialect you are building?</p>
 
@@ -156,13 +156,13 @@ user=&gt;  ; comment about lisp being full of ((((
 <p>``` scheme
 user=> (defn multiply-by [base amount] (* base amount))</p>
 
-<h1>&lsquo;user/multiply-by</h1>
+<h1>'user/multiply-by</h1>
 
 <p>user=> (multiply-by 5 6)
 30
 ```</p>
 
-<p>Next we can invoke it eg. <code>(multiply-by 3 4)</code> its worth mentioning that you can use <code>-</code> in function names. But what is really happening ? this is two part thing. First we have <code>def</code> and second we have <code>fn</code> def binds symbol name with expression or value and <code>fn</code> return a function. So it is &ldquo;like lambda&rdquo; in fact it is lambda.</p>
+<p>Next we can invoke it eg. <code>(multiply-by 3 4)</code> its worth mentioning that you can use <code>-</code> in function names. But what is really happening ? this is two part thing. First we have <code>def</code> and second we have <code>fn</code> def binds symbol name with expression or value and <code>fn</code> return a function. So it is "like lambda" in fact it is lambda.</p>
 
 <p>Lets go with example.</p>
 
@@ -175,7 +175,7 @@ user=> (fn [base] (+ base 1) )</p>
 6
 user=> (def troll-symbol 7)</p>
 
-<h1>&lsquo;user/troll-symbol</h1>
+<h1>'user/troll-symbol</h1>
 
 <p>user=> (troll-symbol)
 ClassCastException java.lang.Long cannot be cast to clojure.lang.IFn  user/eval41 (NO_SOURCE_FILE:25)
@@ -183,28 +183,28 @@ user=> (+ troll-symbol ((fn [base] (+ base 1) ) 5) )
 13
 ```</p>
 
-<p>This is slightly more complex but also should be easy. In first line we use <code>fn</code> to define function with one parameter called base this returns a function. In line two we do the same but this function is returned and passed and argument of 5 and evaluated to 6. In line three we define symbol troll-symbol with value of 7 we obviously can&rsquo;t evaluate a value so we get exception! It&rsquo;s all fine because its value. But we can use it like in last line, where we add to value of troll-symbol effect of evaluation of function that we defined passed with argument of 5.</p>
+<p>This is slightly more complex but also should be easy. In first line we use <code>fn</code> to define function with one parameter called base this returns a function. In line two we do the same but this function is returned and passed and argument of 5 and evaluated to 6. In line three we define symbol troll-symbol with value of 7 we obviously can't evaluate a value so we get exception! It's all fine because its value. But we can use it like in last line, where we add to value of troll-symbol effect of evaluation of function that we defined passed with argument of 5.</p>
 
-<p>Don&rsquo;t be afraid :D. All we did here is explained what <code>defn</code> do, basically defn is just composition of def and fn. Lets you specify symbol that function returned by fn is bound to.</p>
+<p>Don't be afraid :D. All we did here is explained what <code>defn</code> do, basically defn is just composition of def and fn. Lets you specify symbol that function returned by fn is bound to.</p>
 
 <p>Defn simply saves us key strokes :) Like using Emacs :D this can lead to RSI. =)</p>
 
 <p>``` scheme
 user=> (def troll-symbol 8)</p>
 
-<h1>&lsquo;user/troll-symbol</h1>
+<h1>'user/troll-symbol</h1>
 
 <p>user=> troll-symbol
 8
 user=> (def troll-foo (fn [base] (+ base 1)))</p>
 
-<h1>&lsquo;user/troll-foo</h1>
+<h1>'user/troll-foo</h1>
 
 <p>user=> (troll-foo 7)
 8
 ```</p>
 
-<p>This exactly shows what happens when you use defn, you get function from fn and bind it to some symbol. That&rsquo;s it. Its good to have some play with all this brackets :) its fun! try defining something on your own :D</p>
+<p>This exactly shows what happens when you use defn, you get function from fn and bind it to some symbol. That's it. Its good to have some play with all this brackets :) its fun! try defining something on your own :D</p>
 
 <h2>Hello world</h2>
 
@@ -233,11 +233,11 @@ user=&gt; (#(+ 1 %1) 9)
 10
 </code></p>
 
-<p>You can still use old syntax but this is just faster to type. Remember that %1, %2 &hellip; refer to arguments that are passed to this lambda.</p>
+<p>You can still use old syntax but this is just faster to type. Remember that %1, %2 ... refer to arguments that are passed to this lambda.</p>
 
 <h1>Lists and Vectors</h1>
 
-<p>Like in all programming languages we have lists and vectors. Those are built in. Syntax for List is simply <code>'()</code> eg. <code>'(1 2 3 4)</code> and for vector aka &ldquo;array&rdquo; its <code>[]</code> eg. <code>[1 2 3]</code>. NO COMAS!</p>
+<p>Like in all programming languages we have lists and vectors. Those are built in. Syntax for List is simply <code>'()</code> eg. <code>'(1 2 3 4)</code> and for vector aka "array" its <code>[]</code> eg. <code>[1 2 3]</code>. NO COMAS!</p>
 
 <p><code>scheme
 user=&gt; [1 2 3 4 5]
@@ -265,7 +265,7 @@ user=&gt; (map #(println %1) [1 2 3 4 5])
 nil nil nil nil nil)
 </code></p>
 
-<p>It is map&hellip; so it is ugly because result from <code>println</code> is nil so we printed out contents of vector and list but its ugly.
+<p>It is map... so it is ugly because result from <code>println</code> is nil so we printed out contents of vector and list but its ugly.
 Map is a high order function that takes function and list/array/sequance of arguments, applyies and evaluates funtion on each argument and stores results of this in a list that is returned at the end :) eg. <code>(map (+ %1 1) (1 2 3))</code> will give <code>[2 3 4]</code>.</p>
 
 <p>Lets try to do it with doseq.</p>
@@ -282,11 +282,11 @@ nil
 
 <h3>Glossary</h3>
 
-<p>REPL &ndash; Read Eval Print Loop. Simply language console in which you can run code and see results without typing code into file and running interpreter on it.</p>
+<p>REPL - Read Eval Print Loop. Simply language console in which you can run code and see results without typing code into file and running interpreter on it.</p>
 
-<p>Lisp &ndash; On of the biggest language trolls or only language worth learning. Still can&rsquo;t decide</p>
+<p>Lisp - On of the biggest language trolls or only language worth learning. Still can't decide</p>
 
-<p>Jar &ndash; Java archive that contains code, can contain also jam. I like jam.</p>
+<p>Jar - Java archive that contains code, can contain also jam. I like jam.</p>
 
 <h1>Summary</h1>
 
@@ -303,7 +303,7 @@ nil
 
 <h2>Mac, Linux</h2>
 
-<p>In this text i use <code>en0</code>, <code>en1</code> naming convention from OSX if you are linux user you should change it to eth0, eth1 w&hellip; check your network config using <code>ifconfig</code>. Basic knowledge required! =)</p>
+<p>In this text i use <code>en0</code>, <code>en1</code> naming convention from OSX if you are linux user you should change it to eth0, eth1 w... check your network config using <code>ifconfig</code>. Basic knowledge required! =)</p>
 
 <h1>Tcpdump</h1>
 
@@ -314,7 +314,7 @@ nil
 <p>Tcpdump basic options are</p>
 
 <ul>
-<li>-i &lsquo;interface&rsquo;  option lets you specify on which interface you will listen</li>
+<li>-i 'interface'  option lets you specify on which interface you will listen</li>
 <li>-nS lets you see basic information about packets</li>
 <li>-v, -vv, -vvv verbose mode</li>
 <li>-s 1514 lets you specify how much data from packet is displayed. In this case you see whole packet</li>
@@ -331,7 +331,7 @@ nil
 <p><code>bash
 sudo tcpdump -nS -i en1
 </code>
-This is obviously bad idea, only good thing about its that i lets you see that &ldquo;something is on&rdquo; so you will be able to say that this device is actually working.</p>
+This is obviously bad idea, only good thing about its that i lets you see that "something is on" so you will be able to say that this device is actually working.</p>
 
 <h2>Example two, targeting host!</h2>
 

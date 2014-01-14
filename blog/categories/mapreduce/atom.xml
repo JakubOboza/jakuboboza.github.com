@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mapReduce, | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/mapreduce/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-16T22:41:08+00:00</updated>
+  <updated>2014-01-14T10:24:56+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -50,7 +50,7 @@ In reduce function you simple gather results and sum them up. It is easier to th
 <code>bash
 mongo localhost:27017/canis_production generate_report.js
 </code>
-This will run <code>generate_report.js</code> script on database <code>canis_production</code> on db node <code>localhost:27017</code>. You don&rsquo;t need to do it, but its easiet to write it into file then type each time functions ;).</p>
+This will run <code>generate_report.js</code> script on database <code>canis_production</code> on db node <code>localhost:27017</code>. You don't need to do it, but its easiet to write it into file then type each time functions ;).</p>
 
 <h1>Example Map reduce query</h1>
 
@@ -70,30 +70,30 @@ this is have we defined out map reduce functions now all we need to do is just r
 <code>javascript
 db.sites.mapReduce(map, reduce, { out: "mapped_urls" });
 </code>
-To run mapReduce we are using <code>mapReduce</code> function on collection (this example uses collection named &ldquo;sites&rdquo;), first argument is map function, second is reduce function and third is option but very useful, it is output collection where results will be stored in form of documents. This option lets us run the query at eg. night and see results in the morning :).</p>
+To run mapReduce we are using <code>mapReduce</code> function on collection (this example uses collection named "sites"), first argument is map function, second is reduce function and third is option but very useful, it is output collection where results will be stored in form of documents. This option lets us run the query at eg. night and see results in the morning :).</p>
 
 <h2>Lets test it</h2>
 
 <p>First some sample data
 ``` javascript</p>
 
-<blockquote><p>db.sites.insert({url: &ldquo;www.google.com&rdquo;, date: new Date(), trash_data: 5 });
-db.sites.insert({url: &ldquo;www.no-fucking-idea.com&rdquo;, date: new Date(), trash_data: 13 });
-db.sites.insert({url: &ldquo;www.google.com&rdquo;, date: new Date(), trash_data: 1 });
-db.sites.insert({url: &ldquo;www.no-fucking-idea.com&rdquo;, date: new Date(), trash_data: 69 });
-db.sites.insert({url: &ldquo;www.no-fucking-idea.com&rdquo;, date: new Date(), trash_data: 256 });
+<blockquote><p>db.sites.insert({url: "www.google.com", date: new Date(), trash_data: 5 });
+db.sites.insert({url: "www.no-fucking-idea.com", date: new Date(), trash_data: 13 });
+db.sites.insert({url: "www.google.com", date: new Date(), trash_data: 1 });
+db.sites.insert({url: "www.no-fucking-idea.com", date: new Date(), trash_data: 69 });
+db.sites.insert({url: "www.no-fucking-idea.com", date: new Date(), trash_data: 256 });
 <code>
 now functions and query
 </code> javascript
 var map = function(){
-&hellip;   emit(this.url, 1);
-&hellip; }
+...   emit(this.url, 1);
+... }
 var reduce = function(key, values){
-&hellip;   var res = 0;
-&hellip;   values.forEach(function(v){ res += 1});
-&hellip;   return {count: res};
-&hellip; }
-db.sites.mapReduce(map, reduce, { out: &ldquo;mapped_urls&rdquo; });
+...   var res = 0;
+...   values.forEach(function(v){ res += 1});
+...   return {count: res};
+... }
+db.sites.mapReduce(map, reduce, { out: "mapped_urls" });
 {</p>
 
 <pre><code>"result" : "mapped_urls",
@@ -112,8 +112,8 @@ db.sites.mapReduce(map, reduce, { out: &ldquo;mapped_urls&rdquo; });
 And results
 </code> javascript
 db.mapped_urls.find({})
-{ &ldquo;<em>id&rdquo; : &ldquo;www.google.com&rdquo;, &ldquo;value&rdquo; : { &ldquo;count&rdquo; : 2 } }
-{ &ldquo;</em>id&rdquo; : &ldquo;www.no-fucking-idea.com&rdquo;, &ldquo;value&rdquo; : { &ldquo;count&rdquo; : 3 } }
+{ "<em>id" : "www.google.com", "value" : { "count" : 2 } }
+{ "</em>id" : "www.no-fucking-idea.com", "value" : { "count" : 3 } }
 ```
 Worked perfect ;)</p></blockquote>
 

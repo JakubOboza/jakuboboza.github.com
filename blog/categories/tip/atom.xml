@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tip | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/tip/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-16T22:41:08+00:00</updated>
+  <updated>2014-01-14T10:24:56+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -22,7 +22,7 @@
 
 <p><img src="http://i.imgur.com/jwI5yqK.png" alt="cat explaining stuff" /></p>
 
-<h1>Working with URL&rsquo;s</h1>
+<h1>Working with URL's</h1>
 
 <p>Most of the time when preparing to make an http request in haskell eg. using <code>simpleHTTP</code> we need to build a request. We have several ways to do it, one of them would be to ugly glue strings together but thats not the way to do it in a safe way. Happily for us we have <code>url</code>, <code>(cabal install url)</code> package that adds <code>Network.Url</code> package. And here i will show few quick tips how to use it to work with urls.</p>
 
@@ -34,8 +34,8 @@
 import Network.URL</p>
 
 <p>main = do
-  putStrLn &ldquo;give me some url:&rdquo;
-  rawUrl &lt;&ndash; getLine
+  putStrLn "give me some url:"
+  rawUrl &lt;- getLine
   let maybeUrl = importURL rawUrl in</p>
 
 <pre><code>case maybeUrl of
@@ -58,7 +58,7 @@ importURL :: String -&gt; Maybe URL
 exportURL :: URL -&gt; String
 </code></p>
 
-<p>So we are only doing some simple transformation <code>String ~&gt;~ Maybe URL ~&gt;~ URL ~&gt;~ String</code> thats nothing we can&rsquo;t handle!</p>
+<p>So we are only doing some simple transformation <code>String ~&gt;~ Maybe URL ~&gt;~ URL ~&gt;~ String</code> thats nothing we can't handle!</p>
 
 <p>Next important bit is <code>add_param</code> function with signature:</p>
 
@@ -76,14 +76,14 @@ add_param :: URL -&gt; (String, String) -&gt; URL
 import Network.URL</p>
 
 <p>prepareUrl url =
-  let newUrl = add_param url (&ldquo;query&rdquo;,&ldquo;gimme cats pics&rdquo;) in</p>
+  let newUrl = add_param url ("query","gimme cats pics") in</p>
 
 <pre><code>add_param newUrl ("size", "any")
 </code></pre>
 
 <p>main = do
-  putStrLn &ldquo;give me some url:&rdquo;
-  rawUrl &lt;&ndash; getLine
+  putStrLn "give me some url:"
+  rawUrl &lt;- getLine
   let maybeUrl = importURL rawUrl in</p>
 
 <pre><code>case maybeUrl of
@@ -109,7 +109,7 @@ But stuff showed above is the main point of lib.</p>
 
 <p>More about this lib ofc on hackage: <a href="http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html">http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html</a></p>
 
-<p>&hellip;.And quick tip should be quick :)</p>
+<p>....And quick tip should be quick :)</p>
 ]]></content>
   </entry>
   

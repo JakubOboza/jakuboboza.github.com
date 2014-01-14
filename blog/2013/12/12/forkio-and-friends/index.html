@@ -144,11 +144,11 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And that&rsquo;s actually all we need. Let&rsquo;s make some stuff working.</p>
+<p>And that&#8217;s actually all we need. Let&#8217;s make some stuff working.</p>
 
 <h1>Ok So lets get this party started :)</h1>
 
-<p>I think most of the time it&rsquo;s better to explain stuff on examples.</p>
+<p>I think most of the time it&#8217;s better to explain stuff on examples.</p>
 
 <h2>Just spawn!</h2>
 
@@ -171,7 +171,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <p>This is a very simple way to spawn a light weight thread via forkIO :>. As you can see it is a normal action so you can go dirty!</p>
 
-<p>forkIO takes actions and give you back IO ThreadId so you can keep track / kill threads you don&rsquo;t like</p>
+<p>forkIO takes actions and give you back IO ThreadId so you can keep track / kill threads you don&#8217;t like</p>
 
 <h2>Just Spawn</h2>
 
@@ -208,7 +208,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Well compiling and running this gives you only &ldquo;hit it guys&rdquo; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
+<p>Well compiling and running this gives you only &#8220;hit it guys&#8221; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
 
 <figure class='code'><figcaption><span>crazygals2.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -247,7 +247,7 @@ The new thread will be a lightweight thread; if you want to use a foreign librar
 
 <p>After launching it you can see how each thread is spamming its prints ;> So it work until you will hit enter. Cool so we have something working.</p>
 
-<p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &ldquo;thread&rdquo; function in separation.
+<p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &#8220;thread&#8221; function in separation.
 Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it simpler.</p>
 
 <figure class='code'><figcaption><span>crazygals3.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -293,7 +293,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <p>Cool so now we have some basics how to spawn a thread using forkIO but to have something that we actually can use in real life we need to have some sort of communication. I wanna present something i feel would be useful in almost every haskell program. Channel combined with forkIO.</p>
 
-<p>If you programmed ever in <code>Erlang</code> or <code>Go</code> you will know what i&rsquo;m talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can&rsquo;t predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
+<p>If you programmed ever in <code>Erlang</code> or <code>Go</code> you will know what i&#8217;m talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can&#8217;t predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
 
 <p>Channels are amazing because they are flexible :) And very natural. Basic principle is simple you write in one thread to the channel and read in other :)</p>
 
@@ -342,7 +342,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <h2>A Worker</h2>
 
-<p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&rsquo;t got it by now :) )</p>
+<p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&#8217;t got it by now :) )</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -407,7 +407,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Yes you can build workers as you want. I would not spend time on trying to build uber generic worker as it is usually custom and you don&rsquo;t need to spend much time to make one :). Usually you can have worker types for particular tasks eg. databasesWriter, logWriters, counters etc.</p>
+<p>Yes you can build workers as you want. I would not spend time on trying to build uber generic worker as it is usually custom and you don&#8217;t need to spend much time to make one :). Usually you can have worker types for particular tasks eg. databasesWriter, logWriters, counters etc.</p>
 
 <p>Now why would you all this forkIO stuff ? here is there reason. Cat simulation!</p>
 
@@ -486,7 +486,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
 <h1>Summary</h1>
 
-<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don&rsquo;t need to be expert on Kleisli arrows to use them ;).</p>
+<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don&#8217;t need to be expert on Kleisli arrows to use them ;).</p>
 
 <p>Cheers!</p>
 </div>
@@ -635,7 +635,7 @@ Each of them run forever like crazy music fans :). In this place we can make it 
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Jakub Oboza -
+  Copyright &copy; 2014 - Jakub Oboza -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Today i spoted on twitter this: @antirez: &ldquo;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis &hellip;">
+  <meta name="description" content="Today i spoted on twitter this: @antirez: &#8220;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -109,9 +109,9 @@
 
 <div class="entry-content"><p>Today i spoted on twitter this:</p>
 
-<p>@antirez: &ldquo;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis internals and behaviour, and are * great *.&rdquo;</p>
+<p>@antirez: &#8220;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis internals and behaviour, and are * great *.&#8221;</p>
 
-<p>@shanley: &ldquo;@antirez I&rsquo;ve never met a technical community where 99% of them were familiar with the internals of anything. Did you mean 9%?&rdquo;</p>
+<p>@shanley: &#8220;@antirez I&#8217;ve never met a technical community where 99% of them were familiar with the internals of anything. Did you mean 9%?&#8221;</p>
 
 <p>This sparked in my mind very quick review of the topics that we talk about in work and i realised that we talk about a lot  about internals of redis and a bit about riak but this is different story :).</p>
 
@@ -202,9 +202,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And see that even if AL_START_HEAD is defined as 0 and AL_START_TAIL as 1 if we will use direction of 5 (lol) we will get tail :D I know that i&rsquo;m bikesheding now.</p>
+<p>And see that even if AL_START_HEAD is defined as 0 and AL_START_TAIL as 1 if we will use direction of 5 (lol) we will get tail :D I know that i&#8217;m bikesheding now.</p>
 
-<p>Even without going any deeper you have a feeling how this works. Double linked list with (void<em>) value. First thing i thought today was (this was stupid) &ldquo;Wow why this is (void </em>) and not (char <em>) this would let compiler better type check it while compilation&rdquo; but antirez wrote to me &ldquo;@jakuboboza hint: grep listCreate </em>.c&rdquo; and that was the hint i needed. (void *) is more generic but list is used in many places in redis internals and i did not thought about it (lol)</p>
+<p>Even without going any deeper you have a feeling how this works. Double linked list with (void<em>) value. First thing i thought today was (this was stupid) &#8220;Wow why this is (void </em>) and not (char <em>) this would let compiler better type check it while compilation&#8221; but antirez wrote to me &#8220;@jakuboboza hint: grep listCreate </em>.c&#8221; and that was the hint i needed. (void *) is more generic but list is used in many places in redis internals and i did not thought about it (lol)</p>
 
 <figure class='code'><figcaption><span>grep listCreate *.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -323,7 +323,7 @@
 
 <p>Thing to view is suggested by antires Dict!</p>
 
-<p>antirez: &ldquo;@jakuboboza it&rsquo;s definitely a very simple implementation! Probably our most &#8220;on steroids&rdquo; implementation of data structures is dict.c&#8221;</p>
+<p>antirez: &#8220;@jakuboboza it&#8217;s definitely a very simple implementation! Probably our most &#8220;on steroids&#8221; implementation of data structures is dict.c&#8221;</p>
 
 <p>^_____^</p>
 </div>
@@ -466,7 +466,7 @@
     </div>
   </div>
   <footer role="contentinfo"><p>
-  Copyright &copy; 2013 - Jakub Oboza -
+  Copyright &copy; 2014 - Jakub Oboza -
   <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
 </p>
 

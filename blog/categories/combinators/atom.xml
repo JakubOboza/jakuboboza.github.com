@@ -4,7 +4,7 @@
   <title><![CDATA[Category: combinators | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/combinators/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2013-12-16T22:41:08+00:00</updated>
+  <updated>2014-01-14T10:24:56+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -22,15 +22,15 @@
 
 <h1>Observations</h1>
 
-<p>I started making mind notes of things that i understand about system i&rsquo;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
+<p>I started making mind notes of things that i understand about system i'm working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
 
 <h2>Observation 1</h2>
 
-<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &ldquo;this is simple&rdquo;. We can represent it by list of actions like this</p>
+<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was "this is simple". We can represent it by list of actions like this</p>
 
 <p>``` bash</p>
 
-<p> [step] &ndash;> [step] &ndash;> [step]</p>
+<p> [step] -> [step] -> [step]</p>
 
 <p>```</p>
 
@@ -38,7 +38,7 @@
 
 <h2>Observation 2</h2>
 
-<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &ldquo;if&rdquo; i WIN !
+<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate "if" i WIN !
 Lets have a look</p>
 
 <p>``` bash</p>
@@ -48,7 +48,7 @@ Lets have a look</p>
                     |
 </code></pre>
 
-<p>  [step] &ndash;> [if a &lt; 5] &ndash; ( yes ) &ndash;> [step]</p>
+<p>  [step] -> [if a &lt; 5] - ( yes ) -> [step]</p>
 
 <p>```</p>
 
@@ -56,11 +56,11 @@ Lets have a look</p>
 
 <h2>Observation 3</h2>
 
-<p>It is not a tree&hellip;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&hellip; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
+<p>It is not a tree...its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it... but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
 
 <h1>AST</h1>
 
-<p>I wrote simple grammar and made a parser of a very simple &ldquo;ify&rdquo; language. My language starts like this&hellip;</p>
+<p>I wrote simple grammar and made a parser of a very simple "ify" language. My language starts like this...</p>
 
 <p><code>bash
 -- Grammar
@@ -93,21 +93,21 @@ import Text.ParserCombinators.Parsec.Expr
 import Text.ParserCombinators.Parsec.Language
 import qualified Text.ParserCombinators.Parsec.Token as Token</p>
 
-<p>&mdash;  Grammar
-&mdash; x is variable
-&mdash; a is artmetic thing aka number
-&mdash; n is actual number eg. 1
-&mdash; b is boolean
-&mdash; opa is arthmetic operator
-&mdash; opb is boolean operator
-&mdash; opr is comparison operator
-&mdash; S is statement
-&mdash;  a   ::= x | n | &ndash; a | a opa a
-&mdash;  b   ::= true | false | not b | b opb b | a opr a
-&mdash;  opa ::= + | &ndash; | * | /
-&mdash;  opb ::= and | or
-&mdash;  opr ::= > | &lt;
-&mdash;  S   ::= x | x &lt;&ndash; a | S1; S2 | ( S ) | if b then S1 else S2</p>
+<p>--  Grammar
+-- x is variable
+-- a is artmetic thing aka number
+-- n is actual number eg. 1
+-- b is boolean
+-- opa is arthmetic operator
+-- opb is boolean operator
+-- opr is comparison operator
+-- S is statement
+--  a   ::= x | n | - a | a opa a
+--  b   ::= true | false | not b | b opb b | a opr a
+--  opa ::= + | - | * | /
+--  opb ::= and | or
+--  opr ::= > | &lt;
+--  S   ::= x | x &lt;- a | S1; S2 | ( S ) | if b then S1 else S2</p>
 
 <p>data AExpr = Var String</p>
 
@@ -145,7 +145,7 @@ data RBinOp = Greater | Less deriving (Show)</p>
 </code></pre>
 
 <p>languageDef =
-   emptyDef { Token.commentStart    = &ldquo;/*&rdquo;</p>
+   emptyDef { Token.commentStart    = "/*"</p>
 
 <pre><code>        , Token.commentEnd      = "*/"
         , Token.commentLine     = "#"
@@ -168,13 +168,13 @@ data RBinOp = Greater | Less deriving (Show)</p>
 
 <p>lexer = Token.makeTokenParser languageDef</p>
 
-<p>identifier = Token.identifier lexer &mdash; parses an identifier
-reserved   = Token.reserved   lexer &mdash; parses a reserved name
-reservedOp = Token.reservedOp lexer &mdash; parses an operator
-parens     = Token.parens     lexer &mdash; parses surrounding parenthesis:
-integer    = Token.integer    lexer &mdash; parses an integer
-semi       = Token.semi       lexer &mdash; parses a semicolon
-whiteSpace = Token.whiteSpace lexer &mdash; parses whitespace</p>
+<p>identifier = Token.identifier lexer -- parses an identifier
+reserved   = Token.reserved   lexer -- parses a reserved name
+reservedOp = Token.reservedOp lexer -- parses an operator
+parens     = Token.parens     lexer -- parses surrounding parenthesis:
+integer    = Token.integer    lexer -- parses an integer
+semi       = Token.semi       lexer -- parses a semicolon
+whiteSpace = Token.whiteSpace lexer -- parses whitespace</p>
 
 <p>whileParser :: Parser Stmt
 whileParser = whiteSpace >> statement</p>
@@ -186,7 +186,7 @@ statement =   parens statement</p>
 </code></pre>
 
 <p>sequenceOfStmt =
-   do list &lt;&ndash; (sepBy1 statement' semi)</p>
+   do list &lt;- (sepBy1 statement' semi)</p>
 
 <pre><code>  return $ if length list == 1 then head list else Seq list
 </code></pre>
@@ -200,7 +200,7 @@ statement' =   ifStmt</p>
 
 <p>ifStmt :: Parser Stmt
 ifStmt =
-   do reserved &ldquo;if&rdquo;</p>
+   do reserved "if"</p>
 
 <pre><code>  cond  &lt;- bExpression
   reserved "then"
@@ -212,14 +212,14 @@ ifStmt =
 
 <p>identName :: Parser Stmt
 identName =
-   do  varName &lt;&ndash; identifier</p>
+   do  varName &lt;- identifier</p>
 
 <pre><code>   return $ Ident varName
 </code></pre>
 
 <p>assignStmt :: Parser Stmt
 assignStmt =
-   do var  &lt;&ndash; identifier</p>
+   do var  &lt;- identifier</p>
 
 <pre><code>  reservedOp "&lt;-"
   expr &lt;- aExpression
@@ -232,7 +232,7 @@ aExpression = buildExpressionParser aOperators aTerm</p>
 <p>bExpression :: Parser BExpr
 bExpression = buildExpressionParser bOperators bTerm</p>
 
-<p>aOperators = [ [Prefix (reservedOp &ldquo;&ndash;&rdquo;   >> return (Neg             ))          ]</p>
+<p>aOperators = [ [Prefix (reservedOp "-"   >> return (Neg             ))          ]</p>
 
 <pre><code>          , [Infix  (reservedOp "*"   &gt;&gt; return (ABinary Multiply)) AssocLeft]
           , [Infix  (reservedOp "/"   &gt;&gt; return (ABinary Divide  )) AssocLeft]
@@ -241,7 +241,7 @@ bExpression = buildExpressionParser bOperators bTerm</p>
            ]
 </code></pre>
 
-<p>bOperators = [ [Prefix (reservedOp &ldquo;not&rdquo; >> return (Not             ))          ]</p>
+<p>bOperators = [ [Prefix (reservedOp "not" >> return (Not             ))          ]</p>
 
 <pre><code>          , [Infix  (reservedOp "and" &gt;&gt; return (BBinary And     )) AssocLeft]
           , [Infix  (reservedOp "or"  &gt;&gt; return (BBinary Or      )) AssocLeft]
@@ -262,29 +262,29 @@ bExpression = buildExpressionParser bOperators bTerm</p>
 </code></pre>
 
 <p>rExpression =
-   do a1 &lt;&ndash; aExpression</p>
+   do a1 &lt;- aExpression</p>
 
 <pre><code>  op &lt;- relation
   a2 &lt;- aExpression
   return $ RBinary op a1 a2
 </code></pre>
 
-<p>relation =   (reservedOp &ldquo;>&rdquo; >> return Greater)</p>
+<p>relation =   (reservedOp ">" >> return Greater)</p>
 
 <pre><code>      &lt;|&gt; (reservedOp "&lt;" &gt;&gt; return Less)
 </code></pre>
 
-<p>parseString :: String &ndash;> Stmt
+<p>parseString :: String -> Stmt
 parseString str =
-   case parse whileParser &ldquo;&rdquo; str of</p>
+   case parse whileParser "" str of</p>
 
 <pre><code> Left e  -&gt; error $ show e
  Right r -&gt; r
 </code></pre>
 
-<p>parseFile :: String &ndash;> IO Stmt
+<p>parseFile :: String -> IO Stmt
 parseFile file =
-   do program  &lt;&ndash; readFile file</p>
+   do program  &lt;- readFile file</p>
 
 <pre><code>  case parse whileParser "" program of
     Left e  -&gt; print e &gt;&gt; fail "parse error"
@@ -292,12 +292,12 @@ parseFile file =
 </code></pre>
 
 <p>main = do
-  args &lt;&ndash; getArgs
-  ast &lt;&ndash; parseFile(head args)
+  args &lt;- getArgs
+  ast &lt;- parseFile(head args)
   putStrLn $ show ast
 ```</p>
 
-<p>But it works&hellip; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
+<p>But it works... we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
 ]]></content>
   </entry>
   
