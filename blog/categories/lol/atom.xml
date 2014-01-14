@@ -4,7 +4,7 @@
   <title><![CDATA[Category: lol | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/lol/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T11:10:02+00:00</updated>
+  <updated>2014-01-14T11:37:12+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,7 +18,10 @@
     <link href="http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/"/>
     <updated>2014-01-14T10:43:36+00:00</updated>
     <id>http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode</id>
-    <content type="html"><![CDATA[<p>If you have <code>800 Mhash/s</code> GPU (Graphics card) i&rsquo;m sure you often think about making your raspberry pi a dogecoin miner. Because why not :D ? It is not effective i warn you :) you will get around <code>0.34 khash/s</code> that is about 2000 times less than your GPU :) and about 500 times less than CPU on your box. But its easy and fun.</p>
+    <content type="html"><![CDATA[<p>!!!UPDATE:
+Download cpuminer and build from tar <a href="http://sourceforge.net/projects/cpuminer/">http://sourceforge.net/projects/cpuminer/</a> git HEAD is broken and will not let you run configure.</p>
+
+<p>If you have <code>800 Mhash/s</code> GPU (Graphics card) i&rsquo;m sure you often think about making your raspberry pi a dogecoin miner. Because why not :D ? It is not effective i warn you :) you will get around <code>0.34 khash/s</code> that is about 2000 times less than your GPU :) and about 500 times less than CPU on your box. But its easy and fun.</p>
 
 <p><img src="http://i.imgur.com/83LnzuU.jpg" alt="doge meme" /></p>
 
