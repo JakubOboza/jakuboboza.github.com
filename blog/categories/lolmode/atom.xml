@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: lolmode | No F*cking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/lolmode/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2014-01-14T11:10:02+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Dogecoin mining on raspberry pi LOLMODE]]></title>
+    <link href="http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/"/>
+    <updated>2014-01-14T10:43:36+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode</id>
+    <content type="html"><![CDATA[<p>If you have <code>800 Mhash/s</code> GPU (Graphics card) i&rsquo;m sure you often think about making your raspberry pi a dogecoin miner. Because why not :D ? It is not effective i warn you :) you will get around <code>0.34 khash/s</code> that is about 2000 times less than your GPU :) and about 500 times less than CPU on your box. But its easy and fun.</p>
+
+<p><img src="http://i.imgur.com/83LnzuU.jpg" alt="doge meme" /></p>
+
+<p>I mainly did it for fun to see how it will react, work and what is the possible heat problem.</p>
+
+<h1>Again Why ?</h1>
+
+<p>Because DOGE, doge coin is THE NEW BLACK. Its future! An Irony on all crypto currency :) and its value is based on meme, laugh and happiness. This is much better than bitcoin :> at least for me</p>
+
+<h1>Connect to your raspberry pi</h1>
+
+<p>You will need:
+<code>bash requirements
+  λ automake
+  λ gcc
+  λ git-core
+  λ libcurl
+</code></p>
+
+<p>if you are using like me <code>2014-01-07-wheezy-raspbian</code> raspbian you will have everything ready :) one thing to install is <code>automake</code> and you can do this by typing <code>apt-get update</code>  followed by <code>apt-get install automake</code> this is all you need.</p>
+
+<p>lets get on the box! (default login/passowrd for this image is pi:raspberry)
+<code>bash
+10:54 kuba@pc12:~ λ ssh pi@192.168.1.22
+pi@raspberrypi ~ $
+</code>
+(This ip address is just an example :D you will need to have a way to find it in your network.)</p>
+
+<p>Now all you need to do is to clone CPU miner for it.</p>
+
+<p><code>bash
+git clone https://github.com/pooler/cpuminer.git
+</code></p>
+
+<p>This will download your mining software on the raspeberry pi, next we need to compile it and run!</p>
+
+<p><code>bash compiling
+pi@raspberrypi ~/Workspace $ cd cpuminer-2.3.2/
+pi@raspberrypi ~/Workspace/cpuminer-2.3.2 $
+./autogen.sh
+... script will take some time ...
+./configure CFLAGS="-O3"
+make
+</code>
+This will compile and build the minerd binary that is ready to start mining :). Well you need to do one thing, join a doge pool. I&rsquo;m not gone go into details of solo mining vs pool minnig :)  i&rsquo;m just a simple miner :D</p>
+
+<p>If you need more info on mining pools you should check this topic <a href="http://www.reddit.com/r/dogecoin/comments/1tn8yz/dogecoin_mining_pool_list/">http://www.reddit.com/r/dogecoin/comments/1tn8yz/dogecoin_mining_pool_list/</a></p>
+
+<p>I personally at the time of writing this post i&rsquo;m using small pool called chunky pool :).</p>
+
+<h2>Starting to mine!</h2>
+
+<p>Now we have software lets actually mine something :).
+You will need to create a shell script that will start minerd on your raspberry pi. My looks like this</p>
+
+<p><code>bash run.sh
+./minerd --a scrypt --threads 1 -o stratum+tcp://pool.chunky.ms:3333 -O dogedogedoge.pi:password
+</code></p>
+
+<p>make it executable and run! Yay you are a dogecoin farmer now! CPU mining is not the most optimal but hey..its all just for lolz :)</p>
+
+<h3>Heat problems ?</h3>
+
+<p>For me 2 hours of mining on raspberry pi did not generate any extra heat or stuff like this, seems to be stable. I was worried it will got nuts on this topic but i was proven wrong.</p>
+
+<h1>Summay</h1>
+
+<p>This sucks in terms of speed, you will get close to none speed because below 2 khash/s its not even worth it, you will not be on any stats on any pool even listed, periodically you will actually hit the jackpot and get a success pimping you to 2khash/s for about 60 sec but that is  just a lie, you scored a win and this will give you some parts of doge. Last i checked you were able to get around 0.67 doge per hour of your raspberry time. That is really really bad as pretty basic GPU pimps you to 600+</p>
+
+<p>Cheers :) Hope it helps! Much fun, so currency.</p>
+]]></content>
+  </entry>
+  
+</feed>

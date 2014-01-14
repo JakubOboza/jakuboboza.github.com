@@ -4,7 +4,7 @@
   <title><![CDATA[Category: haskell | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/haskell/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -22,7 +22,7 @@
 
 <p><img src="http://i.imgur.com/jwI5yqK.png" alt="cat explaining stuff" /></p>
 
-<h1>Working with URL's</h1>
+<h1>Working with URL&rsquo;s</h1>
 
 <p>Most of the time when preparing to make an http request in haskell eg. using <code>simpleHTTP</code> we need to build a request. We have several ways to do it, one of them would be to ugly glue strings together but thats not the way to do it in a safe way. Happily for us we have <code>url</code>, <code>(cabal install url)</code> package that adds <code>Network.Url</code> package. And here i will show few quick tips how to use it to work with urls.</p>
 
@@ -34,8 +34,8 @@
 import Network.URL</p>
 
 <p>main = do
-  putStrLn "give me some url:"
-  rawUrl &lt;- getLine
+  putStrLn &ldquo;give me some url:&rdquo;
+  rawUrl &lt;&ndash; getLine
   let maybeUrl = importURL rawUrl in</p>
 
 <pre><code>case maybeUrl of
@@ -58,7 +58,7 @@ importURL :: String -&gt; Maybe URL
 exportURL :: URL -&gt; String
 </code></p>
 
-<p>So we are only doing some simple transformation <code>String ~&gt;~ Maybe URL ~&gt;~ URL ~&gt;~ String</code> thats nothing we can't handle!</p>
+<p>So we are only doing some simple transformation <code>String ~&gt;~ Maybe URL ~&gt;~ URL ~&gt;~ String</code> thats nothing we can&rsquo;t handle!</p>
 
 <p>Next important bit is <code>add_param</code> function with signature:</p>
 
@@ -76,14 +76,14 @@ add_param :: URL -&gt; (String, String) -&gt; URL
 import Network.URL</p>
 
 <p>prepareUrl url =
-  let newUrl = add_param url ("query","gimme cats pics") in</p>
+  let newUrl = add_param url (&ldquo;query&rdquo;,&ldquo;gimme cats pics&rdquo;) in</p>
 
 <pre><code>add_param newUrl ("size", "any")
 </code></pre>
 
 <p>main = do
-  putStrLn "give me some url:"
-  rawUrl &lt;- getLine
+  putStrLn &ldquo;give me some url:&rdquo;
+  rawUrl &lt;&ndash; getLine
   let maybeUrl = importURL rawUrl in</p>
 
 <pre><code>case maybeUrl of
@@ -109,7 +109,7 @@ But stuff showed above is the main point of lib.</p>
 
 <p>More about this lib ofc on hackage: <a href="http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html">http://hackage.haskell.org/package/url-2.1/docs/Network-URL.html</a></p>
 
-<p>....And quick tip should be quick :)</p>
+<p>&hellip;.And quick tip should be quick :)</p>
 ]]></content>
   </entry>
   
@@ -150,11 +150,11 @@ writeChan :: Chan a -&gt; a -&gt; IO ()
 readChan :: Chan a -&gt; IO a
 </code></p>
 
-<p>And that's actually all we need. Let's make some stuff working.</p>
+<p>And that&rsquo;s actually all we need. Let&rsquo;s make some stuff working.</p>
 
 <h1>Ok So lets get this party started :)</h1>
 
-<p>I think most of the time it's better to explain stuff on examples.</p>
+<p>I think most of the time it&rsquo;s better to explain stuff on examples.</p>
 
 <h2>Just spawn!</h2>
 
@@ -169,13 +169,13 @@ import Control.Concurrent</p>
 <pre><code>putStrLn "Yay! i'm in thread!"
 </code></pre>
 
-<p>  putStrLn "I'm important i'm in Main thread!"</p>
+<p>  putStrLn &ldquo;I&rsquo;m important i&rsquo;m in Main thread!&rdquo;</p>
 
 <p>```</p>
 
 <p>This is a very simple way to spawn a light weight thread via forkIO :>. As you can see it is a normal action so you can go dirty!</p>
 
-<p>forkIO takes actions and give you back IO ThreadId so you can keep track / kill threads you don't like</p>
+<p>forkIO takes actions and give you back IO ThreadId so you can keep track / kill threads you don&rsquo;t like</p>
 
 <h2>Just Spawn</h2>
 
@@ -186,45 +186,45 @@ import Control.Concurrent</p>
 <p>import Control.Concurrent</p>
 
 <p>fanOfGarbage = do
-  putStrLn "Garbage is best bad evar!"
+  putStrLn &ldquo;Garbage is best bad evar!&rdquo;
   fanOfGarbage</p>
 
 <p>fanOfClassicMusic = do
-  putStrLn "Dude Garbage is garbage"
+  putStrLn &ldquo;Dude Garbage is garbage&rdquo;
   fanOfClassicMusic</p>
 
 <p>main = do
-  putStrLn "hit it guys!"
+  putStrLn &ldquo;hit it guys!&rdquo;
   forkIO fanOfGarbage
   forkIO fanOfClassicMusic</p>
 
 <p>```</p>
 
-<p>Well compiling and running this gives you only "hit it guys" as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
+<p>Well compiling and running this gives you only &ldquo;hit it guys&rdquo; as main thread exits and child threads dies! lets fix it so we can say when they need to stop!:></p>
 
 <p>``` haskell crazygals2.hs</p>
 
 <p>import Control.Concurrent</p>
 
 <p>fanOfGarbage = do
-  putStrLn "Garbage is best bad evar!"
+  putStrLn &ldquo;Garbage is best bad evar!&rdquo;
   fanOfGarbage</p>
 
 <p>fanOfClassicMusic = do
-  putStrLn "Dude Garbage is garbage"
+  putStrLn &ldquo;Dude Garbage is garbage&rdquo;
   fanOfClassicMusic</p>
 
 <p>main = do
-  putStrLn "hit it guys!"
+  putStrLn &ldquo;hit it guys!&rdquo;
   forkIO fanOfGarbage
   forkIO fanOfClassicMusic
   getLine
-  putStrLn "Thank You Sir for stopping them!"
+  putStrLn &ldquo;Thank You Sir for stopping them!&rdquo;
 ```</p>
 
 <p>After launching it you can see how each thread is spamming its prints ;> So it work until you will hit enter. Cool so we have something working.</p>
 
-<p>How does it work ? first of all we use forkIO to spawn threads and this time we have each "thread" function in separation.
+<p>How does it work ? first of all we use forkIO to spawn threads and this time we have each &ldquo;thread&rdquo; function in separation.
 Each of them run forever like crazy music fans :). In this place we can make it simple by using <code>forever</code> from <code>Control.Monad</code> to make it simpler.</p>
 
 <p>``` haskell crazygals3.hs</p>
@@ -245,11 +245,11 @@ import Control.Monad (forever)</p>
 </code></pre>
 
 <p>main = do
-  putStrLn "hit it guys!"
+  putStrLn &ldquo;hit it guys!&rdquo;
   forkIO fanOfGarbage
   forkIO fanOfClassicMusic
   getLine
-  putStrLn "Thank You Sir for stopping them!"
+  putStrLn &ldquo;Thank You Sir for stopping them!&rdquo;
 ```</p>
 
 <p><code>forever</code> is part of <code>Control.Monad</code> as name says it is doing action forever ;) useful for stuff like workers or stuff that has to happen all the time it type is <code>forever :: Monad m =&gt; m a -&gt; m b</code>.</p>
@@ -258,7 +258,7 @@ import Control.Monad (forever)</p>
 
 <p>Cool so now we have some basics how to spawn a thread using forkIO but to have something that we actually can use in real life we need to have some sort of communication. I wanna present something i feel would be useful in almost every haskell program. Channel combined with forkIO.</p>
 
-<p>If you programmed ever in <code>Erlang</code> or <code>Go</code> you will know what i'm talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can't predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
+<p>If you programmed ever in <code>Erlang</code> or <code>Go</code> you will know what i&rsquo;m talking about, channels are very similar to message passing. Basically it is a pipe that you can write to or read from in different threads/processes. This is one of the mechanism we can use to get data out of other threads. Because they are not sequential we can&rsquo;t predict normal vals  or time when they will be ready. One of the ways of getting response from threads are channels.</p>
 
 <p>Channels are amazing because they are flexible :) And very natural. Basic principle is simple you write in one thread to the channel and read in other :)</p>
 
@@ -279,20 +279,20 @@ putStrLn gossip
 
 <p>main :: IO ()
 main = do
-  putStrLn "Lets do some gossips"
-  gossipChan &lt;- newChan -- lets make new chan
-  forkIO $ gossipGirl gossipChan -- spawn gossipGirl
-  writeChan gossipChan "Garbage is garbage!"
-  writeChan gossipChan "Garbage is garbage for reals!"
+  putStrLn &ldquo;Lets do some gossips&rdquo;
+  gossipChan &lt;&ndash; newChan &mdash; lets make new chan
+  forkIO $ gossipGirl gossipChan &mdash; spawn gossipGirl
+  writeChan gossipChan &ldquo;Garbage is garbage!&rdquo;
+  writeChan gossipChan &ldquo;Garbage is garbage for reals!&rdquo;
   getLine
-  putStrLn "Thank You Sir for Info"
+  putStrLn &ldquo;Thank You Sir for Info&rdquo;
 ```</p>
 
 <p>Nice! What happens here :)  So new things are <code>newChan</code> that create channel which we will use to talk to our gossipGirl. <code>readChan</code> reads data from channel and <code>writeChan</code> writes stuff to channel. This is very simple :) So now lets generalize our worker into something that we can use in next mini tutorials. A worker.</p>
 
 <h2>A Worker</h2>
 
-<p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don't got it by now :) )</p>
+<p>simple worker will take 1 channel as parameter and spawn thread this will help us in understanding how this whole thing works. (ofc if we don&rsquo;t got it by now :) )</p>
 
 <p>``` haskell</p>
 
@@ -314,24 +314,24 @@ putStrLn gossip
 
 <p>main :: IO ()
 main = do
-  putStrLn "Lets do some gossips"
-  gossipChan &lt;- newChan -- lets make new chan
-  gossipChan2 &lt;- newChan -- lets make new chan
-  worker gossipChan gossipGirl -- spawn gossipGirl</p>
+  putStrLn &ldquo;Lets do some gossips&rdquo;
+  gossipChan &lt;&ndash; newChan &mdash; lets make new chan
+  gossipChan2 &lt;&ndash; newChan &mdash; lets make new chan
+  worker gossipChan gossipGirl &mdash; spawn gossipGirl</p>
 
-<p>  writeChan gossipChan "Garbage is garbage!"
-  writeChan gossipChan "Garbage is garbage for reals!"</p>
+<p>  writeChan gossipChan &ldquo;Garbage is garbage!&rdquo;
+  writeChan gossipChan &ldquo;Garbage is garbage for reals!&rdquo;</p>
 
-<p>  worker2 (gossipGirl gossipChan2) -- woker2 2 girl!
-  writeChan gossipChan2 "Umkay"
-  writeChan gossipChan2 "Yez!"</p>
+<p>  worker2 (gossipGirl gossipChan2) &mdash; woker2 2 girl!
+  writeChan gossipChan2 &ldquo;Umkay&rdquo;
+  writeChan gossipChan2 &ldquo;Yez!&rdquo;</p>
 
 <p>  getLine
-  putStrLn "Thank You Sir for Info"</p>
+  putStrLn &ldquo;Thank You Sir for Info&rdquo;</p>
 
 <p>```</p>
 
-<p>Yes you can build workers as you want. I would not spend time on trying to build uber generic worker as it is usually custom and you don't need to spend much time to make one :). Usually you can have worker types for particular tasks eg. databasesWriter, logWriters, counters etc.</p>
+<p>Yes you can build workers as you want. I would not spend time on trying to build uber generic worker as it is usually custom and you don&rsquo;t need to spend much time to make one :). Usually you can have worker types for particular tasks eg. databasesWriter, logWriters, counters etc.</p>
 
 <p>Now why would you all this forkIO stuff ? here is there reason. Cat simulation!</p>
 
@@ -344,7 +344,7 @@ import Control.Concurrent.Chan</p>
 <p>data AskForMeow = GibFood | Smile</p>
 
 <p>meowMe chan chanBack = do
-  niceTry &lt;- readChan chan
+  niceTry &lt;&ndash; readChan chan
   case niceTry of</p>
 
 <pre><code>GibFood -&gt; writeChan chanBack "Meow"
@@ -356,19 +356,19 @@ Smile   -&gt; writeChan chanBack "No"
 
 <p>main :: IO ()
 main = do
-  putStrLn "Hey kitty kitty"</p>
+  putStrLn &ldquo;Hey kitty kitty&rdquo;</p>
 
-<p>  foodInputChan &lt;- newChan
-  catOutputChan &lt;- newChan</p>
+<p>  foodInputChan &lt;&ndash; newChan
+  catOutputChan &lt;&ndash; newChan</p>
 
 <p>  cat $ meowMe foodInputChan catOutputChan</p>
 
 <p>  writeChan foodInputChan Smile
-  response &lt;- readChan catOutputChan
+  response &lt;&ndash; readChan catOutputChan
   putStrLn response</p>
 
 <p>  writeChan foodInputChan GibFood
-  response' &lt;- readChan catOutputChan
+  response' &lt;&ndash; readChan catOutputChan
   putStrLn response'</p>
 
 <p>  getLine
@@ -377,7 +377,7 @@ main = do
 
 <h1>Summary</h1>
 
-<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don't need to be expert on Kleisli arrows to use them ;).</p>
+<p>I hope this gives a little insight into <code>forkIO</code> and <code>channels</code> functions as You should use them in your code. It is super simple to add them, they work miracles and i love them. Yes you don&rsquo;t need to be expert on Kleisli arrows to use them ;).</p>
 
 <p>Cheers!</p>
 ]]></content>
@@ -392,15 +392,15 @@ main = do
 
 <h1>Observations</h1>
 
-<p>I started making mind notes of things that i understand about system i'm working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
+<p>I started making mind notes of things that i understand about system i&rsquo;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
 
 <h2>Observation 1</h2>
 
-<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was "this is simple". We can represent it by list of actions like this</p>
+<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &ldquo;this is simple&rdquo;. We can represent it by list of actions like this</p>
 
 <p>``` bash</p>
 
-<p> [step] -> [step] -> [step]</p>
+<p> [step] &ndash;> [step] &ndash;> [step]</p>
 
 <p>```</p>
 
@@ -408,7 +408,7 @@ main = do
 
 <h2>Observation 2</h2>
 
-<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate "if" i WIN !
+<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &ldquo;if&rdquo; i WIN !
 Lets have a look</p>
 
 <p>``` bash</p>
@@ -418,7 +418,7 @@ Lets have a look</p>
                     |
 </code></pre>
 
-<p>  [step] -> [if a &lt; 5] - ( yes ) -> [step]</p>
+<p>  [step] &ndash;> [if a &lt; 5] &ndash; ( yes ) &ndash;> [step]</p>
 
 <p>```</p>
 
@@ -426,11 +426,11 @@ Lets have a look</p>
 
 <h2>Observation 3</h2>
 
-<p>It is not a tree...its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it... but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
+<p>It is not a tree&hellip;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&hellip; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
 
 <h1>AST</h1>
 
-<p>I wrote simple grammar and made a parser of a very simple "ify" language. My language starts like this...</p>
+<p>I wrote simple grammar and made a parser of a very simple &ldquo;ify&rdquo; language. My language starts like this&hellip;</p>
 
 <p><code>bash
 -- Grammar
@@ -463,21 +463,21 @@ import Text.ParserCombinators.Parsec.Expr
 import Text.ParserCombinators.Parsec.Language
 import qualified Text.ParserCombinators.Parsec.Token as Token</p>
 
-<p>--  Grammar
--- x is variable
--- a is artmetic thing aka number
--- n is actual number eg. 1
--- b is boolean
--- opa is arthmetic operator
--- opb is boolean operator
--- opr is comparison operator
--- S is statement
---  a   ::= x | n | - a | a opa a
---  b   ::= true | false | not b | b opb b | a opr a
---  opa ::= + | - | * | /
---  opb ::= and | or
---  opr ::= > | &lt;
---  S   ::= x | x &lt;- a | S1; S2 | ( S ) | if b then S1 else S2</p>
+<p>&mdash;  Grammar
+&mdash; x is variable
+&mdash; a is artmetic thing aka number
+&mdash; n is actual number eg. 1
+&mdash; b is boolean
+&mdash; opa is arthmetic operator
+&mdash; opb is boolean operator
+&mdash; opr is comparison operator
+&mdash; S is statement
+&mdash;  a   ::= x | n | &ndash; a | a opa a
+&mdash;  b   ::= true | false | not b | b opb b | a opr a
+&mdash;  opa ::= + | &ndash; | * | /
+&mdash;  opb ::= and | or
+&mdash;  opr ::= > | &lt;
+&mdash;  S   ::= x | x &lt;&ndash; a | S1; S2 | ( S ) | if b then S1 else S2</p>
 
 <p>data AExpr = Var String</p>
 
@@ -515,7 +515,7 @@ data RBinOp = Greater | Less deriving (Show)</p>
 </code></pre>
 
 <p>languageDef =
-   emptyDef { Token.commentStart    = "/*"</p>
+   emptyDef { Token.commentStart    = &ldquo;/*&rdquo;</p>
 
 <pre><code>        , Token.commentEnd      = "*/"
         , Token.commentLine     = "#"
@@ -538,13 +538,13 @@ data RBinOp = Greater | Less deriving (Show)</p>
 
 <p>lexer = Token.makeTokenParser languageDef</p>
 
-<p>identifier = Token.identifier lexer -- parses an identifier
-reserved   = Token.reserved   lexer -- parses a reserved name
-reservedOp = Token.reservedOp lexer -- parses an operator
-parens     = Token.parens     lexer -- parses surrounding parenthesis:
-integer    = Token.integer    lexer -- parses an integer
-semi       = Token.semi       lexer -- parses a semicolon
-whiteSpace = Token.whiteSpace lexer -- parses whitespace</p>
+<p>identifier = Token.identifier lexer &mdash; parses an identifier
+reserved   = Token.reserved   lexer &mdash; parses a reserved name
+reservedOp = Token.reservedOp lexer &mdash; parses an operator
+parens     = Token.parens     lexer &mdash; parses surrounding parenthesis:
+integer    = Token.integer    lexer &mdash; parses an integer
+semi       = Token.semi       lexer &mdash; parses a semicolon
+whiteSpace = Token.whiteSpace lexer &mdash; parses whitespace</p>
 
 <p>whileParser :: Parser Stmt
 whileParser = whiteSpace >> statement</p>
@@ -556,7 +556,7 @@ statement =   parens statement</p>
 </code></pre>
 
 <p>sequenceOfStmt =
-   do list &lt;- (sepBy1 statement' semi)</p>
+   do list &lt;&ndash; (sepBy1 statement' semi)</p>
 
 <pre><code>  return $ if length list == 1 then head list else Seq list
 </code></pre>
@@ -570,7 +570,7 @@ statement' =   ifStmt</p>
 
 <p>ifStmt :: Parser Stmt
 ifStmt =
-   do reserved "if"</p>
+   do reserved &ldquo;if&rdquo;</p>
 
 <pre><code>  cond  &lt;- bExpression
   reserved "then"
@@ -582,14 +582,14 @@ ifStmt =
 
 <p>identName :: Parser Stmt
 identName =
-   do  varName &lt;- identifier</p>
+   do  varName &lt;&ndash; identifier</p>
 
 <pre><code>   return $ Ident varName
 </code></pre>
 
 <p>assignStmt :: Parser Stmt
 assignStmt =
-   do var  &lt;- identifier</p>
+   do var  &lt;&ndash; identifier</p>
 
 <pre><code>  reservedOp "&lt;-"
   expr &lt;- aExpression
@@ -602,7 +602,7 @@ aExpression = buildExpressionParser aOperators aTerm</p>
 <p>bExpression :: Parser BExpr
 bExpression = buildExpressionParser bOperators bTerm</p>
 
-<p>aOperators = [ [Prefix (reservedOp "-"   >> return (Neg             ))          ]</p>
+<p>aOperators = [ [Prefix (reservedOp &ldquo;&ndash;&rdquo;   >> return (Neg             ))          ]</p>
 
 <pre><code>          , [Infix  (reservedOp "*"   &gt;&gt; return (ABinary Multiply)) AssocLeft]
           , [Infix  (reservedOp "/"   &gt;&gt; return (ABinary Divide  )) AssocLeft]
@@ -611,7 +611,7 @@ bExpression = buildExpressionParser bOperators bTerm</p>
            ]
 </code></pre>
 
-<p>bOperators = [ [Prefix (reservedOp "not" >> return (Not             ))          ]</p>
+<p>bOperators = [ [Prefix (reservedOp &ldquo;not&rdquo; >> return (Not             ))          ]</p>
 
 <pre><code>          , [Infix  (reservedOp "and" &gt;&gt; return (BBinary And     )) AssocLeft]
           , [Infix  (reservedOp "or"  &gt;&gt; return (BBinary Or      )) AssocLeft]
@@ -632,29 +632,29 @@ bExpression = buildExpressionParser bOperators bTerm</p>
 </code></pre>
 
 <p>rExpression =
-   do a1 &lt;- aExpression</p>
+   do a1 &lt;&ndash; aExpression</p>
 
 <pre><code>  op &lt;- relation
   a2 &lt;- aExpression
   return $ RBinary op a1 a2
 </code></pre>
 
-<p>relation =   (reservedOp ">" >> return Greater)</p>
+<p>relation =   (reservedOp &ldquo;>&rdquo; >> return Greater)</p>
 
 <pre><code>      &lt;|&gt; (reservedOp "&lt;" &gt;&gt; return Less)
 </code></pre>
 
-<p>parseString :: String -> Stmt
+<p>parseString :: String &ndash;> Stmt
 parseString str =
-   case parse whileParser "" str of</p>
+   case parse whileParser &ldquo;&rdquo; str of</p>
 
 <pre><code> Left e  -&gt; error $ show e
  Right r -&gt; r
 </code></pre>
 
-<p>parseFile :: String -> IO Stmt
+<p>parseFile :: String &ndash;> IO Stmt
 parseFile file =
-   do program  &lt;- readFile file</p>
+   do program  &lt;&ndash; readFile file</p>
 
 <pre><code>  case parse whileParser "" program of
     Left e  -&gt; print e &gt;&gt; fail "parse error"
@@ -662,12 +662,12 @@ parseFile file =
 </code></pre>
 
 <p>main = do
-  args &lt;- getArgs
-  ast &lt;- parseFile(head args)
+  args &lt;&ndash; getArgs
+  ast &lt;&ndash; parseFile(head args)
   putStrLn $ show ast
 ```</p>
 
-<p>But it works... we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
+<p>But it works&hellip; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
 ]]></content>
   </entry>
   
@@ -677,7 +677,7 @@ parseFile file =
     <updated>2012-06-07T19:09:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/06/07/pong-tests-are-wrong</id>
     <content type="html"><![CDATA[<p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
-In my opinion pong tests are wrong and do not show real "performance". I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
+In my opinion pong tests are wrong and do not show real &ldquo;performance&rdquo;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
 
 <p>From this gist we can see that his vibe.d benchmark set pong test at 8425.85 req/sec (He used ab and i used httperf).</p>
 
@@ -689,7 +689,7 @@ In my opinion pong tests are wrong and do not show real "performance". I said to
 
 <p>``` haskell pingpong.hs</p>
 
-<p>{-# LANGUAGE OverloadedStrings #-}</p>
+<p>{&ndash;# LANGUAGE OverloadedStrings #&ndash;}</p>
 
 <p>import Network.Wai
 import Network.Wai.Handler.Warp
@@ -713,12 +713,12 @@ run port app
     x -&gt; index x
 </code></pre>
 
-<p>pong = ResponseBuilder status200 [ ("Content-Type", "text/plain") ] $ mconcat $ map copyByteString</p>
+<p>pong = ResponseBuilder status200 [ (&ldquo;Content-Type&rdquo;, &ldquo;text/plain&rdquo;) ] $ mconcat $ map copyByteString</p>
 
 <pre><code>[ "pong" ]
 </code></pre>
 
-<p>index x = ResponseBuilder status200 [("Content-Type", "text/html")] $ mconcat $ map copyByteString</p>
+<p>index x = ResponseBuilder status200 [(&ldquo;Content-Type&rdquo;, &ldquo;text/html&rdquo;)] $ mconcat $ map copyByteString</p>
 
 <pre><code>[ "&lt;p&gt;Hello from ", BU.fromString $ show x, "!&lt;/p&gt;"
 , "&lt;p&gt;&lt;a href='http://no-fucking-idea.com/pong'&gt;pong&lt;/a&gt;&lt;/p&gt;\n" ]
@@ -733,9 +733,9 @@ run port app
 <p>I prepared results to show how big lie is pong test. Because in this type of test / showoff all you test is how fast really you can accept connections. Single thread will always win :). But lets look at results:</p>
 
 <ul>
-<li>Multi threaded - 50 threads   - Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
-<li>Multi threaded - 4 threads ( on for each core ) - Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
-<li>Single threaded - default compilation  - Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
+<li>Multi threaded &ndash; 50 threads   &ndash; Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
+<li>Multi threaded &ndash; 4 threads ( on for each core ) &ndash; Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
+<li>Single threaded &ndash; default compilation  &ndash; Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
 </ul>
 
 
@@ -747,7 +747,7 @@ run port app
 
 <h2>So how to test ?!</h2>
 
-<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday... users are really testing performance of our db ;>... or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
+<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&hellip; users are really testing performance of our db ;>&hellip; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
 ]]></content>
   </entry>
   

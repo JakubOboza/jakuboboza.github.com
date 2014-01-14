@@ -111,11 +111,11 @@
 
 <h1>Observations</h1>
 
-<p>I started making mind notes of things that i understand about system i&#8217;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
+<p>I started making mind notes of things that i understand about system i&rsquo;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
 
 <h2>Observation 1</h2>
 
-<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &#8220;this is simple&#8221;. We can represent it by list of actions like this</p>
+<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &ldquo;this is simple&rdquo;. We can represent it by list of actions like this</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span>
@@ -126,7 +126,7 @@
 
 <h2>Observation 2</h2>
 
-<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &#8220;if&#8221; i WIN !
+<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &ldquo;if&rdquo; i WIN !
 Lets have a look</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -144,11 +144,11 @@ Lets have a look</p>
 
 <h2>Observation 3</h2>
 
-<p>It is not a tree&#8230;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&#8230; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
+<p>It is not a tree&hellip;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&hellip; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
 
 <h1>AST</h1>
 
-<p>I wrote simple grammar and made a parser of a very simple &#8220;ify&#8221; language. My language starts like this&#8230;</p>
+<p>I wrote simple grammar and made a parser of a very simple &ldquo;ify&rdquo; language. My language starts like this&hellip;</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -538,7 +538,7 @@ Lets have a look</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>But it works&#8230; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
+<p>But it works&hellip; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
 </div>
 
 
@@ -614,6 +614,10 @@ Lets have a look</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
       </li>
     
@@ -627,10 +631,6 @@ Lets have a look</p>
     
       <li class="post">
         <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
       </li>
     
   </ul>

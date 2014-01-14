@@ -4,7 +4,7 @@
   <title><![CDATA[Category: stale | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/stale/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -27,7 +27,7 @@
 <p>lets imagine we have a simple <code>sinatra</code> app. For purpose of this post we will have app with one method <code>/ohhai</code> that shows current time. This is a great way to test if out caching is working fine. Code of the app is really simple:
 ``` ruby app.rb
 class ExampleStaleApp &lt; Sinatra::Base
-  get "/ohhai" do</p>
+  get &ldquo;/ohhai&rdquo; do</p>
 
 <pre><code>sleep(5)
 Time.now.to_s
@@ -38,18 +38,18 @@ end
 <code>
 Also to start it easy i have created a config.ru `rackup` file describing how to start app (in repo there is start.sh script ;)
 </code> ruby config.ru
-require 'rubygems'
-require 'bundler'</p>
+require &lsquo;rubygems&rsquo;
+require &lsquo;bundler&rsquo;</p>
 
 <p>Bundler.require</p>
 
-<p>require './app'</p>
+<p>require &lsquo;./app&rsquo;</p>
 
 <p>run ExampleStaleApp
 <code>
 If you are using code from my repo &lt;https://github.com/JakubOboza/003-nginx-cache-stale-example&gt; to start it all you need to do is
 </code>
-λ git clone https://github.com/JakubOboza/003-nginx-cache-stale-example
+λ git clone <a href="https://github.com/JakubOboza/003-nginx-cache-stale-example">https://github.com/JakubOboza/003-nginx-cache-stale-example</a>
 λ cd 003-nginx-cache-stale-example
 λ bundle install
 λ ./start.sh
@@ -109,7 +109,7 @@ location = /50x.html {
 <p>}
 ```</p>
 
-<p>It isn't even so long ;)</p>
+<p>It isn&rsquo;t even so long ;)</p>
 
 <h3>upstream</h3>
 
@@ -170,7 +170,7 @@ This sets up for us config that will enable serving stale content if upstream is
 
 <h1>Test</h1>
 
-<p>You can test it now. Or wait... with my config you have to add entry to <code>/etc/hosts</code>
+<p>You can test it now. Or wait&hellip; with my config you have to add entry to <code>/etc/hosts</code>
 <code>bash hosts
 127.0.0.1 example_stale.local
 </code>
@@ -183,11 +183,11 @@ Now you can go to <code>example_stale.local/ohhai</code> (or just <code>curl exa
 Next requests
 <img src="http://img4.imageshack.us/img4/1484/screenshot20120331at211.png" alt="few ms after" /></p>
 
-<p>-> <a href="http://www.youtube.com/watch?v=lgoXUzIwXk0">http://www.youtube.com/watch?v=lgoXUzIwXk0</a></p>
+<p>&ndash;> <a href="http://www.youtube.com/watch?v=lgoXUzIwXk0">http://www.youtube.com/watch?v=lgoXUzIwXk0</a></p>
 
 <h1>Cheers</h1>
 
-<p>How you can use it? Depends on your app architecture, but for every bit of content that you create which is "static" it is great thing to have. I like this feature of nginx and i hope this post will help you ;).</p>
+<p>How you can use it? Depends on your app architecture, but for every bit of content that you create which is &ldquo;static&rdquo; it is great thing to have. I like this feature of nginx and i hope this post will help you ;).</p>
 ]]></content>
   </entry>
   

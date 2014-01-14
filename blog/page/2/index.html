@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="After long chat with my friend who is Ocaml ( Objective Caml ) fanatic on topic of Lisp. I decided to get my hands on Clojure. Is there a better idea &hellip;">
+  <meta name="description" content="I&rsquo;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +84,180 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2012/12/17/gems-hidden-in-the-past/">Gems Hidden in the Past</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-12-17T20:52:00+00:00" pubdate data-updated="true">Dec 17<span>th</span>, 2012</time>
+        
+           | <a href="/blog/2012/12/17/gems-hidden-in-the-past/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/12/17/gems-hidden-in-the-past/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with &ldquo;hacker&rdquo; effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are &ldquo;new&rdquo; today like nodejs &ldquo;the new black&rdquo; are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment&hellip;  That is the things i would like to rant about today.</p>
+
+<h1>New Discoveries</h1>
+
+<p>&ldquo;Theory is the thing we all skip and later on regret skipping&rdquo; (Yes i quoted my self, I heard someone did it before so its not hip). We learn a lot of stuff and some of the things simply slip through and gets forgotten. That is opening for &ldquo;new discoveries&rdquo; or &ldquo;rediscoveries&rdquo; of some solutions. I have a thesis that &ldquo;if something is simple it will get its niche&rdquo; (did it again). This would explain new hipe for Nodejs &lt;nodejs.org>. I don&rsquo;t want to judge technologies I did some stuff in node and i have small portion of experience but this text is not about this, its about technology behind stuff people think it&rsquo;s brilliant and new nowadays.</p>
+
+<h2>Event loop | Evented solutions</h2>
+
+<p>Event loops exists long long and are nothing new. When someone says event loop first thing i think about is not nodejs or eventmachine or twistted but WinAPI. Yes old WinAPI and suddenly everybody realize that every GUI (Graphical User Interface) solution is evented. QT, WinAPI and many other even older solutions. This is nothing new,  so lets take a trip through the cards of history to find other gems that we can rediscover and become new rocket scientists&hellip;or first tech archeologists.</p>
+
+<h3>Step One: Alternatives to sequencing</h3>
+
+<p>So most common thing people do is sequencing and even if we use brain in other way it is easy to us to think about and form sequences because it is something we understand. This is basic unit of work we think about. So most of people write small function that sequence some action and they build programs from small functions calling small functions in a really big sequence.</p>
+
+<p>Alternative solution to do this is event machine, this solution will enable us to generate a lot of small event and if we will manage to force programmer to make them as small as possible and as fast as possible we can achieve a feeling of multitasking. How does it work ? we have one loop that picks events from event queue and process them and as long as nobody will make event that is blocking everything this will work like charm. Key to this solution is &ldquo;non blocking&rdquo;.</p>
+
+<h4>Achieving Non-blocking</h4>
+
+<p>To do this we need to have a way of &ldquo;wait until will happen and if it happen&#8217;ed trigger event&rdquo; thing. This can be done by many different solutions. For example for file descriptors (everything is a file) we have stuff like <code>select</code>, <code>poll</code>, <code>epoll</code>, <code>kqueue</code>. and this is not new its the 80&#8217;. Later on POSIX first official POSIX thing 1997. 15 years ago! Previously mentioned nodejs is representing this category (ofc from the fresh news!). Does it have flaws ? Yes! People call this async&hellip; its not async, not real async. Real async was also implemented in 80&rsquo;s :D</p>
+
+<h4>Signals</h4>
+
+<p>Signals are also very old, basically this is similar concept (every concept is similar) You have a slot that handles signal and something that emits signals. It&rsquo;s very handy and was implemented with big success in QT library. Does it has flaws ? basically same as event loop solutions. It&rsquo;s a way of doing &ldquo;message passing&rdquo; pattern.</p>
+
+<h4>Message passing</h4>
+
+<p>Message passing really well implemented in Erlang is another way of achieving same result, imho  most clean and good solution in the industry right now. Simply you cast messages and other entities receive them and react. YES THIS IS HOW PEOPLE WORK.
+Most of thins seems to be inspired by nature&hellip; but lets not go this route and start religious war.</p>
+
+<h4>Async</h4>
+
+<p>The real unix async calls. Yes unix has this built in.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;aio.h&gt;</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">aio_write</span><span class="p">(</span><span class="k">struct</span> <span class="n">aiocb</span> <span class="o">*</span><span class="n">aiocbp</span><span class="p">);</span>
+</span><span class='line'><span class="kt">int</span> <span class="n">aio_read</span><span class="p">(</span><span class="k">struct</span> <span class="n">aiocb</span> <span class="o">*</span><span class="n">aiocbp</span><span class="p">);</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>You call <code>aio_write</code> and write to a file will happen, sometime in future&hellip; BEFORE END OF THE WORLD, maybe!</p>
+
+<p>Wow! This is fresh! nobody is using it nowadays! you should make new nodejs on it and call it modejs. Or wait ? Can you ? nobody really know how to use them and not be cluster f@cked after five seconds.  Real async syscalls in unix. That is awesome and its older than your son! Lets dig more&hellip;</p>
+
+<h4>Reactive programming</h4>
+
+<p>This is the sh*t, real event programming, you have real reactor nothing is faked like in eventloop! But its nothing new&hellip; also implemented in 80&rsquo;s.  But what is the difference between reactive programming and event loop ? Not much because this is more conceptual thing around building your reactor. In reactor concept we think about data flows and reacting to changes in them.</p>
+
+<p>We don&rsquo;t have to research things that are found!</p>
+
+<h2>Map Reduce, Google, Smart people</h2>
+
+<p>So how mega smart people in Google work ? I don&rsquo;t know I don&rsquo;t work for google and I&rsquo;m not smart but I assume they want to get sh*t done. And after reading Amazon Dynamo Paper <a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf</a> , Google Big Table paper <a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf">http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf</a> and many other i think they developed it in kitchen. Yes in a kitchen.</p>
+
+<p>They sat down, people from google and amazon i imagine 6 engineers took 1 apple (Steve Jobs was serving) and asked them self how to how to cut it into 6 parts so they can eat it. They took knife and sliced into 6 parts and split it to each other. Suddenly one stood up (Amazon guy with headphones in avatar) and said. Each part of apple is exclusive (patent trolls have everything exclusive nowadays) to each of us so we can eat them on our own. LETS MAKE DB USING THIS TECH AND WRITE A PAPER ON IT. Next guy said.. yeah we have limited number of apple parts so it is predictable and we form a RING from it&hellip; and thats how Big Table and Amazon dynamo was born. The Google cook who was slicing apple said, i sliced apple in parts one by one with one knife&hellip; AND HE WROTE MAP REDUCE PAPER.</p>
+
+<p>They did not invented anything really new, they just approached problem simple. We can&rsquo;t split and scale complex solutions so we will make everything simple. And it happens that most of things can be turned into linear or near linear problem.</p>
+
+<h3>Is Map Reduce really something new ?</h3>
+
+<p>In my opinion not. Map existed in lisp world probably since 70&rsquo;s. Now someone took map and sequence of data that is exclusive and don&rsquo;t depend on each other and said &ldquo;What will happen if i will split this list into two parts and run map on each in two or more threads and then just sum results ?&rdquo; and map reduce was born. Concept is dead simple. But its nothing new! I&rsquo;m not taking here credit from google engineers. I think guys there are very smart and by using simple things in my eyes they are ^2 smart. But is it something ground breaking new ? No.</p>
+
+<p>So maybe we should more often look into past. Maybe we can find more gems like this&hellip; i bet google has technology archeology department :D</p>
+
+<h3>Step Two: Type writer</h3>
+
+<p>I&rsquo;m 80&#8217; kid. I remember type writers and the sound so for me understanding how files in OS (Unix or in general) works was simple, but when recently i was explaining it to friend who is 90&#8217; kid he did not got the concept of that well. Why ? Because he is from age where type writers did not exist. For me it was a bit shocking because i thought everybody knows exactly how they work. And when i said why we have \r and what it is i was for a moment happy that I&rsquo;m very very old :D.</p>
+
+<h3>Queues, Interpreters and other stuff.</h3>
+
+<p>Technology archeologiest must be open to new things, read about everything and most of all, never stop thinking &ldquo;this had to be already invented&rdquo;.  When I first suggested Queue as a solution to a problem some people looked at me like i would be snake. FIFO queues, something so basic&hellip; still some people don&rsquo;t even think about them. This is dull example but basic data structures should be well known by everybody still&hellip; things that freezes blood in your veins happens.</p>
+
+<p>Building DSL and interpreters is good fun, its not easy often I&rsquo;m still learning a lot but this should not be &ldquo;devil&rdquo; to other programmers.</p>
+
+<h1>Old manuscripts</h1>
+
+<p>There are books that contains tones of cool knowledge, you can be technology archeologist like me! just venture into them and discover &ldquo;Stuff&rdquo;. First book i would recall here is Richard Stevens.</p>
+
+<ul>
+<li>1990 – UNIX Network Programming – ISBN 0-13-949876-1</li>
+<li>1992 – Advanced Programming in the UNIX Environment – ISBN 0-201-56317-7</li>
+<li>1994 – TCP/IP Illustrated, Volume 1: The Protocols – ISBN 0-201-63346-9</li>
+<li>1995 – TCP/IP Illustrated, Volume 2: The Implementation (z Garym R. Wrightem) – ISBN 0-201-63354-X</li>
+<li>1996 – TCP/IP Illustrated, Volume 3: TCP for Transactions, HTTP, NNTP, and the UNIX Domain Protocols – ISBN 0-201-63495-3</li>
+<li>1998 – UNIX Network Programming, Volume 1, Second Edition: Networking APIs: Sockets and XTI – ISBN 0-13-490012-X</li>
+<li>1999 – UNIX Network Programming, Volume 2, Second Edition: Interprocess Communications – ISBN 0-13-081081-9</li>
+</ul>
+
+
+<p>This guy is amazing, books are very good quality talking about topics that today are more than active in our community. 22 year old books!</p>
+
+<ul>
+<li>1989 &ndash; Genetic Algorithms in Search, Optimization, and Machine Learning</li>
+</ul>
+
+
+<p>Amazing book, I never was big fan of A.I. (maybe i should, that would give me chance to actually have some of I&hellip;) but this book opened my eyes on how simple this stuff is. How easy and how powerful. When i was at uni this was one of the books i enjoed the most.</p>
+
+<ul>
+<li>1976 &ndash; Algorithms + Data Structures = Programs (Prentice-Hall Series in Automatic Computation) by Wirth.</li>
+</ul>
+
+
+<p>Classic this guy guides you through Pascal and shows you how to program and at the end of book implements subset of language. I say 76&#8217; FFS that good books will not be printed after 2006. 44 years ago published. C&#8217;mon!</p>
+
+<ul>
+<li>1988 &ndash; C Programming Language (2nd Edition)</li>
+</ul>
+
+
+<p>Next classic, especially section about making your own malloc(). C&#8217;mon 1988&#8217; 24 years ago. Brilliant book.</p>
+
+<p>And something fresh</p>
+
+<ul>
+<li>2004 &ndash; The Art of C++  by Herbert Schildt</li>
+</ul>
+
+
+<p>Really good book, also common pattern in books that i read&hellip; guy is implementing language at the end ( subset of C )</p>
+
+<p>Yes this is good stuff. Old books containing knowledge that industry will discover in 6-10 years.</p>
+
+<h2>But what about current research ?</h2>
+
+<p>Current stuff like dependent types&hellip; i recon we will hear about them in industry after our deaths ;/ next week apocalypse ;/. Yes there are tones of things to rediscover&hellip; and it&rsquo;s fun! lets do it!</p>
+
+<h1>Summary</h1>
+
+<p>I love when i hear about new stuff and suddenly  after inspection it becomes clear it is just old thing on new cogs. I love this. I love technology archeology and i want to bring more examples of this and write about it on my blog.</p>
+
+<p>Yes sending satelite in space is something new&hellip;. another event loop implementation is not.</p>
+
+<p>Sorry for ranting that much :D&hellip; anyway nobody read this :D.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2012/12/15/getting-some-clojure/">Getting Some Clojure</a></h1>
     
     
@@ -114,31 +288,31 @@
 
 <h2>Lisp</h2>
 
-<p>Before i tried Clojure i had few &#8220;trips&#8221; to Lisp world but i was always stroked by amount of half finished vm&#8217;s and implementations that are far from being production ready. For example chicken, scsh, sketchy, mit-scheme, bigloo. Some of them are more some less production ready but none of them is ready for anything real. The most production ready lisp thing i saw in my life was <code>elisp</code> YES f*cking <code>EMACS</code> lisp.
-But I&#8217;m not any expert in lisp world!</p>
+<p>Before i tried Clojure i had few &ldquo;trips&rdquo; to Lisp world but i was always stroked by amount of half finished vm&rsquo;s and implementations that are far from being production ready. For example chicken, scsh, sketchy, mit-scheme, bigloo. Some of them are more some less production ready but none of them is ready for anything real. The most production ready lisp thing i saw in my life was <code>elisp</code> YES f*cking <code>EMACS</code> lisp.
+But I&rsquo;m not any expert in lisp world!</p>
 
 <h2>Scheme</h2>
 
-<p>Scheme is a dialect of Lisp that implements subset of language, in scheme code and data has same form which is a massive game changer. Scheme has super duper hiper mega MACRO building capabilities. And it is probably its biggest problems&#8230;</p>
+<p>Scheme is a dialect of Lisp that implements subset of language, in scheme code and data has same form which is a massive game changer. Scheme has super duper hiper mega MACRO building capabilities. And it is probably its biggest problems&hellip;</p>
 
-<h2>Lisp Hacker&#8217;s</h2>
+<h2>Lisp Hacker&rsquo;s</h2>
 
 <p>I remember when my friend was hacking in lisp, i remember when i was trying to hack stuff in scheme. So scheme is a trap!
-First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when he finishes this he tries to implement scheme interpreter in his interpreter&#8230; Second trap is when he realizes that he wrote enough amount of scheme interpreters and he moves to implementing new features into his interpreter in interpreter in interpreter ( and yes &#8216;ready&#8217; means that 8/10 runs stuff passes, some crash and half of features don&#8217;t even exits so called &#8220;junk features&#8221; ). So his dialect gets better than Haskell lazy evaluation, better etc&#8230; at this stage he has self bootstraping half working interpreter of his language that had no docs and nobody except his can use it and even if he can he must be on drags to make the lazy evaluation happen. Next stage of course is starting to do AI in scheme. So the point is that no shit gets done, its all conceptual work. If Da&#8217;vinci would program in Lisp he would not cut of his ear, he would cut of his head.</p>
+First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when he finishes this he tries to implement scheme interpreter in his interpreter&hellip; Second trap is when he realizes that he wrote enough amount of scheme interpreters and he moves to implementing new features into his interpreter in interpreter in interpreter ( and yes &lsquo;ready&rsquo; means that 8/10 runs stuff passes, some crash and half of features don&rsquo;t even exits so called &ldquo;junk features&rdquo; ). So his dialect gets better than Haskell lazy evaluation, better etc&hellip; at this stage he has self bootstraping half working interpreter of his language that had no docs and nobody except his can use it and even if he can he must be on drags to make the lazy evaluation happen. Next stage of course is starting to do AI in scheme. So the point is that no shit gets done, its all conceptual work. If Da&#8217;vinci would program in Lisp he would not cut of his ear, he would cut of his head.</p>
 
 <h2>Life of ()</h2>
 
-<p>I wrote some borderline rant on lisp hackers and this was supposed to be micro tutorial on scheme. Well i took the Lisp way of &#8220;getting shit done&#8221; :D. If you don&#8217;t know that lisp bread and butter are <code>(</code> and <code>)</code> you should probably run away.</p>
+<p>I wrote some borderline rant on lisp hackers and this was supposed to be micro tutorial on scheme. Well i took the Lisp way of &ldquo;getting shit done&rdquo; :D. If you don&rsquo;t know that lisp bread and butter are <code>(</code> and <code>)</code> you should probably run away.</p>
 
 <p>Naow!</p>
 
 <h2>So why Clojure ?</h2>
 
-<p>Clojure seems to be production ready stuff that can &#8220;get shit done&#8221;. It support concurrency (with STM - Software Transactional Memory) it is Scheme&#8217;y / Lispy and I have read that its hip in Open Source magazine. Thats enough to start learning yeah ?</p>
+<p>Clojure seems to be production ready stuff that can &ldquo;get shit done&rdquo;. It support concurrency (with STM &ndash; Software Transactional Memory) it is Scheme&#8217;y / Lispy and I have read that its hip in Open Source magazine. Thats enough to start learning yeah ?</p>
 
 <p>No! But i want to learn it and write some stuff about it. It seems to be so different from other languages, RP notation and the whole community of Stallman like people.</p>
 
-<p>Clojure runs on JVM ( Java Virtual Machine ) and beside Java being biggest troll language next to C++ ever! JVM is really good. It makes stuff really portable and its good for building stuff like backends for servers. Same goes with Scala using JVM, actually JVM is solid! ( coming from me Java hater ). Its not like some f*cktard writing in &#8220;Open Source Magazine&#8221; that C++ enables you to write portable code. No, writing os portable code in C++ is not easy, its hard and full of pain.</p>
+<p>Clojure runs on JVM ( Java Virtual Machine ) and beside Java being biggest troll language next to C++ ever! JVM is really good. It makes stuff really portable and its good for building stuff like backends for servers. Same goes with Scala using JVM, actually JVM is solid! ( coming from me Java hater ). Its not like some f*cktard writing in &ldquo;Open Source Magazine&rdquo; that C++ enables you to write portable code. No, writing os portable code in C++ is not easy, its hard and full of pain.</p>
 
 <h1>Getting s*it on your box</h1>
 
@@ -147,8 +321,8 @@ First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when
 <ul>
 <li>Minimum jar needed to start REPL <a href="http://clojure.org/getting_started">http://clojure.org/getting_started</a></li>
 <li>Downloads for latest version <a href="http://clojure.org/downloads">http://clojure.org/downloads</a></li>
-<li>Brew / Macports search &#8220;clojure&#8221;</li>
-<li>In case that nothing else work, go to <a href="https://github.com/clojure/clojure">https://github.com/clojure/clojure</a> and look for &#8220;build from source instructions&#8221;</li>
+<li>Brew / Macports search &ldquo;clojure&rdquo;</li>
+<li>In case that nothing else work, go to <a href="https://github.com/clojure/clojure">https://github.com/clojure/clojure</a> and look for &ldquo;build from source instructions&rdquo;</li>
 </ul>
 
 
@@ -163,7 +337,7 @@ First stage of lisp/scheme hacker is to build scheme interpreter in scheme, when
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I mix it with <code>cjl</code>  but thats because i&#8217;m a noob.
+<p>I mix it with <code>cjl</code>  but thats because i&rsquo;m a noob.
 This should prompt you with something like this</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
@@ -195,7 +369,7 @@ We can now try to evaluate some simple stuff.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>RPN now i should quote link to wikipedia on Reverse Polish Notation. (I&#8217;m Polish so it is kind&#8217;a like looking at my back and trying to read sign on t-shirt). Here you go <a href="http://en.wikipedia.org/wiki/Reverse_Polish_notation">http://en.wikipedia.org/wiki/Reverse_Polish_notation</a> Reverse polish notation simple words is a stack notation. Where you put operator on stack and then arguments. Or so called prefix notation. C, Java, Ruby are all infix notation eg. <code>2 + 6</code> while lisp / scheme is prefix notation aka <code>(+ 2 6)</code> on reality its so cool that you don&#8217;t have to repeat your self and you put operator, function only  once and a list of arguments eg. <code>(+ 1 2 3 4 5)</code>. So lets try it out.</p>
+<p>RPN now i should quote link to wikipedia on Reverse Polish Notation. (I&rsquo;m Polish so it is kind&#8217;a like looking at my back and trying to read sign on t-shirt). Here you go <a href="http://en.wikipedia.org/wiki/Reverse_Polish_notation">http://en.wikipedia.org/wiki/Reverse_Polish_notation</a> Reverse polish notation simple words is a stack notation. Where you put operator on stack and then arguments. Or so called prefix notation. C, Java, Ruby are all infix notation eg. <code>2 + 6</code> while lisp / scheme is prefix notation aka <code>(+ 2 6)</code> on reality its so cool that you don&rsquo;t have to repeat your self and you put operator, function only  once and a list of arguments eg. <code>(+ 1 2 3 4 5)</code>. So lets try it out.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -256,7 +430,7 @@ We can now try to evaluate some simple stuff.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Not really&#8230;. it should be something like 0.(6) :)</p>
+<p>Not really&hellip;. it should be something like 0.(6) :)</p>
 
 <p>So this is how you invoke functions, built in functions. But what if you would want to comment something out ? because its a useful info about new scheme dialect you are building?</p>
 
@@ -295,7 +469,7 @@ For example:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Next we can invoke it eg. <code>(multiply-by 3 4)</code> its worth mentioning that you can use <code>-</code> in function names. But what is really happening ? this is two part thing. First we have <code>def</code> and second we have <code>fn</code> def binds symbol name with expression or value and <code>fn</code> return a function. So it is &#8220;like lambda&#8221; in fact it is lambda.</p>
+<p>Next we can invoke it eg. <code>(multiply-by 3 4)</code> its worth mentioning that you can use <code>-</code> in function names. But what is really happening ? this is two part thing. First we have <code>def</code> and second we have <code>fn</code> def binds symbol name with expression or value and <code>fn</code> return a function. So it is &ldquo;like lambda&rdquo; in fact it is lambda.</p>
 
 <p>Lets go with example.</p>
 
@@ -322,9 +496,9 @@ For example:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This is slightly more complex but also should be easy. In first line we use <code>fn</code> to define function with one parameter called base this returns a function. In line two we do the same but this function is returned and passed and argument of 5 and evaluated to 6. In line three we define symbol troll-symbol with value of 7 we obviously can&#8217;t evaluate a value so we get exception! It&#8217;s all fine because its value. But we can use it like in last line, where we add to value of troll-symbol effect of evaluation of function that we defined passed with argument of 5.</p>
+<p>This is slightly more complex but also should be easy. In first line we use <code>fn</code> to define function with one parameter called base this returns a function. In line two we do the same but this function is returned and passed and argument of 5 and evaluated to 6. In line three we define symbol troll-symbol with value of 7 we obviously can&rsquo;t evaluate a value so we get exception! It&rsquo;s all fine because its value. But we can use it like in last line, where we add to value of troll-symbol effect of evaluation of function that we defined passed with argument of 5.</p>
 
-<p>Don&#8217;t be afraid :D. All we did here is explained what <code>defn</code> do, basically defn is just composition of def and fn. Lets you specify symbol that function returned by fn is bound to.</p>
+<p>Don&rsquo;t be afraid :D. All we did here is explained what <code>defn</code> do, basically defn is just composition of def and fn. Lets you specify symbol that function returned by fn is bound to.</p>
 
 <p>Defn simply saves us key strokes :) Like using Emacs :D this can lead to RSI. =)</p>
 
@@ -347,7 +521,7 @@ For example:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This exactly shows what happens when you use defn, you get function from fn and bind it to some symbol. That&#8217;s it. Its good to have some play with all this brackets :) its fun! try defining something on your own :D</p>
+<p>This exactly shows what happens when you use defn, you get function from fn and bind it to some symbol. That&rsquo;s it. Its good to have some play with all this brackets :) its fun! try defining something on your own :D</p>
 
 <h2>Hello world</h2>
 
@@ -381,11 +555,11 @@ In my tutorial there is space for Hello World also :D</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>You can still use old syntax but this is just faster to type. Remember that %1, %2 &#8230; refer to arguments that are passed to this lambda.</p>
+<p>You can still use old syntax but this is just faster to type. Remember that %1, %2 &hellip; refer to arguments that are passed to this lambda.</p>
 
 <h1>Lists and Vectors</h1>
 
-<p>Like in all programming languages we have lists and vectors. Those are built in. Syntax for List is simply <code>'()</code> eg. <code>'(1 2 3 4)</code> and for vector aka &#8220;array&#8221; its <code>[]</code> eg. <code>[1 2 3]</code>. NO COMAS!</p>
+<p>Like in all programming languages we have lists and vectors. Those are built in. Syntax for List is simply <code>'()</code> eg. <code>'(1 2 3 4)</code> and for vector aka &ldquo;array&rdquo; its <code>[]</code> eg. <code>[1 2 3]</code>. NO COMAS!</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -431,7 +605,7 @@ In my tutorial there is space for Hello World also :D</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>It is map&#8230; so it is ugly because result from <code>println</code> is nil so we printed out contents of vector and list but its ugly.
+<p>It is map&hellip; so it is ugly because result from <code>println</code> is nil so we printed out contents of vector and list but its ugly.
 Map is a high order function that takes function and list/array/sequance of arguments, applyies and evaluates funtion on each argument and stores results of this in a list that is returned at the end :) eg. <code>(map (+ %1 1) (1 2 3))</code> will give <code>[2 3 4]</code>.</p>
 
 <p>Lets try to do it with doseq.</p>
@@ -453,11 +627,11 @@ Map is a high order function that takes function and list/array/sequance of argu
 
 <h3>Glossary</h3>
 
-<p>REPL - Read Eval Print Loop. Simply language console in which you can run code and see results without typing code into file and running interpreter on it.</p>
+<p>REPL &ndash; Read Eval Print Loop. Simply language console in which you can run code and see results without typing code into file and running interpreter on it.</p>
 
-<p>Lisp - On of the biggest language trolls or only language worth learning. Still can&#8217;t decide</p>
+<p>Lisp &ndash; On of the biggest language trolls or only language worth learning. Still can&rsquo;t decide</p>
 
-<p>Jar - Java archive that contains code, can contain also jam. I like jam.</p>
+<p>Jar &ndash; Java archive that contains code, can contain also jam. I like jam.</p>
 
 <h1>Summary</h1>
 
@@ -504,7 +678,7 @@ Map is a high order function that takes function and list/array/sequance of argu
 
 <h2>Mac, Linux</h2>
 
-<p>In this text i use <code>en0</code>, <code>en1</code> naming convention from OSX if you are linux user you should change it to eth0, eth1 w&#8230; check your network config using <code>ifconfig</code>. Basic knowledge required! =)</p>
+<p>In this text i use <code>en0</code>, <code>en1</code> naming convention from OSX if you are linux user you should change it to eth0, eth1 w&hellip; check your network config using <code>ifconfig</code>. Basic knowledge required! =)</p>
 
 <h1>Tcpdump</h1>
 
@@ -515,7 +689,7 @@ Map is a high order function that takes function and list/array/sequance of argu
 <p>Tcpdump basic options are</p>
 
 <ul>
-<li>-i &#8216;interface&#8217;  option lets you specify on which interface you will listen</li>
+<li>-i &lsquo;interface&rsquo;  option lets you specify on which interface you will listen</li>
 <li>-nS lets you see basic information about packets</li>
 <li>-v, -vv, -vvv verbose mode</li>
 <li>-s 1514 lets you specify how much data from packet is displayed. In this case you see whole packet</li>
@@ -534,7 +708,7 @@ Map is a high order function that takes function and list/array/sequance of argu
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This is obviously bad idea, only good thing about its that i lets you see that &#8220;something is on&#8221; so you will be able to say that this device is actually working.</p>
+<p>This is obviously bad idea, only good thing about its that i lets you see that &ldquo;something is on&rdquo; so you will be able to say that this device is actually working.</p>
 
 <h2>Example two, targeting host!</h2>
 
@@ -609,20 +783,20 @@ Map is a high order function that takes function and list/array/sequance of argu
 
 
   <div class="entry-content"><ul>
-<li>This is more &#8220;note to self&#8221; type of post rather than tutorial thing.</li>
-<li>It&#8217;s hard to write blog posts when you are trying to take over the world :)</li>
+<li>This is more &ldquo;note to self&rdquo; type of post rather than tutorial thing.</li>
+<li>It&rsquo;s hard to write blog posts when you are trying to take over the world :)</li>
 </ul>
 
 
 <h1>Why ?</h1>
 
-<p>Recently in &#8220;professor Toons&#8221; :)  computer club was a task that was ideal to solve as graph. It was one of this &#8220;find path&#8221; tasks. Yesterday just before going to bed I thought &#8220;Why not solve it in Erlang&#8221;.  And this are my thoughts about erlang digraph: library.</p>
+<p>Recently in &ldquo;professor Toons&rdquo; :)  computer club was a task that was ideal to solve as graph. It was one of this &ldquo;find path&rdquo; tasks. Yesterday just before going to bed I thought &ldquo;Why not solve it in Erlang&rdquo;.  And this are my thoughts about erlang digraph: library.</p>
 
 <h2>Task</h2>
 
 <p>First of all <a href="http://erldocs.com/">http://erldocs.com/</a> is the way to go when working with documentation.</p>
 
-<p>Second &#8220;the Task&#8221;. It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
+<p>Second &ldquo;the Task&rdquo;. It had two parts, first was to load xml file with songs and second was to build graph and find playlist between two songs having in mind that for each song following has to start with the same letter that first ended.</p>
 
 <p>example.</p>
 
@@ -633,7 +807,7 @@ BAC
 ACB
 BBA</p>
 
-<p>And you want to find playlist from ABC to BAC you will get ABC -> CBA -> ACB -> BAC. Easy</p>
+<p>And you want to find playlist from ABC to BAC you will get ABC &ndash;> CBA &ndash;> ACB &ndash;> BAC. Easy</p>
 
 <h2>Digraph</h2>
 
@@ -777,7 +951,7 @@ BBA</p>
 
 <h1>Rolling out own queue system</h1>
 
-<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don&#8217;t have constraint that data can never be lost!</p>
+<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don&rsquo;t have constraint that data can never be lost!</p>
 
 <h2>Can lose data in queue</h2>
 
@@ -807,19 +981,19 @@ BBA</p>
 
 <p>So how we approach problems so of us would create inside of their code queue.</p>
 
-<p>In C it would be simply array wrapped with mutex&#8217;es but this is unreliable and its long to write and and and&#8230;</p>
+<p>In C it would be simply array wrapped with mutex&#8217;es but this is unreliable and its long to write and and and&hellip;</p>
 
 <p>So what people do ? They try use READY products.</p>
 
 <h2>First big mistake</h2>
 
 <p>Use key-value store as queue.
-- Lets serialize array into XYZ and set it into key.
-- That&#8217;s good idea! Only one thing will write to it!</p>
+&ndash; Lets serialize array into XYZ and set it into key.
+&ndash; That&rsquo;s good idea! Only one thing will write to it!</p>
 
 <p>WRONG!</p>
 
-<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know &#8220;agile says XYZ now&#8221;&#8230; actually &#8220;agile&#8221; don&#8217;t say &#8220;take drugs an yolo because tomorrow you can die&#8221; but &#8220;TAKE RISKY THINGS FIRST&#8221; and this is risky thing. Should be implemented well.</p>
+<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know &ldquo;agile says XYZ now&rdquo;&hellip; actually &ldquo;agile&rdquo; don&rsquo;t say &ldquo;take drugs an yolo because tomorrow you can die&rdquo; but &ldquo;TAKE RISKY THINGS FIRST&rdquo; and this is risky thing. Should be implemented well.</p>
 
 <p>What happens in this case ? Someone gets a great idea that product should scale adds another daemon and this f*cks up queue you lose messages.</p>
 
@@ -837,7 +1011,7 @@ Process a)</p>
 
 <p>Now imagine process b) does the same. Everything is blazing fast and you get f*cked.</p>
 
-<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don&#8217;t know how to resolve this issue but at least you would know&#8230; but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
+<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don&rsquo;t know how to resolve this issue but at least you would know&hellip; but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
 
 <h2>Redis list as queue</h2>
 
@@ -883,11 +1057,11 @@ Process a)</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Cool ! Works great and any process can access it in atomic way isn&#8217;t it great ? best thing ever ?!</p>
+<p>Cool ! Works great and any process can access it in atomic way isn&rsquo;t it great ? best thing ever ?!</p>
 
 <p>Actually it is very good. But there is one thing you just missed! Redis do a flush of keys every 60 sec if 10k keys did change by default. What does it mean ? You can get screwed if redis will instantly die!</p>
 
-<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section &#8220;Append-only file&#8221;</p>
+<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section &ldquo;Append-only file&rdquo;</p>
 
 <figure class='code'><figcaption><span>redis_config.fix</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -897,11 +1071,11 @@ Process a)</p>
 
 
 <p>Man you just did it, you lost some performance but you did it. Who would knew ? You just saved the world.
-How much we just cut performance ? &#8220;fsync every time a new command is appended to the AOF. Very very slow, very safe.&#8221; that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
+How much we just cut performance ? &ldquo;fsync every time a new command is appended to the AOF. Very very slow, very safe.&rdquo; that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
 
-<h2>Can&#8217;t lose any data! Redis plus Mysql/Postgres</h2>
+<h2>Can&rsquo;t lose any data! Redis plus Mysql/Postgres</h2>
 
-<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on &#8220;appendonly yes&#8221;. Also it makes things hell more complicated and forces you to do updates in both system.</p>
+<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on &ldquo;appendonly yes&rdquo;. Also it makes things hell more complicated and forces you to do updates in both system.</p>
 
 <p>Is this system cure for cancer ? No! You have to have very good queue fail recovery / startup system. Simply empty list and make query</p>
 
@@ -910,13 +1084,13 @@ How much we just cut performance ? &#8220;fsync every time a new command is appe
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>next you have to clean redis queue and push new data. Is this safe ? No you don&#8217;t know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
+<p>next you have to clean redis queue and push new data. Is this safe ? No you don&rsquo;t know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
 
 <p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
 
 <h1>Why not MongoDB</h1>
 
-<p>You can&#8217;t atomically pop stuff. Don&#8217;t think about pop/push/pushall on array in document!
+<p>You can&rsquo;t atomically pop stuff. Don&rsquo;t think about pop/push/pushall on array in document!
 If you will have this idea check my gist <a href="https://gist.github.com/2071805">https://gist.github.com/2071805</a> run it and see what happens :) what you get back.</p>
 
 <h1>RabbitMQ / ZeroMQ</h1>
@@ -956,7 +1130,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <h1>Why do we use Queues ?</h1>
 
-<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain&#8217;t doing our job properly.</p>
+<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain&rsquo;t doing our job properly.</p>
 
 <p>What makes things hard.</p>
 
@@ -977,7 +1151,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 </ul>
 
 
-<p>I&#8217;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
+<p>I&rsquo;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
 
 <p>Loads of things can be brilliant queue choices eg. Redis, ZeroMQ, RabbitMQ or even named pipes but not serialized array in key-value store.</p>
 </div>
@@ -1020,9 +1194,9 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
   <div class="entry-content"><p>Today i spoted on twitter this:</p>
 
-<p>@antirez: &#8220;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis internals and behaviour, and are * great *.&#8221;</p>
+<p>@antirez: &ldquo;The Redis community is composed of 99% of people that, really, know their stuff, know the Redis internals and behaviour, and are * great *.&rdquo;</p>
 
-<p>@shanley: &#8220;@antirez I&#8217;ve never met a technical community where 99% of them were familiar with the internals of anything. Did you mean 9%?&#8221;</p>
+<p>@shanley: &ldquo;@antirez I&rsquo;ve never met a technical community where 99% of them were familiar with the internals of anything. Did you mean 9%?&rdquo;</p>
 
 <p>This sparked in my mind very quick review of the topics that we talk about in work and i realised that we talk about a lot  about internals of redis and a bit about riak but this is different story :).</p>
 
@@ -1113,9 +1287,9 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>And see that even if AL_START_HEAD is defined as 0 and AL_START_TAIL as 1 if we will use direction of 5 (lol) we will get tail :D I know that i&#8217;m bikesheding now.</p>
+<p>And see that even if AL_START_HEAD is defined as 0 and AL_START_TAIL as 1 if we will use direction of 5 (lol) we will get tail :D I know that i&rsquo;m bikesheding now.</p>
 
-<p>Even without going any deeper you have a feeling how this works. Double linked list with (void<em>) value. First thing i thought today was (this was stupid) &#8220;Wow why this is (void </em>) and not (char <em>) this would let compiler better type check it while compilation&#8221; but antirez wrote to me &#8220;@jakuboboza hint: grep listCreate </em>.c&#8221; and that was the hint i needed. (void *) is more generic but list is used in many places in redis internals and i did not thought about it (lol)</p>
+<p>Even without going any deeper you have a feeling how this works. Double linked list with (void<em>) value. First thing i thought today was (this was stupid) &ldquo;Wow why this is (void </em>) and not (char <em>) this would let compiler better type check it while compilation&rdquo; but antirez wrote to me &ldquo;@jakuboboza hint: grep listCreate </em>.c&rdquo; and that was the hint i needed. (void *) is more generic but list is used in many places in redis internals and i did not thought about it (lol)</p>
 
 <figure class='code'><figcaption><span>grep listCreate *.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1234,7 +1408,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <p>Thing to view is suggested by antires Dict!</p>
 
-<p>antirez: &#8220;@jakuboboza it&#8217;s definitely a very simple implementation! Probably our most &#8220;on steroids&#8221; implementation of data structures is dict.c&#8221;</p>
+<p>antirez: &ldquo;@jakuboboza it&rsquo;s definitely a very simple implementation! Probably our most &#8220;on steroids&rdquo; implementation of data structures is dict.c&#8221;</p>
 
 <p>^_____^</p>
 </div>
@@ -1275,9 +1449,9 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
   </header>
 
 
-  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#x6b;&#x75;&#x62;&#x61;&#x40;&#108;&#97;&#x6d;&#98;&#x64;&#97;&#99;&#x75;&#46;&#x62;&#101;">&#x6b;&#x75;&#x62;&#x61;&#x40;&#x6c;&#x61;&#x6d;&#98;&#x64;&#x61;&#x63;&#x75;&#46;&#x62;&#101;</a> =)</p>
+  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#x74;&#x6f;&#x3a;&#107;&#117;&#x62;&#97;&#x40;&#108;&#x61;&#109;&#x62;&#x64;&#97;&#x63;&#117;&#x2e;&#98;&#x65;">&#x6b;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#x6d;&#x62;&#100;&#x61;&#x63;&#x75;&#46;&#98;&#x65;</a> =)</p>
 
-<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&#8217;t find time to finish this stuff ;/.</p>
+<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
 <h1>Auto failover</h1>
 
@@ -1289,7 +1463,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <h1>Setup</h1>
 
-<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &#8220;master&#8221; and &#8220;replica servers&#8221; with this configs
+<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &ldquo;master&rdquo; and &ldquo;replica servers&rdquo; with this configs
 (ofc turn daemonize to yes in production lol)</p>
 
 <p>Standard Master setup with default script on port 6379 and replica with</p>
@@ -1457,7 +1631,7 @@ with</p>
 
 <p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
 
-<h1>when you do this&#8230;</h1>
+<h1>when you do this&hellip;</h1>
 
 <p>You will see beefy</p>
 
@@ -1478,7 +1652,7 @@ with</p>
 
 <h1>Summary</h1>
 
-<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&#8230;</p>
+<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&hellip;</p>
 
 <p>I like it!</p>
 
@@ -1534,7 +1708,7 @@ with</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>What happens when i click &#8220;follow&#8221;</p>
+<p>What happens when i click &ldquo;follow&rdquo;</p>
 
 <figure class='code'><figcaption><span>example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1629,7 +1803,7 @@ with</p>
 </ul>
 
 
-<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&#8217;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
+<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&rsquo;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1640,7 +1814,7 @@ with</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH&#8217;ed so should be semi ordered. (we don&#8217;t really care about order). adding stuff to time line is bit tricky.</p>
+<p>So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH&#8217;ed so should be semi ordered. (we don&rsquo;t really care about order). adding stuff to time line is bit tricky.</p>
 
 <p>we need to do it like this
 <code>LRANGE &lt;key&gt; 0 1</code> current list id, next we need to <code>LLEN &lt;key&gt;</code> to check size and if it is &lt; SIZE ( for our example 100 ) we just <code>LPUSH &lt;key&gt; &lt;value&gt;</code> and job done, if size is > 100 we need to <code>INCR &lt;list counter&gt;</code> and LPUSH its result on list of lists and next we need to <code>LPUSH &lt;key&gt; &lt;value&gt;</code> on the new list.</p>
@@ -1655,7 +1829,7 @@ with</p>
 <p>This list is just the most current posts of particular user. How does this list work ? Algorithm is simple</p>
 
 <ul>
-<li>LPUSH new post id&#8217;s</li>
+<li>LPUSH new post id&rsquo;s</li>
 <li>RPOP if SIZE > 100</li>
 </ul>
 
@@ -1664,9 +1838,9 @@ with</p>
 
 <h2>Time line</h2>
 
-<p>Now the time line. Time line is exactly the same as user post list. we will just one &#8220;bit&#8221; about adding posts.</p>
+<p>Now the time line. Time line is exactly the same as user post list. we will just one &ldquo;bit&rdquo; about adding posts.</p>
 
-<p>Algorithm here is when you add a post you have to pick all id&#8217;s of people who follow you. (example from top if you are adding post as amelia)</p>
+<p>Algorithm here is when you add a post you have to pick all id&rsquo;s of people who follow you. (example from top if you are adding post as amelia)</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 </pre></td><td class='code'><pre><code class='bash'><span class='line'>SMEMBERS twtr:&lt;user_id&gt;:followers
@@ -1690,9 +1864,9 @@ with</p>
 
 <p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys &lt;user_id> this could be skiped but in my opinion it is not bad. IF you will use &lt;user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
 
-<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &#8220;lazy way&#8221; you can minimize number of hits to around 10.</p>
+<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &ldquo;lazy way&rdquo; you can minimize number of hits to around 10.</p>
 
-<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &#8220;sharding&#8221; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
+<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &ldquo;sharding&rdquo; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
 
 <p>Cheers!</p>
 </div>
@@ -1739,7 +1913,7 @@ with</p>
 
 <h1>What is this post about :)</h1>
 
-<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &#8220;how i would design it in different databases&#8221;. (i&#8217;m taking only about data model)</p>
+<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &ldquo;how i would design it in different databases&rdquo;. (i&rsquo;m taking only about data model)</p>
 
 <h2>Requirements</h2>
 
@@ -1759,7 +1933,7 @@ with</p>
 
 <p>How to do it with redis ? :)</p>
 
-<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &#8220;todoapp&#8221;.</p>
+<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &ldquo;todoapp&rdquo;.</p>
 
 <p>So lets start with user and his list of todo lists :). This gives us first key</p>
 
@@ -1915,9 +2089,9 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &#8220;redis&#8221; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
+<p>This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &ldquo;redis&rdquo; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
 
-<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &#8220;ultimate&#8221;  non splittable lists.</p>
+<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &ldquo;ultimate&rdquo;  non splittable lists.</p>
 
 <h1>Design using Mongodb</h1>
 
@@ -1925,7 +2099,7 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 
 <h2>Todolist = Document</h2>
 
-<p>In this example we will use built in &#8220;array&#8221; operators</p>
+<p>In this example we will use built in &ldquo;array&rdquo; operators</p>
 
 <figure class='code'><figcaption><span>creating</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1967,7 +2141,7 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>this will create empty todo list with name &#8220;House work&#8221; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &#8220;lists&#8221; while doing search.</p>
+<p>this will create empty todo list with name &ldquo;House work&rdquo; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &ldquo;lists&rdquo; while doing search.</p>
 
 <p>Lets try it out how to find out mongo tagged entries?</p>
 
@@ -1992,7 +2166,7 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 
 <p></p>
 
-<p>This way we can find whole todolist with task that contains tag &#8220;mongo&#8221; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this</p>
+<p>This way we can find whole todolist with task that contains tag &ldquo;mongo&rdquo; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this</p>
 
 <figure class='code'><figcaption><span>todo list structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -2025,7 +2199,7 @@ One last thing is to add tags!. Simply here each task will have list of tags and
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Using redis we could wrapp stuff into MULTI command while using mongodb &#8220;array&#8221; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
+<p>Using redis we could wrapp stuff into MULTI command while using mongodb &ldquo;array&rdquo; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
 
 <h2>Todolist = many documents</h2>
 
@@ -2068,11 +2242,11 @@ With structure like this</p>
 
 <h1>Summary</h1>
 
-<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &#8220;strucutres&#8221; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
+<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &ldquo;strucutres&rdquo; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
 
-<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&#8217;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &#8220;rawly&#8221; in redis hiredis client.</p>
+<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&rsquo;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &ldquo;rawly&rdquo; in redis hiredis client.</p>
 
-<p>btw i jsut wrote this from &#8220;top of my head&#8221; so it may contain typos and i&#8217;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
+<p>btw i jsut wrote this from &ldquo;top of my head&rdquo; so it may contain typos and i&rsquo;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
 
 <p>Cheers!</p>
 </div>
@@ -2146,7 +2320,7 @@ With structure like this</p>
 
 <ul>
 <li>If we have html request to actions like create, update or destroy we want to redirect on success</li>
-<li>if we have json, xml request to same type of &#8220;state changing&#8221; actions we want to render response with our format.</li>
+<li>if we have json, xml request to same type of &ldquo;state changing&rdquo; actions we want to render response with our format.</li>
 </ul>
 
 
@@ -2219,132 +2393,6 @@ With structure like this</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/07/pong-tests-are-wrong/">Pong Tests Are Wrong</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-07T19:09:00+01:00" pubdate data-updated="true">Jun 7<span>th</span>, 2012</time>
-        
-           | <a href="/blog/2012/06/07/pong-tests-are-wrong/#disqus_thread"
-             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/06/07/pong-tests-are-wrong/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
-In my opinion pong tests are wrong and do not show real &#8220;performance&#8221;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
-
-<p>From this gist we can see that his vibe.d benchmark set pong test at 8425.85 req/sec (He used ab and i used httperf).</p>
-
-<h1>Warp</h1>
-
-<p>My first candidate in this competition of pong tests is haskell warp handler.</p>
-
-<p>code:</p>
-
-<figure class='code'><figcaption><span>pingpong.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="cm">{-# LANGUAGE OverloadedStrings #-}</span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Network.Wai</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Network.Wai.Handler.Warp</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Network.HTTP.Types</span> <span class="p">(</span><span class="nf">status200</span><span class="p">)</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Blaze.ByteString.Builder</span> <span class="p">(</span><span class="nf">copyByteString</span><span class="p">)</span>
-</span><span class='line'><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Data.ByteString.UTF8</span> <span class="k">as</span> <span class="n">BU</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Monoid</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Enumerator</span> <span class="p">(</span><span class="nf">run_</span><span class="p">,</span> <span class="nf">enumList</span><span class="p">,</span> <span class="p">(</span><span class="o">$$</span><span class="p">))</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>    <span class="kr">let</span> <span class="n">port</span> <span class="ow">=</span> <span class="mi">8000</span>
-</span><span class='line'>    <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;Listening on port &quot;</span> <span class="o">++</span> <span class="n">show</span> <span class="n">port</span>
-</span><span class='line'>    <span class="n">run</span> <span class="n">port</span> <span class="n">app</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">app</span> <span class="n">req</span> <span class="ow">=</span> <span class="n">return</span> <span class="o">$</span>
-</span><span class='line'>    <span class="kr">case</span> <span class="n">pathInfo</span> <span class="n">req</span> <span class="kr">of</span>
-</span><span class='line'>        <span class="p">[</span><span class="s">&quot;pong&quot;</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">pong</span>
-</span><span class='line'>        <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">index</span> <span class="n">x</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">pong</span> <span class="ow">=</span> <span class="kt">ResponseBuilder</span> <span class="n">status200</span> <span class="p">[</span> <span class="p">(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/plain&quot;</span><span class="p">)</span> <span class="p">]</span> <span class="o">$</span> <span class="n">mconcat</span> <span class="o">$</span> <span class="n">map</span> <span class="n">copyByteString</span>
-</span><span class='line'>    <span class="p">[</span> <span class="s">&quot;pong&quot;</span> <span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">index</span> <span class="n">x</span> <span class="ow">=</span> <span class="kt">ResponseBuilder</span> <span class="n">status200</span> <span class="p">[(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span><span class="p">)]</span> <span class="o">$</span> <span class="n">mconcat</span> <span class="o">$</span> <span class="n">map</span> <span class="n">copyByteString</span>
-</span><span class='line'>    <span class="p">[</span> <span class="s">&quot;&lt;p&gt;Hello from &quot;</span><span class="p">,</span> <span class="kt">BU</span><span class="o">.</span><span class="n">fromString</span> <span class="o">$</span> <span class="n">show</span> <span class="n">x</span><span class="p">,</span> <span class="s">&quot;!&lt;/p&gt;&quot;</span>
-</span><span class='line'>    <span class="p">,</span> <span class="s">&quot;&lt;p&gt;&lt;a href=&#39;/pong&#39;&gt;pong&lt;/a&gt;&lt;/p&gt;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>it is semi rack like syntax ;)</p>
-
-<h1>Benchmark results</h1>
-
-<p>I prepared results to show how big lie is pong test. Because in this type of test / showoff all you test is how fast really you can accept connections. Single thread will always win :). But lets look at results:</p>
-
-<ul>
-<li>Multi threaded - 50 threads   - Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
-<li>Multi threaded - 4 threads ( on for each core ) - Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
-<li>Single threaded - default compilation  - Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
-</ul>
-
-
-<p>Tested with <code>httperf --uri=/ --port=8000 --num-calls=10000 --num-conns=20</code> httperf command.</p>
-
-<h1>Summary</h1>
-
-<p>You can test it on your own, i did it on latest 7.4.1 Ghc from haskell platform on OSX 10.7. And post reply with your results :) maybe i missed something. Code, scripts to build and run are in repository <a href="https://github.com/JakubOboza/haskell-warp-pong-test">https://github.com/JakubOboza/haskell-warp-pong-test</a>.</p>
-
-<h2>So how to test ?!</h2>
-
-<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&#8230; users are really testing performance of our db ;>&#8230; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2364,6 +2412,10 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
       </li>
     
@@ -2377,10 +2429,6 @@ In my opinion pong tests are wrong and do not show real &#8220;performance&#8221
     
       <li class="post">
         <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
       </li>
     
   </ul>

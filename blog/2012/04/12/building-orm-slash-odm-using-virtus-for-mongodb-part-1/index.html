@@ -107,11 +107,11 @@
   </header>
 
 
-<div class="entry-content"><p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&#8217;s really worth reading) and i thought &#8220;it&#8217;s nice&#8221;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&#8217;s ORM&#8217;s is not so common topic across web.</p>
+<div class="entry-content"><p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&rsquo;s really worth reading) and i thought &ldquo;it&rsquo;s nice&rdquo;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&rsquo;s ORM&rsquo;s is not so common topic across web.</p>
 
 <h1>Aim</h1>
 
-<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&#8217;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &#8220;Muppet&#8221;. Name describes the project :).</p>
+<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&rsquo;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &ldquo;Muppet&rdquo;. Name describes the project :).</p>
 
 <h3>Virtus</h3>
 
@@ -315,7 +315,7 @@ All this specs are stripped to minimum to enhance readability.</p>
 <h1>Third step: layouting Muppet!</h1>
 
 <p>At this moment we should have ready specs, that fail hard throwing errors on unknown tokens. Its good.
-What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&#8217;s.</p>
+What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&rsquo;s.</p>
 
 <figure class='code'><figcaption><span>muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -409,7 +409,7 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 
 <h1>Forth step: support for quering and inserting</h1>
 
-<p>Now lets remove pending marks from specs that  are in &#8220;describes&#8221; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.</p>
+<p>Now lets remove pending marks from specs that  are in &ldquo;describes&rdquo; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.</p>
 
 <figure class='code'><figcaption><span>lib/muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -533,7 +533,7 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I could not think of a way to implement it in a more simple way. We have to &#8220;sections&#8221; first is class methods where we define</p>
+<p>I could not think of a way to implement it in a more simple way. We have to &ldquo;sections&rdquo; first is class methods where we define</p>
 
 <ul>
 <li>collection_name this method says to us what is the collection name (we can override it in model)</li>
@@ -546,14 +546,14 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 
 <p>Instance methods are only two <code>save</code> and <code>destroy</code> save is raw and simple, takes all attributes from using virtues and saves them using mongo native driver. destroy acts in the same way.</p>
 
-<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&#8217;s and remove.</p>
+<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&rsquo;s and remove.</p>
 
 <h1>Summary</h1>
 
 <p>I really enjoyed writing this code and blog post :).
 You can find code for this blog post here <a href="https://github.com/JakubOboza/muppet">https://github.com/JakubOboza/muppet</a></p>
 
-<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &#8220;Muppet&#8221;</p>
+<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &ldquo;Muppet&rdquo;</p>
 
 <p>-Cheers</p>
 </div>
@@ -631,6 +631,10 @@ You can find code for this blog post here <a href="https://github.com/JakubOboza
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
       </li>
     
@@ -644,10 +648,6 @@ You can find code for this blog post here <a href="https://github.com/JakubOboza
     
       <li class="post">
         <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
       </li>
     
   </ul>

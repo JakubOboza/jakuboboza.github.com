@@ -4,7 +4,7 @@
   <title><![CDATA[Category: twitter | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/twitter/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,9 +18,9 @@
     <link href="http://no-fucking-idea.com/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/"/>
     <updated>2013-06-09T23:30:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats</id>
-    <content type="html"><![CDATA[<p>So it was long since last post and i have in pipeline many posts on ODM's, Genetic Algorithms, Streaming Algorithms Clojure and Haskell i was working on but nothing is finished ;/. Need time!</p>
+    <content type="html"><![CDATA[<p>So it was long since last post and i have in pipeline many posts on ODM&rsquo;s, Genetic Algorithms, Streaming Algorithms Clojure and Haskell i was working on but nothing is finished ;/. Need time!</p>
 
-<h1>I'm using twitter</h1>
+<h1>I&rsquo;m using twitter</h1>
 
 <p>And most of the time it is just updates from friends, sometimes some news from hacker world that potentially could be interesting. I use twitter in a bit odd way first of all i post link to things i read during commute to work :) and i use twitter to post alters from my apps to me.</p>
 
@@ -72,7 +72,7 @@ This is part of TwitterDriver/Agent class. And i wrap everything into exception 
   twtr:&lt;user_id&gt;:followers -&gt; set of id's  that follows this user
 </code></p>
 
-<p>What happens when i click "follow"
+<p>What happens when i click &ldquo;follow&rdquo;
 <code>bash example
 redis 127.0.0.1:6379&gt; SADD twtr:kuba:following amelia
 (integer) 1
@@ -140,14 +140,14 @@ Why this approach and not compacting all the things into pipe separate key? Both
 </ul>
 
 
-<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id's. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
+<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&rsquo;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
 
 <p><code>bash
   twtr:&lt;user_id&gt;:lists -&gt; list of lits id's only LPUSH id and LRANGE 0 number.
   twtr:&lt;user_id&gt;:list_next -&gt; auto incr counter for lists id's
   twtr:&lt;user_id&gt;:list:&lt;list_id&gt; -&gt; list with 100 posts
 </code>
-So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH'ed so should be semi ordered. (we don't really care about order). adding stuff to time line is bit tricky.</p>
+So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH'ed so should be semi ordered. (we don&rsquo;t really care about order). adding stuff to time line is bit tricky.</p>
 
 <p>we need to do it like this
 <code>LRANGE &lt;key&gt; 0 1</code> current list id, next we need to <code>LLEN &lt;key&gt;</code> to check size and if it is &lt; SIZE ( for our example 100 ) we just <code>LPUSH &lt;key&gt; &lt;value&gt;</code> and job done, if size is > 100 we need to <code>INCR &lt;list counter&gt;</code> and LPUSH its result on list of lists and next we need to <code>LPUSH &lt;key&gt; &lt;value&gt;</code> on the new list.</p>
@@ -160,7 +160,7 @@ So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two 
 This list is just the most current posts of particular user. How does this list work ? Algorithm is simple</p>
 
 <ul>
-<li>LPUSH new post id's</li>
+<li>LPUSH new post id&rsquo;s</li>
 <li>RPOP if SIZE > 100</li>
 </ul>
 
@@ -169,9 +169,9 @@ This list is just the most current posts of particular user. How does this list 
 
 <h2>Time line</h2>
 
-<p>Now the time line. Time line is exactly the same as user post list. we will just one "bit" about adding posts.</p>
+<p>Now the time line. Time line is exactly the same as user post list. we will just one &ldquo;bit&rdquo; about adding posts.</p>
 
-<p>Algorithm here is when you add a post you have to pick all id's of people who follow you. (example from top if you are adding post as amelia)
+<p>Algorithm here is when you add a post you have to pick all id&rsquo;s of people who follow you. (example from top if you are adding post as amelia)
 <code>bash
 SMEMBERS twtr:&lt;user_id&gt;:followers
 </code>
@@ -188,9 +188,9 @@ And you need to push your post id into their time line posts list. Thats all. Of
 
 <p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys &lt;user_id> this could be skiped but in my opinion it is not bad. IF you will use &lt;user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
 
-<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a "lazy way" you can minimize number of hits to around 10.</p>
+<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &ldquo;lazy way&rdquo; you can minimize number of hits to around 10.</p>
 
-<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving "sharding" in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
+<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &ldquo;sharding&rdquo; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
 
 <p>Cheers!</p>
 ]]></content>

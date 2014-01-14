@@ -4,7 +4,7 @@
   <title><![CDATA[Category: tcpdump | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/tcpdump/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -22,7 +22,7 @@
 
 <h2>Mac, Linux</h2>
 
-<p>In this text i use <code>en0</code>, <code>en1</code> naming convention from OSX if you are linux user you should change it to eth0, eth1 w... check your network config using <code>ifconfig</code>. Basic knowledge required! =)</p>
+<p>In this text i use <code>en0</code>, <code>en1</code> naming convention from OSX if you are linux user you should change it to eth0, eth1 w&hellip; check your network config using <code>ifconfig</code>. Basic knowledge required! =)</p>
 
 <h1>Tcpdump</h1>
 
@@ -33,7 +33,7 @@
 <p>Tcpdump basic options are</p>
 
 <ul>
-<li>-i 'interface'  option lets you specify on which interface you will listen</li>
+<li>-i &lsquo;interface&rsquo;  option lets you specify on which interface you will listen</li>
 <li>-nS lets you see basic information about packets</li>
 <li>-v, -vv, -vvv verbose mode</li>
 <li>-s 1514 lets you specify how much data from packet is displayed. In this case you see whole packet</li>
@@ -50,7 +50,7 @@
 <p><code>bash
 sudo tcpdump -nS -i en1
 </code>
-This is obviously bad idea, only good thing about its that i lets you see that "something is on" so you will be able to say that this device is actually working.</p>
+This is obviously bad idea, only good thing about its that i lets you see that &ldquo;something is on&rdquo; so you will be able to say that this device is actually working.</p>
 
 <h2>Example two, targeting host!</h2>
 

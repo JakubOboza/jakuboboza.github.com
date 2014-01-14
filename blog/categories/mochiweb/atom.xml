@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mochiweb | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/mochiweb/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,7 +18,7 @@
     <link href="http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/"/>
     <updated>2013-01-22T19:42:00+00:00</updated>
     <id>http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang</id>
-    <content type="html"><![CDATA[<p>Recently with friends we are building side project called "Midway" its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
+    <content type="html"><![CDATA[<p>Recently with friends we are building side project called &ldquo;Midway&rdquo; its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
 
 <h1>Making request</h1>
 
@@ -32,10 +32,10 @@ inets:start().
 <p>Ok i generalized using httpc to really simple thing</p>
 
 <p>``` erlang
-post(URL, ContentType, Body) -> request(post, {URL, [], ContentType, Body}).
-get(URL)                     -> request(get,  {URL, []}).</p>
+post(URL, ContentType, Body) &ndash;> request(post, {URL, [], ContentType, Body}).
+get(URL)                     &ndash;> request(get,  {URL, []}).</p>
 
-<p>request(Method, Body) -></p>
+<p>request(Method, Body) &ndash;></p>
 
 <pre><code>httpc:request(Method, Body, [], []).
 </code></pre>
@@ -45,8 +45,8 @@ get(URL)                     -> request(get,  {URL, []}).</p>
 <p>So if you will a call you will get something like this</p>
 
 <p>``` erlang
-httpc:request(get, {"http://www.youtube.com/watch?v=JvxG3zl_WhU", []}, [], []).
-{ok,{ {"HTTP/1.1",200,"OK"},</p>
+httpc:request(get, {&ldquo;<a href="http://www.youtube.com/watch?v=JvxG3zl_WhU">http://www.youtube.com/watch?v=JvxG3zl_WhU</a>&rdquo;, []}, [], []).
+{ok,{ {&ldquo;HTTP/1.1&rdquo;,200,&ldquo;OK&rdquo;},</p>
 
 <pre><code> [{"cache-control","no-cache"},
   {"date","Tue, 22 Jan 2013 20:36:16 GMT"},
@@ -82,10 +82,10 @@ httpc:request(get, {"http://www.youtube.com/watch?v=JvxG3zl_WhU", []}, [], []).
 <p>So after calling it on response we can get body</p>
 
 <p>``` erlang
-  Response = httpc:request(get, {"http://www.youtube.com/watch?v=JvxG3zl_WhU", []}, [], []).
+  Response = httpc:request(get, {&ldquo;<a href="http://www.youtube.com/watch?v=JvxG3zl_WhU">http://www.youtube.com/watch?v=JvxG3zl_WhU</a>&rdquo;, []}, [], []).
   Body = response_body(Response).
-  io:format("~s~n",[Body]).
-  &lt;!DOCTYPE html><html lang="en"><head> ...</p>
+  io:format(&ldquo;~s~n&rdquo;,[Body]).
+  &lt;!DOCTYPE html><html lang="en"><head> &hellip;</p>
 
 <p>```</p>
 
@@ -103,12 +103,12 @@ mochijson2:endcode(STUFF).
 </code>
 One thing worth mentioning is that it expects input in a bit structured format.</p>
 
-<p>So typycaly it will use "struct" symbol for json "{}" objects.</p>
+<p>So typycaly it will use &ldquo;struct&rdquo; symbol for json &ldquo;{}&rdquo; objects.</p>
 
 <p><code>erlang
 {struct, [{name, &lt;&lt;"jakub"&gt;&gt;}, {age, 27}, {ids, [1,2]}]}
 </code>
-So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use...</p>
+So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use&hellip;</p>
 
 <h2>Jiffy</h2>
 
@@ -124,7 +124,7 @@ Eshell V5.8.2  (abort with ^G)
 &lt;&lt;"{\"foo\":[\"bing\",2.2999999999999998224,true]}"&gt;&gt;
 </code></p>
 
-<p>This shows how nice it is to use :D no 'struct' pure love!</p>
+<p>This shows how nice it is to use :D no &lsquo;struct&rsquo; pure love!</p>
 
 <p>You can get it here <a href="https://github.com/davisp/jiffy">https://github.com/davisp/jiffy</a></p>
 

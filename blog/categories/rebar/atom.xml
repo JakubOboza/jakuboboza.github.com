@@ -4,7 +4,7 @@
   <title><![CDATA[Category: rebar | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/rebar/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -28,7 +28,7 @@
 
 <p>Basic template is made from one or many <code>.erl</code> files written with <code>mustache</code> style <code>{ { } }</code> code and <code>.template</code> file describing what to do with files.</p>
 
-<h2>Let's build gen_server template</h2>
+<h2>Let&rsquo;s build gen_server template</h2>
 
 <p>So my first file will be <code>gen_server.erl</code>
 ``` bash gen_server.erl
@@ -39,37 +39,37 @@
 <p>-module( { {name } }).
 -behaviour(gen_server).</p>
 
-<p>-author(' { {author_name } } &lt;{ {author_email } }>').</p>
+<p>-author(&lsquo; { {author_name } } &lt;{ {author_email } }>&rsquo;).</p>
 
 <p>-export([start_link/1]).
 -export([init/1, handle_call/3, handle_cast/2, terminate/2, handle_info/2, code_change/3, stop/1]).</p>
 
 <p>% public api</p>
 
-<p>start_link(_Args) ->
+<p>start_link(_Args) &ndash;>
   gen_server:start_link({local, ?MODULE}, ?MODULE, [], []).</p>
 
 <p>% state should be change with State that you will pass
-init([]) ->
+init([]) &ndash;>
   {ok, state}.</p>
 
-<p>stop(_Pid) ->
+<p>stop(_Pid) &ndash;>
   stop().</p>
 
-<p>stop() ->
+<p>stop() &ndash;>
   gen_server:cast(?MODULE, stop).</p>
 
-<p>handle_call({method_name_and_params}, _From, State) ->
+<p>handle_call({method_name_and_params}, _From, State) &ndash;>
   Response = ok,
   {reply, Response, State};</p>
 
-<p>handle_call(<em>Message, </em>From, State) ->
+<p>handle_call(<em>Message, </em>From, State) &ndash;>
   {reply, error, State}.</p>
 
-<p>handle_cast(<em>Message, State) -> {noreply, State}.
-handle_info(</em>Message, State) -> {noreply, State}.
-terminate(<em>Reason, </em>State) -> ok.
-code_change(<em>OldVersion, State, </em>Extra) -> {ok, State}.
+<p>handle_cast(<em>Message, State) &ndash;> {noreply, State}.
+handle_info(</em>Message, State) &ndash;> {noreply, State}.
+terminate(<em>Reason, </em>State) &ndash;> ok.
+code_change(<em>OldVersion, State, </em>Extra) &ndash;> {ok, State}.
 <code>``
 This is the template, i know a bit long i tried to cut out all comments, euint etc and narrow it to minimum. I posted it to show how much you can save :). Now you will need the</code>transformation file`. All this things in { { something } } will be replaced by things we will type in command line or defaults from template file.</p>
 

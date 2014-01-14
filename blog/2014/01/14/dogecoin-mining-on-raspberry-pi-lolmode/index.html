@@ -1,0 +1,404 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Dogecoin Mining on Raspberry Pi LOLMODE - No F*cking Idea</title>
+  <meta name="author" content="Jakub Oboza">
+
+  
+  <meta name="description" content="If you have 800 Mhash/s GPU (Graphics card) i&rsquo;m sure you often think about making your raspberry pi a dogecoin miner. Because why not :D ? It &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="No F*cking Idea" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-17523816-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">No F*cking Idea</a></h1>
+  
+    <h2>Common answer to everything</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:no-fucking-idea.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/link-lib">LIB!</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Dogecoin Mining on Raspberry Pi LOLMODE</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-14T10:43:36+00:00" pubdate data-updated="true">Jan 14<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>If you have <code>800 Mhash/s</code> GPU (Graphics card) i&rsquo;m sure you often think about making your raspberry pi a dogecoin miner. Because why not :D ? It is not effective i warn you :) you will get around <code>0.34 khash/s</code> that is about 2000 times less than your GPU :) and about 500 times less than CPU on your box. But its easy and fun.</p>
+
+<p><img src="http://i.imgur.com/83LnzuU.jpg" alt="doge meme" /></p>
+
+<p>I mainly did it for fun to see how it will react, work and what is the possible heat problem.</p>
+
+<h1>Again Why ?</h1>
+
+<p>Because DOGE, doge coin is THE NEW BLACK. Its future! An Irony on all crypto currency :) and its value is based on meme, laugh and happiness. This is much better than bitcoin :> at least for me</p>
+
+<h1>Connect to your raspberry pi</h1>
+
+<p>You will need:</p>
+
+<figure class='code'><figcaption><span>requirements</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>  λ automake
+</span><span class='line'>  λ gcc
+</span><span class='line'>  λ git-core
+</span><span class='line'>  λ libcurl
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>if you are using like me <code>2014-01-07-wheezy-raspbian</code> raspbian you will have everything ready :) one thing to install is <code>automake</code> and you can do this by typing <code>apt-get update</code>  followed by <code>apt-get install automake</code> this is all you need.</p>
+
+<p>lets get on the box! (default login/passowrd for this image is pi:raspberry)</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>10:54 kuba@pc12:~ λ ssh pi@192.168.1.22
+</span><span class='line'>pi@raspberrypi ~ <span class="err">$</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>(This ip address is just an example :D you will need to have a way to find it in your network.)</p>
+
+<p>Now all you need to do is to clone CPU miner for it.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>git clone https://github.com/pooler/cpuminer.git
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will download your mining software on the raspeberry pi, next we need to compile it and run!</p>
+
+<figure class='code'><figcaption><span>compiling</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>pi@raspberrypi ~/Workspace <span class="nv">$ </span><span class="nb">cd </span>cpuminer-2.3.2/
+</span><span class='line'>pi@raspberrypi ~/Workspace/cpuminer-2.3.2 <span class="err">$</span>
+</span><span class='line'>./autogen.sh
+</span><span class='line'>... script will take some <span class="nb">time</span> ...
+</span><span class='line'>./configure <span class="nv">CFLAGS</span><span class="o">=</span><span class="s2">&quot;-O3&quot;</span>
+</span><span class='line'>make
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This will compile and build the minerd binary that is ready to start mining :). Well you need to do one thing, join a doge pool. I&rsquo;m not gone go into details of solo mining vs pool minnig :)  i&rsquo;m just a simple miner :D</p>
+
+<p>If you need more info on mining pools you should check this topic <a href="http://www.reddit.com/r/dogecoin/comments/1tn8yz/dogecoin_mining_pool_list/">http://www.reddit.com/r/dogecoin/comments/1tn8yz/dogecoin_mining_pool_list/</a></p>
+
+<p>I personally at the time of writing this post i&rsquo;m using small pool called chunky pool :).</p>
+
+<h2>Starting to mine!</h2>
+
+<p>Now we have software lets actually mine something :).
+You will need to create a shell script that will start minerd on your raspberry pi. My looks like this</p>
+
+<figure class='code'><figcaption><span>run.sh</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./minerd --a scrypt --threads 1 -o stratum+tcp://pool.chunky.ms:3333 -O dogedogedoge.pi:password
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>make it executable and run! Yay you are a dogecoin farmer now! CPU mining is not the most optimal but hey..its all just for lolz :)</p>
+
+<h3>Heat problems ?</h3>
+
+<p>For me 2 hours of mining on raspberry pi did not generate any extra heat or stuff like this, seems to be stable. I was worried it will got nuts on this topic but i was proven wrong.</p>
+
+<h1>Summay</h1>
+
+<p>This sucks in terms of speed, you will get close to none speed because below 2 khash/s its not even worth it, you will not be on any stats on any pool even listed, periodically you will actually hit the jackpot and get a success pimping you to 2khash/s for about 60 sec but that is  just a lie, you scored a win and this will give you some parts of doge. Last i checked you were able to get around 0.67 doge per hour of your raspberry time. That is really really bad as pretty basic GPU pimps you to 600+</p>
+
+<p>Cheers :) Hope it helps! Much fun, so currency.</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jakub Oboza</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-01-14T10:43:36+00:00" pubdate data-updated="true">Jan 14<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/doge/'>doge</a>, <a class='category' href='/blog/categories/dogemining/'>dogemining</a>, <a class='category' href='/blog/categories/lol/'>lol</a>, <a class='category' href='/blog/categories/lolmode/'>lolmode</a>, <a class='category' href='/blog/categories/mining/'>mining</a>, <a class='category' href='/blog/categories/mode/'>mode</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/" data-via="JakubOboza" data-counturl="http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/" title="Previous Post: Working with URL quick tip Network.Url">&laquo; Working with URL quick tip Network.Url</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <a class="coinbase-button" data-code="a093222bb846e484c7f9123c4ec983e5" data-button-style="donation_large" href="https://coinbase.com/checkouts/a093222bb846e484c7f9123c4ec983e5">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/12/forkio-and-friends/">forkIO and Friends</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/">Erlang E17 and Second Edition of Programming Erlang</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'JakubOboza',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/101398174644580064637?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Jakub Oboza -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'nofuckingidea';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/';
+        var disqus_url = 'http://no-fucking-idea.com/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

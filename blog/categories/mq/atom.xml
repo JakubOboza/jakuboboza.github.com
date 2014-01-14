@@ -4,7 +4,7 @@
   <title><![CDATA[Category: mq | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/mq/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -24,7 +24,7 @@
 
 <h1>Rolling out own queue system</h1>
 
-<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don't have constraint that data can never be lost!</p>
+<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don&rsquo;t have constraint that data can never be lost!</p>
 
 <h2>Can lose data in queue</h2>
 
@@ -50,19 +50,19 @@ but this is shell example, you could create it and just read/write it in your pr
 
 <p>So how we approach problems so of us would create inside of their code queue.</p>
 
-<p>In C it would be simply array wrapped with mutex'es but this is unreliable and its long to write and and and...</p>
+<p>In C it would be simply array wrapped with mutex'es but this is unreliable and its long to write and and and&hellip;</p>
 
 <p>So what people do ? They try use READY products.</p>
 
 <h2>First big mistake</h2>
 
 <p>Use key-value store as queue.
-- Lets serialize array into XYZ and set it into key.
-- That's good idea! Only one thing will write to it!</p>
+&ndash; Lets serialize array into XYZ and set it into key.
+&ndash; That&rsquo;s good idea! Only one thing will write to it!</p>
 
 <p>WRONG!</p>
 
-<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know "agile says XYZ now"... actually "agile" don't say "take drugs an yolo because tomorrow you can die" but "TAKE RISKY THINGS FIRST" and this is risky thing. Should be implemented well.</p>
+<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know &ldquo;agile says XYZ now&rdquo;&hellip; actually &ldquo;agile&rdquo; don&rsquo;t say &ldquo;take drugs an yolo because tomorrow you can die&rdquo; but &ldquo;TAKE RISKY THINGS FIRST&rdquo; and this is risky thing. Should be implemented well.</p>
 
 <p>What happens in this case ? Someone gets a great idea that product should scale adds another daemon and this f*cks up queue you lose messages.</p>
 
@@ -80,7 +80,7 @@ Process a)</p>
 
 <p>Now imagine process b) does the same. Everything is blazing fast and you get f*cked.</p>
 
-<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don't know how to resolve this issue but at least you would know... but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
+<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don&rsquo;t know how to resolve this issue but at least you would know&hellip; but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
 
 <h2>Redis list as queue</h2>
 
@@ -110,11 +110,11 @@ redis 127.0.0.1:6379&gt; rpop queue
 (nil)
 </code></p>
 
-<p>Cool ! Works great and any process can access it in atomic way isn't it great ? best thing ever ?!</p>
+<p>Cool ! Works great and any process can access it in atomic way isn&rsquo;t it great ? best thing ever ?!</p>
 
 <p>Actually it is very good. But there is one thing you just missed! Redis do a flush of keys every 60 sec if 10k keys did change by default. What does it mean ? You can get screwed if redis will instantly die!</p>
 
-<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section "Append-only file"</p>
+<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section &ldquo;Append-only file&rdquo;</p>
 
 <p><code>bash redis_config.fix
 - appendonly no
@@ -122,24 +122,24 @@ redis 127.0.0.1:6379&gt; rpop queue
 </code></p>
 
 <p>Man you just did it, you lost some performance but you did it. Who would knew ? You just saved the world.
-How much we just cut performance ? "fsync every time a new command is appended to the AOF. Very very slow, very safe." that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
+How much we just cut performance ? &ldquo;fsync every time a new command is appended to the AOF. Very very slow, very safe.&rdquo; that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
 
-<h2>Can't lose any data! Redis plus Mysql/Postgres</h2>
+<h2>Can&rsquo;t lose any data! Redis plus Mysql/Postgres</h2>
 
-<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on "appendonly yes". Also it makes things hell more complicated and forces you to do updates in both system.</p>
+<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on &ldquo;appendonly yes&rdquo;. Also it makes things hell more complicated and forces you to do updates in both system.</p>
 
 <p>Is this system cure for cancer ? No! You have to have very good queue fail recovery / startup system. Simply empty list and make query
 <code>bash startup
 select * jobs where done = false
 </code></p>
 
-<p>next you have to clean redis queue and push new data. Is this safe ? No you don't know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
+<p>next you have to clean redis queue and push new data. Is this safe ? No you don&rsquo;t know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
 
 <p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
 
 <h1>Why not MongoDB</h1>
 
-<p>You can't atomically pop stuff. Don't think about pop/push/pushall on array in document!
+<p>You can&rsquo;t atomically pop stuff. Don&rsquo;t think about pop/push/pushall on array in document!
 If you will have this idea check my gist <a href="https://gist.github.com/2071805">https://gist.github.com/2071805</a> run it and see what happens :) what you get back.</p>
 
 <h1>RabbitMQ / ZeroMQ</h1>
@@ -169,7 +169,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <h1>Why do we use Queues ?</h1>
 
-<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain't doing our job properly.</p>
+<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain&rsquo;t doing our job properly.</p>
 
 <p>What makes things hard.</p>
 
@@ -190,7 +190,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 </ul>
 
 
-<p>I'm 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
+<p>I&rsquo;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
 
 <p>Loads of things can be brilliant queue choices eg. Redis, ZeroMQ, RabbitMQ or even named pipes but not serialized array in key-value store.</p>
 ]]></content>

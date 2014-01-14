@@ -4,7 +4,7 @@
   <title><![CDATA[Category: replication | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/replication/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -75,7 +75,7 @@ client-output-buffer-limit normal 0 0 0
 client-output-buffer-limit slave 256mb 64mb 60
 client-output-buffer-limit pubsub 32mb 8mb 60
 <code>``
-Here the important thing really is</code>slaveof 127.0.0.1 6379<code>where we set where is our master.</code>port 7789<code>important if we are using few redis instances on one box and</code>dir ./replica_dir` be sure to not point this to master node db path if you do... you will suffer eternal flame.</p>
+Here the important thing really is</code>slaveof 127.0.0.1 6379<code>where we set where is our master.</code>port 7789<code>important if we are using few redis instances on one box and</code>dir ./replica_dir` be sure to not point this to master node db path if you do&hellip; you will suffer eternal flame.</p>
 
 <p>Now just start the node <code>redis-server redis-replica.conf</code> and he will start syncing.</p>
 

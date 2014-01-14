@@ -4,7 +4,7 @@
   <title><![CDATA[Category: expire | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/expire/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -50,7 +50,7 @@ SETEX &lt;key&gt; &lt;seconds&gt; &lt;value&gt;
 SETEX "key:to:home" 1500 "4b234ferg34ret34rasd32rs"
 </code></p>
 
-<p>This will set for 1500 seconds key "key:to:home" to value "4b234ferg34ret34rasd32rs". Pretty easy thing to do.</p>
+<p>This will set for 1500 seconds key &ldquo;key:to:home&rdquo; to value &ldquo;4b234ferg34ret34rasd32rs&rdquo;. Pretty easy thing to do.</p>
 
 <h2>PSETEX</h2>
 
@@ -60,7 +60,7 @@ SETEX "key:to:home" 1500 "4b234ferg34ret34rasd32rs"
 PSETEX "key:to:home" 15000 "4b234ferg34ret34rasd32rs"
 </code></p>
 
-<p>Will set "key:to:home" to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
+<p>Will set &ldquo;key:to:home&rdquo; to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
 
 <p>Cheers!</p>
 ]]></content>

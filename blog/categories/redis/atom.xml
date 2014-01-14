@@ -4,7 +4,7 @@
   <title><![CDATA[Category: redis | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/redis/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -50,7 +50,7 @@ SETEX &lt;key&gt; &lt;seconds&gt; &lt;value&gt;
 SETEX "key:to:home" 1500 "4b234ferg34ret34rasd32rs"
 </code></p>
 
-<p>This will set for 1500 seconds key "key:to:home" to value "4b234ferg34ret34rasd32rs". Pretty easy thing to do.</p>
+<p>This will set for 1500 seconds key &ldquo;key:to:home&rdquo; to value &ldquo;4b234ferg34ret34rasd32rs&rdquo;. Pretty easy thing to do.</p>
 
 <h2>PSETEX</h2>
 
@@ -60,7 +60,7 @@ SETEX "key:to:home" 1500 "4b234ferg34ret34rasd32rs"
 PSETEX "key:to:home" 15000 "4b234ferg34ret34rasd32rs"
 </code></p>
 
-<p>Will set "key:to:home" to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
+<p>Will set &ldquo;key:to:home&rdquo; to expire in 15 seconds, its important to notice that TTL will give you back amount of time units! so if you did PSETEX it will me miliseconds and if it is SETEX it is in seconds!.</p>
 
 <p>Cheers!</p>
 ]]></content>
@@ -77,7 +77,7 @@ PSETEX "key:to:home" 15000 "4b234ferg34ret34rasd32rs"
 
 <h1>Rolling out own queue system</h1>
 
-<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don't have constraint that data can never be lost!</p>
+<p>First thing often people do is rolling out their own queue system. Is it bad ? no! it is great as long as you don&rsquo;t have constraint that data can never be lost!</p>
 
 <h2>Can lose data in queue</h2>
 
@@ -103,19 +103,19 @@ but this is shell example, you could create it and just read/write it in your pr
 
 <p>So how we approach problems so of us would create inside of their code queue.</p>
 
-<p>In C it would be simply array wrapped with mutex'es but this is unreliable and its long to write and and and...</p>
+<p>In C it would be simply array wrapped with mutex'es but this is unreliable and its long to write and and and&hellip;</p>
 
 <p>So what people do ? They try use READY products.</p>
 
 <h2>First big mistake</h2>
 
 <p>Use key-value store as queue.
-- Lets serialize array into XYZ and set it into key.
-- That's good idea! Only one thing will write to it!</p>
+&ndash; Lets serialize array into XYZ and set it into key.
+&ndash; That&rsquo;s good idea! Only one thing will write to it!</p>
 
 <p>WRONG!</p>
 
-<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know "agile says XYZ now"... actually "agile" don't say "take drugs an yolo because tomorrow you can die" but "TAKE RISKY THINGS FIRST" and this is risky thing. Should be implemented well.</p>
+<p>Such an assumption will provide you with insane amount of carnage in future. And even if i know &ldquo;agile says XYZ now&rdquo;&hellip; actually &ldquo;agile&rdquo; don&rsquo;t say &ldquo;take drugs an yolo because tomorrow you can die&rdquo; but &ldquo;TAKE RISKY THINGS FIRST&rdquo; and this is risky thing. Should be implemented well.</p>
 
 <p>What happens in this case ? Someone gets a great idea that product should scale adds another daemon and this f*cks up queue you lose messages.</p>
 
@@ -133,7 +133,7 @@ Process a)</p>
 
 <p>Now imagine process b) does the same. Everything is blazing fast and you get f*cked.</p>
 
-<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don't know how to resolve this issue but at least you would know... but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
+<p>So DB system must know context. This is where RIAK shines, you get vector clocks and you know that you are f*cked. You can react but in 99% you don&rsquo;t know how to resolve this issue but at least you would know&hellip; but some specialsits can disable this because handling vector clocks is a pain and you can get PERFORMANCE BOOST :))).</p>
 
 <h2>Redis list as queue</h2>
 
@@ -163,11 +163,11 @@ redis 127.0.0.1:6379&gt; rpop queue
 (nil)
 </code></p>
 
-<p>Cool ! Works great and any process can access it in atomic way isn't it great ? best thing ever ?!</p>
+<p>Cool ! Works great and any process can access it in atomic way isn&rsquo;t it great ? best thing ever ?!</p>
 
 <p>Actually it is very good. But there is one thing you just missed! Redis do a flush of keys every 60 sec if 10k keys did change by default. What does it mean ? You can get screwed if redis will instantly die!</p>
 
-<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section "Append-only file"</p>
+<p>How to fix this ? Visit <a href="http://redis.io/topics/persistence">http://redis.io/topics/persistence</a> and see section &ldquo;Append-only file&rdquo;</p>
 
 <p><code>bash redis_config.fix
 - appendonly no
@@ -175,24 +175,24 @@ redis 127.0.0.1:6379&gt; rpop queue
 </code></p>
 
 <p>Man you just did it, you lost some performance but you did it. Who would knew ? You just saved the world.
-How much we just cut performance ? "fsync every time a new command is appended to the AOF. Very very slow, very safe." that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
+How much we just cut performance ? &ldquo;fsync every time a new command is appended to the AOF. Very very slow, very safe.&rdquo; that is Ouch!  Your boss could be unhappy even if this solution is actually the best, most simple and durable idea.</p>
 
-<h2>Can't lose any data! Redis plus Mysql/Postgres</h2>
+<h2>Can&rsquo;t lose any data! Redis plus Mysql/Postgres</h2>
 
-<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on "appendonly yes". Also it makes things hell more complicated and forces you to do updates in both system.</p>
+<p>Persistence daemons worked out a new combo. You store each element of the queue like key-value store in SQL RDBMS and put its id on the queue in redis next you pop it up from the queue in redis process and updates its status in SQL RDBM. This is not so bad but it kills performance more than just turning on &ldquo;appendonly yes&rdquo;. Also it makes things hell more complicated and forces you to do updates in both system.</p>
 
 <p>Is this system cure for cancer ? No! You have to have very good queue fail recovery / startup system. Simply empty list and make query
 <code>bash startup
 select * jobs where done = false
 </code></p>
 
-<p>next you have to clean redis queue and push new data. Is this safe ? No you don't know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
+<p>next you have to clean redis queue and push new data. Is this safe ? No you don&rsquo;t know if few last jobs did finish or not. Eg. Mysql got f*cked but messages got processed. Yes this adds a lot more complications.</p>
 
 <p>Also with this solution index on ID column makes its fast to make a select but slow to add or remove. And you want your queue to perform and yes mysql will do fsync.</p>
 
 <h1>Why not MongoDB</h1>
 
-<p>You can't atomically pop stuff. Don't think about pop/push/pushall on array in document!
+<p>You can&rsquo;t atomically pop stuff. Don&rsquo;t think about pop/push/pushall on array in document!
 If you will have this idea check my gist <a href="https://gist.github.com/2071805">https://gist.github.com/2071805</a> run it and see what happens :) what you get back.</p>
 
 <h1>RabbitMQ / ZeroMQ</h1>
@@ -222,7 +222,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <h1>Why do we use Queues ?</h1>
 
-<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain't doing our job properly.</p>
+<p>We use them to absorb traffic of messages and process their content by eg. workers / handlers etc. If we will make it unprocessable by more than one worker we ain&rsquo;t doing our job properly.</p>
 
 <p>What makes things hard.</p>
 
@@ -243,7 +243,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 </ul>
 
 
-<p>I'm 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
+<p>I&rsquo;m 100% sure that storing queues as serialized lists in memcached or keeping them as table in mysql/postgres and making loads of funky stuff to keep it running is not the way to go. It can seem like a good idea at start but it is not. Named pipe in file system can be better.</p>
 
 <p>Loads of things can be brilliant queue choices eg. Redis, ZeroMQ, RabbitMQ or even named pipes but not serialized array in key-value store.</p>
 ]]></content>
@@ -254,9 +254,9 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#107;&#x75;&#98;&#x61;&#x40;&#108;&#x61;&#x6d;&#98;&#x64;&#97;&#99;&#x75;&#x2e;&#98;&#x65;">&#107;&#x75;&#x62;&#97;&#64;&#108;&#x61;&#109;&#98;&#x64;&#97;&#99;&#117;&#46;&#98;&#101;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#105;&#108;&#x74;&#x6f;&#x3a;&#x6b;&#117;&#98;&#97;&#64;&#108;&#x61;&#109;&#x62;&#100;&#97;&#99;&#117;&#46;&#98;&#101;">&#107;&#117;&#x62;&#97;&#64;&#108;&#x61;&#x6d;&#98;&#100;&#x61;&#99;&#x75;&#46;&#x62;&#101;</a> =)</p>
 
-<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can't find time to finish this stuff ;/.</p>
+<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
 <h1>Auto failover</h1>
 
@@ -268,7 +268,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
 <h1>Setup</h1>
 
-<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start "master" and "replica servers" with this configs
+<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &ldquo;master&rdquo; and &ldquo;replica servers&rdquo; with this configs
 (ofc turn daemonize to yes in production lol)</p>
 
 <p>Standard Master setup with default script on port 6379 and replica with</p>
@@ -358,7 +358,7 @@ OK
 </code>
 and got
 ``` bash
-1)  1) "name"</p>
+1)  1) &ldquo;name&rdquo;</p>
 
 <pre><code>2) "resque"
 3) "ip"
@@ -372,7 +372,7 @@ and got
 
 <p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
 
-<h1>when you do this...</h1>
+<h1>when you do this&hellip;</h1>
 
 <p>You will see beefy
 <code>bash
@@ -386,7 +386,7 @@ On the initial slave :) things just went from bad to good :D</p>
 
 <h1>Summary</h1>
 
-<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but...</p>
+<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&hellip;</p>
 
 <p>I like it!</p>
 
@@ -410,7 +410,7 @@ On the initial slave :) things just went from bad to good :D</p>
   twtr:&lt;user_id&gt;:followers -&gt; set of id's  that follows this user
 </code></p>
 
-<p>What happens when i click "follow"
+<p>What happens when i click &ldquo;follow&rdquo;
 <code>bash example
 redis 127.0.0.1:6379&gt; SADD twtr:kuba:following amelia
 (integer) 1
@@ -478,14 +478,14 @@ Why this approach and not compacting all the things into pipe separate key? Both
 </ul>
 
 
-<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id's. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
+<p>So this scenario reasonable seems to have list of lists in which we will have ordered post lists id&rsquo;s. if we will use only LPUSH to add posts lists tot his list we will be able to to do easy LRANGE 0 <range> to get newest lists.</p>
 
 <p><code>bash
   twtr:&lt;user_id&gt;:lists -&gt; list of lits id's only LPUSH id and LRANGE 0 number.
   twtr:&lt;user_id&gt;:list_next -&gt; auto incr counter for lists id's
   twtr:&lt;user_id&gt;:list:&lt;list_id&gt; -&gt; list with 100 posts
 </code>
-So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH'ed so should be semi ordered. (we don't really care about order). adding stuff to time line is bit tricky.</p>
+So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two lists and next we will merge them first + second. Both are LPUSH'ed so should be semi ordered. (we don&rsquo;t really care about order). adding stuff to time line is bit tricky.</p>
 
 <p>we need to do it like this
 <code>LRANGE &lt;key&gt; 0 1</code> current list id, next we need to <code>LLEN &lt;key&gt;</code> to check size and if it is &lt; SIZE ( for our example 100 ) we just <code>LPUSH &lt;key&gt; &lt;value&gt;</code> and job done, if size is > 100 we need to <code>INCR &lt;list counter&gt;</code> and LPUSH its result on list of lists and next we need to <code>LPUSH &lt;key&gt; &lt;value&gt;</code> on the new list.</p>
@@ -498,7 +498,7 @@ So how do we get most recent posts ? we just  LRANGE 0 2 to get most recent two 
 This list is just the most current posts of particular user. How does this list work ? Algorithm is simple</p>
 
 <ul>
-<li>LPUSH new post id's</li>
+<li>LPUSH new post id&rsquo;s</li>
 <li>RPOP if SIZE > 100</li>
 </ul>
 
@@ -507,9 +507,9 @@ This list is just the most current posts of particular user. How does this list 
 
 <h2>Time line</h2>
 
-<p>Now the time line. Time line is exactly the same as user post list. we will just one "bit" about adding posts.</p>
+<p>Now the time line. Time line is exactly the same as user post list. we will just one &ldquo;bit&rdquo; about adding posts.</p>
 
-<p>Algorithm here is when you add a post you have to pick all id's of people who follow you. (example from top if you are adding post as amelia)
+<p>Algorithm here is when you add a post you have to pick all id&rsquo;s of people who follow you. (example from top if you are adding post as amelia)
 <code>bash
 SMEMBERS twtr:&lt;user_id&gt;:followers
 </code>
@@ -526,9 +526,9 @@ And you need to push your post id into their time line posts list. Thats all. Of
 
 <p>This is how i would approach building twitter like clone. Things like old lists can be easily archived into mysql, postgres or other thing and EXPIREed from redis.  One thing in my design is common that i put a lot into keys &lt;user_id> this could be skiped but in my opinion it is not bad. IF you will use &lt;user_id> in form of user email md5 you can use it directly to access gravatar of that user.</p>
 
-<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a "lazy way" you can minimize number of hits to around 10.</p>
+<p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &ldquo;lazy way&rdquo; you can minimize number of hits to around 10.</p>
 
-<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving "sharding" in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
+<p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &ldquo;sharding&rdquo; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
 
 <p>Cheers!</p>
 ]]></content>
@@ -545,7 +545,7 @@ And you need to push your post id into their time line posts list. Thats all. Of
 
 <h1>What is this post about :)</h1>
 
-<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was "how i would design it in different databases". (i'm taking only about data model)</p>
+<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &ldquo;how i would design it in different databases&rdquo;. (i&rsquo;m taking only about data model)</p>
 
 <h2>Requirements</h2>
 
@@ -565,7 +565,7 @@ And you need to push your post id into their time line posts list. Thats all. Of
 
 <p>How to do it with redis ? :)</p>
 
-<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase "todoapp".</p>
+<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &ldquo;todoapp&rdquo;.</p>
 
 <p>So lets start with user and his list of todo lists :). This gives us first key</p>
 
@@ -656,9 +656,9 @@ redis 127.0.0.1:6379&gt; LRANGE todo:kuba:task:1:tags 0 -1
 1) "design"
 2) "redis"
 </code>
-This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like "redis" you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
+This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &ldquo;redis&rdquo; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
 
-<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of "ultimate"  non splittable lists.</p>
+<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &ldquo;ultimate&rdquo;  non splittable lists.</p>
 
 <h1>Design using Mongodb</h1>
 
@@ -666,15 +666,15 @@ This example shows what we need to do to tag a task with something and how to pe
 
 <h2>Todolist = Document</h2>
 
-<p>In this example we will use built in "array" operators</p>
+<p>In this example we will use built in &ldquo;array&rdquo; operators</p>
 
 <p>``` javascript  creating</p>
 
-<blockquote><p>db.todolists.save({name: "House work", tasks: []})
-"ok"
-db.todolists.find({name: "House work"})
+<blockquote><p>db.todolists.save({name: &ldquo;House work&rdquo;, tasks: []})
+&ldquo;ok&rdquo;
+db.todolists.find({name: &ldquo;House work&rdquo;})
 [
-  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
+  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
 
 <pre><code>  "tasks" : [   ]   }
 </code></pre>
@@ -684,12 +684,12 @@ db.todolists.find({name: "House work"})
 
 <p>So lets add a task :)
 ``` javascript
-db.todolists.update({name: "House work"},{$push:{"tasks":{"name":"finish blog post", "tags":["mongo"] } } })
-"ok"</p>
+db.todolists.update({name: &ldquo;House work&rdquo;},{$push:{&ldquo;tasks&rdquo;:{&ldquo;name&rdquo;:&ldquo;finish blog post&rdquo;, &ldquo;tags&rdquo;:[&ldquo;mongo&rdquo;] } } })
+&ldquo;ok&rdquo;</p>
 
-<blockquote><blockquote><p>db.todolists.find({name: "House work"})
+<blockquote><blockquote><p>db.todolists.find({name: &ldquo;House work&rdquo;})
 [
-  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
+  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
 
 <pre><code>  "tasks" : [  
    {   "name" : "finish blog post",   "tags" : [   "mongo" ]   }
@@ -699,16 +699,16 @@ db.todolists.update({name: "House work"},{$push:{"tasks":{"name":"finish blog po
 <p>]
 ```</p></blockquote></blockquote>
 
-<p>this will create empty todo list with name "House work" of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra "lists" while doing search.</p>
+<p>this will create empty todo list with name &ldquo;House work&rdquo; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &ldquo;lists&rdquo; while doing search.</p>
 
 <p>Lets try it out how to find out mongo tagged entries?</p>
 
 <p>``` javascript find by tag</p>
 
-<blockquote><p>db.todolists.find({"tasks.tags": { $in : ["mongo"] } })</p></blockquote>
+<blockquote><p>db.todolists.find({&ldquo;tasks.tags&rdquo;: { $in : [&ldquo;mongo&rdquo;] } })</p></blockquote>
 
 <p>[
-  {   "name" : "House work",   "_id" : {   "$oid" : "50118742cc93742e0d0b6f7c"   },</p>
+  {   &ldquo;name&rdquo; : &ldquo;House work&rdquo;,   &ldquo;_id&rdquo; : {   &ldquo;$oid&rdquo; : &ldquo;50118742cc93742e0d0b6f7c&rdquo;   },</p>
 
 <pre><code>  "tasks" : [ 
     {   "name" : "finish blog post",   "tags" : [   "mongo" ]   }
@@ -718,11 +718,11 @@ db.todolists.update({name: "House work"},{$push:{"tasks":{"name":"finish blog po
 <p>]
 ```</p>
 
-<p>This way we can find whole todolist with task that contains tag "mongo" but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this
+<p>This way we can find whole todolist with task that contains tag &ldquo;mongo&rdquo; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this
 ``` javascript  todo list structure
 {
- user: "user id",
- name: "<name>",
+ user: &ldquo;user id&rdquo;,
+ name: &ldquo;<name>&rdquo;,
  tasks: [
    {</p>
 
@@ -738,7 +738,7 @@ updated_at : Time
  ]
 }
 ```
-Using redis we could wrapp stuff into MULTI command while using mongodb "array" command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
+Using redis we could wrapp stuff into MULTI command while using mongodb &ldquo;array&rdquo; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
 
 <h2>Todolist = many documents</h2>
 
@@ -746,19 +746,19 @@ Using redis we could wrapp stuff into MULTI command while using mongodb "array" 
 With structure like this
 ``` javascript task structure
 {
-  todo_list: "todo list id",
-  user: "user id",
-  text: "todo text",
-  tags: ["Tag1", "Tag2"]
+  todo_list: &ldquo;todo list id&rdquo;,
+  user: &ldquo;user id&rdquo;,
+  text: &ldquo;todo text&rdquo;,
+  tags: [&ldquo;Tag1&rdquo;, &ldquo;Tag2&rdquo;]
 }</p>
 
 <p><code>
 This way we will have a lot of documents, more disk space consumption and still we will have to have second collection with with objects with structure like this
 </code> javascript structure of todolist
 {
-  todo_list: "todo list id",
-  name: "todo list name",
-  user: "user id",
+  todo_list: &ldquo;todo list id&rdquo;,
+  name: &ldquo;todo list name&rdquo;,
+  user: &ldquo;user id&rdquo;,
   // tasks: [Tasks OBjectID Array] you could have this and remove todo_list id from tasks choice is yours :)
 }
 <code>``
@@ -766,11 +766,11 @@ And this way we can use</code>find` tool very easy and get documents fast.</p>
 
 <h1>Summary</h1>
 
-<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is "strucutres" and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
+<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &ldquo;strucutres&rdquo; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
 
-<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i'm sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things "rawly" in redis hiredis client.</p>
+<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&rsquo;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &ldquo;rawly&rdquo; in redis hiredis client.</p>
 
-<p>btw i jsut wrote this from "top of my head" so it may contain typos and i'm sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
+<p>btw i jsut wrote this from &ldquo;top of my head&rdquo; so it may contain typos and i&rsquo;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
 
 <p>Cheers!</p>
 ]]></content>

@@ -4,7 +4,7 @@
   <title><![CDATA[Category: setup | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/setup/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -24,7 +24,7 @@
 
 <h1>redis.conf</h1>
 
-<p>Regular nodes can't be part of cluster :( so you have to prepare separate redis configs for your cluster servers.
+<p>Regular nodes can&rsquo;t be part of cluster :( so you have to prepare separate redis configs for your cluster servers.
 Most important thing is to setup <code>cluster-enabled</code> and <code>cluster-config-file</code> I decided to name my config files <code>redis-cluster-&lt;port&gt;.conf</code>. I used ports 4444, 4445 4446
 Here is my sample config
 ``` bash
@@ -76,7 +76,7 @@ For each node i created directory</code>cluster_<port><code>and that was the har
 
 <h1>redis-tribe.rb</h1>
 
-<p>In <code>src/</code> directory of source you can find ruby script for creating and managing cluster. But first you need to have ruby installed with <code>redis</code> gem. i just did <code>gem install redis</code> but if you don't have ruby you have to google how to install it etc (hint: get 1.9.2).</p>
+<p>In <code>src/</code> directory of source you can find ruby script for creating and managing cluster. But first you need to have ruby installed with <code>redis</code> gem. i just did <code>gem install redis</code> but if you don&rsquo;t have ruby you have to google how to install it etc (hint: get 1.9.2).</p>
 
 <p>now you can run the script. <code>./redis-tribe.rb</code> and see</p>
 
@@ -84,12 +84,12 @@ For each node i created directory</code>cluster_<port><code>and that was the har
 λ ./redis-trib.rb   <br/>
 Usage: redis-trib <command> <arguments ...></p>
 
-<p>  create               host1:port host2:port ... hostN:port
+<p>  create               host1:port host2:port &hellip; hostN:port
   check                host:port
   reshard              host:port
 ```</p>
 
-<p>To start cluster we will type "create" (useless comment)</p>
+<p>To start cluster we will type &ldquo;create&rdquo; (useless comment)</p>
 
 <p><code>bash
 λ ./redis-trib.rb create 127.0.0.1:4444 127.0.0.1:4445 127.0.0.1:4446
@@ -124,7 +124,7 @@ redis 127.0.0.1:4445&gt; set "jakub" "oboza"
 
 <h1>Smart clients</h1>
 
-<p>In redis doc we can read that you will require "smart client" to make it low latency. Yes, you can read from output that it was moved so you will have to cache where the key is now and reset temp cache when it will be moved (resharding)</p>
+<p>In redis doc we can read that you will require &ldquo;smart client&rdquo; to make it low latency. Yes, you can read from output that it was moved so you will have to cache where the key is now and reset temp cache when it will be moved (resharding)</p>
 
 <h1>Fire!</h1>
 
@@ -150,7 +150,7 @@ redis 127.0.0.1:4445&gt; set "jakub" "oboza"
 
 <h1>Summary</h1>
 
-<p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don't work as intended and some keys are not pushed. But it is pulled from unstable branch so i'm crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
+<p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don&rsquo;t work as intended and some keys are not pushed. But it is pulled from unstable branch so i&rsquo;m crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
 ]]></content>
   </entry>
   

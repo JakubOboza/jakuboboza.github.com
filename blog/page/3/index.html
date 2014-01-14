@@ -9,7 +9,8 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="First question when i need to add new blog to my code I ask is, do i remember all the boilerplate and how many times i will make a mistake this time &hellip;">
+  <meta name="description" content="After short talk with tomash and his gist https://gist.github.com/2871286 with performance of vibe.d i decided to write this post.
+In my opinion pong &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -84,6 +85,132 @@
       
   <header>
     
+      <h1 class="entry-title"><a href="/blog/2012/06/07/pong-tests-are-wrong/">Pong Tests Are Wrong</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2012-06-07T19:09:00+01:00" pubdate data-updated="true">Jun 7<span>th</span>, 2012</time>
+        
+           | <a href="/blog/2012/06/07/pong-tests-are-wrong/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/06/07/pong-tests-are-wrong/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>After short talk with tomash and his gist <a href="https://gist.github.com/2871286">https://gist.github.com/2871286</a> with performance of vibe.d i decided to write this post.
+In my opinion pong tests are wrong and do not show real &ldquo;performance&rdquo;. I said to him to check sinatra with thin handler not webrick and that showed ~1.6k req/sec which is not bad at all. While at my box it was ~900 req/sec so significantly less (Macbook Pro i5).</p>
+
+<p>From this gist we can see that his vibe.d benchmark set pong test at 8425.85 req/sec (He used ab and i used httperf).</p>
+
+<h1>Warp</h1>
+
+<p>My first candidate in this competition of pong tests is haskell warp handler.</p>
+
+<p>code:</p>
+
+<figure class='code'><figcaption><span>pingpong.hs</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="cm">{-# LANGUAGE OverloadedStrings #-}</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Network.Wai</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Network.Wai.Handler.Warp</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Network.HTTP.Types</span> <span class="p">(</span><span class="nf">status200</span><span class="p">)</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Blaze.ByteString.Builder</span> <span class="p">(</span><span class="nf">copyByteString</span><span class="p">)</span>
+</span><span class='line'><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Data.ByteString.UTF8</span> <span class="k">as</span> <span class="n">BU</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Monoid</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Data.Enumerator</span> <span class="p">(</span><span class="nf">run_</span><span class="p">,</span> <span class="nf">enumList</span><span class="p">,</span> <span class="p">(</span><span class="o">$$</span><span class="p">))</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>    <span class="kr">let</span> <span class="n">port</span> <span class="ow">=</span> <span class="mi">8000</span>
+</span><span class='line'>    <span class="n">putStrLn</span> <span class="o">$</span> <span class="s">&quot;Listening on port &quot;</span> <span class="o">++</span> <span class="n">show</span> <span class="n">port</span>
+</span><span class='line'>    <span class="n">run</span> <span class="n">port</span> <span class="n">app</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">app</span> <span class="n">req</span> <span class="ow">=</span> <span class="n">return</span> <span class="o">$</span>
+</span><span class='line'>    <span class="kr">case</span> <span class="n">pathInfo</span> <span class="n">req</span> <span class="kr">of</span>
+</span><span class='line'>        <span class="p">[</span><span class="s">&quot;pong&quot;</span><span class="p">]</span> <span class="ow">-&gt;</span> <span class="n">pong</span>
+</span><span class='line'>        <span class="n">x</span> <span class="ow">-&gt;</span> <span class="n">index</span> <span class="n">x</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">pong</span> <span class="ow">=</span> <span class="kt">ResponseBuilder</span> <span class="n">status200</span> <span class="p">[</span> <span class="p">(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/plain&quot;</span><span class="p">)</span> <span class="p">]</span> <span class="o">$</span> <span class="n">mconcat</span> <span class="o">$</span> <span class="n">map</span> <span class="n">copyByteString</span>
+</span><span class='line'>    <span class="p">[</span> <span class="s">&quot;pong&quot;</span> <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">index</span> <span class="n">x</span> <span class="ow">=</span> <span class="kt">ResponseBuilder</span> <span class="n">status200</span> <span class="p">[(</span><span class="s">&quot;Content-Type&quot;</span><span class="p">,</span> <span class="s">&quot;text/html&quot;</span><span class="p">)]</span> <span class="o">$</span> <span class="n">mconcat</span> <span class="o">$</span> <span class="n">map</span> <span class="n">copyByteString</span>
+</span><span class='line'>    <span class="p">[</span> <span class="s">&quot;&lt;p&gt;Hello from &quot;</span><span class="p">,</span> <span class="kt">BU</span><span class="o">.</span><span class="n">fromString</span> <span class="o">$</span> <span class="n">show</span> <span class="n">x</span><span class="p">,</span> <span class="s">&quot;!&lt;/p&gt;&quot;</span>
+</span><span class='line'>    <span class="p">,</span> <span class="s">&quot;&lt;p&gt;&lt;a href=&#39;/pong&#39;&gt;pong&lt;/a&gt;&lt;/p&gt;</span><span class="se">\n</span><span class="s">&quot;</span> <span class="p">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>it is semi rack like syntax ;)</p>
+
+<h1>Benchmark results</h1>
+
+<p>I prepared results to show how big lie is pong test. Because in this type of test / showoff all you test is how fast really you can accept connections. Single thread will always win :). But lets look at results:</p>
+
+<ul>
+<li>Multi threaded &ndash; 50 threads   &ndash; Request rate: 858.8 req/s (1.2 ms/req) BOOO!!!!</li>
+<li>Multi threaded &ndash; 4 threads ( on for each core ) &ndash; Request rate: 10020.8 req/s (0.1 ms/req) Vibe.d die!!! Yeah!!!!</li>
+<li>Single threaded &ndash; default compilation  &ndash; Request rate: 13584.1 req/s (0.1 ms/req) Mother of God!</li>
+</ul>
+
+
+<p>Tested with <code>httperf --uri=/ --port=8000 --num-calls=10000 --num-conns=20</code> httperf command.</p>
+
+<h1>Summary</h1>
+
+<p>You can test it on your own, i did it on latest 7.4.1 Ghc from haskell platform on OSX 10.7. And post reply with your results :) maybe i missed something. Code, scripts to build and run are in repository <a href="https://github.com/JakubOboza/haskell-warp-pong-test">https://github.com/JakubOboza/haskell-warp-pong-test</a>.</p>
+
+<h2>So how to test ?!</h2>
+
+<p>I think you should test your application in default environment so with db behind it, but anyone in this scenario can say it is testing performance of db. But everyday&hellip; users are really testing performance of our db ;>&hellip; or the weakest of the elements in chain. So if your db / rendering engine is performing at level of 50 req / sec fast app handler will not turn it into 5000 req / sec.</p>
+</div>
+  
+  
+
+
+    </article>
+  
+  
+    <article>
+      
+  <header>
+    
       <h1 class="entry-title"><a href="/blog/2012/05/29/rebar-templates/">Rebar Templates</a></h1>
     
     
@@ -120,7 +247,7 @@
 
 <p>Basic template is made from one or many <code>.erl</code> files written with <code>mustache</code> style <code>{ { } }</code> code and <code>.template</code> file describing what to do with files.</p>
 
-<h2>Let&#8217;s build gen_server template</h2>
+<h2>Let&rsquo;s build gen_server template</h2>
 
 <p>So my first file will be <code>gen_server.erl</code></p>
 
@@ -292,18 +419,18 @@ Cheers!</p>
   </header>
 
 
-  <div class="entry-content"><p>I&#8217;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
+  <div class="entry-content"><p>I&rsquo;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
 just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
 
-<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by &#8220;entry&#8221;. Some of the</p>
+<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by &ldquo;entry&rdquo;. Some of the</p>
 
 <h1>Initial idea</h1>
 
-<p>We will emit single &#8220;entry&#8221; so for logs that are build around &#8220;lines&#8221; we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
+<p>We will emit single &ldquo;entry&rdquo; so for logs that are build around &ldquo;lines&rdquo; we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
 
 <h1>Future toons</h1>
 
-<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can&#8217;t be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That&#8217;s ok.</p>
+<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can&rsquo;t be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That&rsquo;s ok.</p>
 
 <figure class='code'><figcaption><span>lib/toons.js</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -346,9 +473,9 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don&#8217;t need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don&#8217;t wanna lose your &#8220;instance methods&#8221; don&#8217;t you.</p>
+<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don&rsquo;t need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don&rsquo;t wanna lose your &ldquo;instance methods&rdquo; don&rsquo;t you.</p>
 
-<p>Next nice thing to help users is check of instanceof just at top of &#8220;constructor&#8221; function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.</p>
+<p>Next nice thing to help users is check of instanceof just at top of &ldquo;constructor&rdquo; function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -409,7 +536,7 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This example will show each line of the file prefixed with &#8220;>&#8221; symbol and at the end he will print out &#8220;lol&#8221;. This is most common case in real world :) you need to optimize &#8220;lol&#8221;. And for now thats the whole api.</p>
+<p>This example will show each line of the file prefixed with &ldquo;>&rdquo; symbol and at the end he will print out &ldquo;lol&rdquo;. This is most common case in real world :) you need to optimize &ldquo;lol&rdquo;. And for now thats the whole api.</p>
 
 <h1>Command line interface</h1>
 
@@ -426,11 +553,11 @@ just spammmmmmed, hammered me with emails and when i replied to one of this emai
 
 <h1>Db vs File</h1>
 
-<p>Some people say they need to put logs into db, i always ask this people &#8220;why not just file? this db will have to write it to this file anyway :)&#8221;</p>
+<p>Some people say they need to put logs into db, i always ask this people &ldquo;why not just file? this db will have to write it to this file anyway :)&rdquo;</p>
 
 <h1>Summary</h1>
 
-<p>if you will get email from new relic sales guy, ignore! don&#8217;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
+<p>if you will get email from new relic sales guy, ignore! don&rsquo;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
 
 <p>Cheers!</p>
 </div>
@@ -568,7 +695,7 @@ Sounds easy :). Lets think about most basic scenario.</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Here the important thing really is <code>slaveof 127.0.0.1 6379</code> where we set where is our master. <code>port 7789</code> important if we are using few redis instances on one box and <code>dir ./replica_dir</code> be sure to not point this to master node db path if you do&#8230; you will suffer eternal flame.</p>
+<p>Here the important thing really is <code>slaveof 127.0.0.1 6379</code> where we set where is our master. <code>port 7789</code> important if we are using few redis instances on one box and <code>dir ./replica_dir</code> be sure to not point this to master node db path if you do&hellip; you will suffer eternal flame.</p>
 
 <p>Now just start the node <code>redis-server redis-replica.conf</code> and he will start syncing.</p>
 
@@ -742,12 +869,12 @@ example output:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This will create for us <code>package.json</code>. Now we have fully functional module and we could stop now&#8230;. but</p>
+<p>This will create for us <code>package.json</code>. Now we have fully functional module and we could stop now&hellip;. but</p>
 
 <h1>package.json</h1>
 
 <p>This file is description of our package. It is in form of json so it should be easy to read and change.
-Most of this fields don&#8217;t need a lot of description because keys are self explaining but things that we should look at is <code>"scripts"</code> where we defined <code>"test"</code> key. If we will now run <code>npm test</code> he will execute this command that is very useful.</p>
+Most of this fields don&rsquo;t need a lot of description because keys are self explaining but things that we should look at is <code>"scripts"</code> where we defined <code>"test"</code> key. If we will now run <code>npm test</code> he will execute this command that is very useful.</p>
 
 <p>Engines defined on what version of <code>node.js</code> our code will work leaving it to <code>*</code> is a bit hazard. You can set it to something specific if you want.</p>
 
@@ -766,7 +893,7 @@ Most of this fields don&#8217;t need a lot of description because keys are self 
 
 <h1>Code</h1>
 
-<p>Ok but we don&#8217;t have any code yet ;/. Yes lets start coding.</p>
+<p>Ok but we don&rsquo;t have any code yet ;/. Yes lets start coding.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -800,7 +927,7 @@ Most of this fields don&#8217;t need a lot of description because keys are self 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Everything passed, that is expected because we don&#8217;t have any tests :) Now lets add to <code>package.json</code> one more thing development dependency for <code>should.js</code> it will enable us to use mocha in a bit <code>rspec</code> bdd style. Like this:</p>
+<p>Everything passed, that is expected because we don&rsquo;t have any tests :) Now lets add to <code>package.json</code> one more thing development dependency for <code>should.js</code> it will enable us to use mocha in a bit <code>rspec</code> bdd style. Like this:</p>
 
 <figure class='code'><figcaption><span>package.json</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1007,7 +1134,7 @@ Cheers!</p>
 
 <h1>redis.conf</h1>
 
-<p>Regular nodes can&#8217;t be part of cluster :( so you have to prepare separate redis configs for your cluster servers.
+<p>Regular nodes can&rsquo;t be part of cluster :( so you have to prepare separate redis configs for your cluster servers.
 Most important thing is to setup <code>cluster-enabled</code> and <code>cluster-config-file</code> I decided to name my config files <code>redis-cluster-&lt;port&gt;.conf</code>. I used ports 4444, 4445 4446
 Here is my sample config</p>
 
@@ -1102,7 +1229,7 @@ Here is my sample config</p>
 
 <h1>redis-tribe.rb</h1>
 
-<p>In <code>src/</code> directory of source you can find ruby script for creating and managing cluster. But first you need to have ruby installed with <code>redis</code> gem. i just did <code>gem install redis</code> but if you don&#8217;t have ruby you have to google how to install it etc (hint: get 1.9.2).</p>
+<p>In <code>src/</code> directory of source you can find ruby script for creating and managing cluster. But first you need to have ruby installed with <code>redis</code> gem. i just did <code>gem install redis</code> but if you don&rsquo;t have ruby you have to google how to install it etc (hint: get 1.9.2).</p>
 
 <p>now you can run the script. <code>./redis-tribe.rb</code> and see</p>
 
@@ -1121,7 +1248,7 @@ Here is my sample config</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>To start cluster we will type &#8220;create&#8221; (useless comment)</p>
+<p>To start cluster we will type &ldquo;create&rdquo; (useless comment)</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1177,7 +1304,7 @@ Here is my sample config</p>
 
 <h1>Smart clients</h1>
 
-<p>In redis doc we can read that you will require &#8220;smart client&#8221; to make it low latency. Yes, you can read from output that it was moved so you will have to cache where the key is now and reset temp cache when it will be moved (resharding)</p>
+<p>In redis doc we can read that you will require &ldquo;smart client&rdquo; to make it low latency. Yes, you can read from output that it was moved so you will have to cache where the key is now and reset temp cache when it will be moved (resharding)</p>
 
 <h1>Fire!</h1>
 
@@ -1220,7 +1347,7 @@ Here is my sample config</p>
 
 <h1>Summary</h1>
 
-<p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don&#8217;t work as intended and some keys are not pushed. But it is pulled from unstable branch so i&#8217;m crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
+<p>Even if i think this is a great tool, and is unstable i saw after few minutes play that some things just don&rsquo;t work as intended and some keys are not pushed. But it is pulled from unstable branch so i&rsquo;m crossing my fingers for this project because it looks sweet! Go Go Antirez.</p>
 </div>
   
   
@@ -1259,11 +1386,11 @@ Here is my sample config</p>
   </header>
 
 
-  <div class="entry-content"><p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&#8217;s really worth reading) and i thought &#8220;it&#8217;s nice&#8221;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&#8217;s ORM&#8217;s is not so common topic across web.</p>
+  <div class="entry-content"><p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus&#8212;attributes-for-your-plain-ruby-objects.html</a> (it&rsquo;s really worth reading) and i thought &ldquo;it&rsquo;s nice&rdquo;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&rsquo;s ORM&rsquo;s is not so common topic across web.</p>
 
 <h1>Aim</h1>
 
-<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&#8217;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &#8220;Muppet&#8221;. Name describes the project :).</p>
+<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&rsquo;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &ldquo;Muppet&rdquo;. Name describes the project :).</p>
 
 <h3>Virtus</h3>
 
@@ -1467,7 +1594,7 @@ All this specs are stripped to minimum to enhance readability.</p>
 <h1>Third step: layouting Muppet!</h1>
 
 <p>At this moment we should have ready specs, that fail hard throwing errors on unknown tokens. Its good.
-What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&#8217;s.</p>
+What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&rsquo;s.</p>
 
 <figure class='code'><figcaption><span>muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1561,7 +1688,7 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 
 <h1>Forth step: support for quering and inserting</h1>
 
-<p>Now lets remove pending marks from specs that  are in &#8220;describes&#8221; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.</p>
+<p>Now lets remove pending marks from specs that  are in &ldquo;describes&rdquo; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.</p>
 
 <figure class='code'><figcaption><span>lib/muppet.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -1685,7 +1812,7 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I could not think of a way to implement it in a more simple way. We have to &#8220;sections&#8221; first is class methods where we define</p>
+<p>I could not think of a way to implement it in a more simple way. We have to &ldquo;sections&rdquo; first is class methods where we define</p>
 
 <ul>
 <li>collection_name this method says to us what is the collection name (we can override it in model)</li>
@@ -1698,14 +1825,14 @@ What i did is simple <code>lib/muppet.rb</code> defines the module we will inclu
 
 <p>Instance methods are only two <code>save</code> and <code>destroy</code> save is raw and simple, takes all attributes from using virtues and saves them using mongo native driver. destroy acts in the same way.</p>
 
-<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&#8217;s and remove.</p>
+<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&rsquo;s and remove.</p>
 
 <h1>Summary</h1>
 
 <p>I really enjoyed writing this code and blog post :).
 You can find code for this blog post here <a href="https://github.com/JakubOboza/muppet">https://github.com/JakubOboza/muppet</a></p>
 
-<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &#8220;Muppet&#8221;</p>
+<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &ldquo;Muppet&rdquo;</p>
 
 <p>-Cheers</p>
 </div>
@@ -2322,7 +2449,7 @@ One of them was mocha and at that time i needed something to test my backend cod
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>I really like this <code>app.should.be.an.instanceof(Application);</code> syntax. But if you don&#8217;t like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
+<p>I really like this <code>app.should.be.an.instanceof(Application);</code> syntax. But if you don&rsquo;t like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
 
 <h1>Handlebars</h1>
 
@@ -2345,7 +2472,7 @@ One of them was mocha and at that time i needed something to test my backend cod
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in <code>is getting interpolated. so in this example ` class= ` mans that if in rendering context we have class variable render `class=value_of_class_variable_in_context` as part of li element.</code> will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg. <code>underscore.js</code> templates explode if you don&#8217;t have any param that you use inside of them.</p>
+<p>This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in <code>is getting interpolated. so in this example ` class= ` mans that if in rendering context we have class variable render `class=value_of_class_variable_in_context` as part of li element.</code> will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg. <code>underscore.js</code> templates explode if you don&rsquo;t have any param that you use inside of them.</p>
 
 <h1>Both tools in action</h1>
 
@@ -2393,7 +2520,7 @@ Lets write some implementation to satisfy out spec.</p>
 
 <p><img src="http://img833.imageshack.us/img833/1738/screenshot20120405at215.png" alt="Success spec" />
 Bang everything works fine :). Lets make it do something useful, render some templates!
-First lets write a spec for it -></p>
+First lets write a spec for it &ndash;></p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -2507,7 +2634,7 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>In map function you have to emit key -> values from document, eg. for each document emit urls and counts of them.</p>
+<p>In map function you have to emit key &ndash;> values from document, eg. for each document emit urls and counts of them.</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -2531,7 +2658,7 @@ I really enjoy writing tests for javascript this way. It is much more like rspec
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>This will run <code>generate_report.js</code> script on database <code>canis_production</code> on db node <code>localhost:27017</code>. You don&#8217;t need to do it, but its easiet to write it into file then type each time functions ;).</p>
+<p>This will run <code>generate_report.js</code> script on database <code>canis_production</code> on db node <code>localhost:27017</code>. You don&rsquo;t need to do it, but its easiet to write it into file then type each time functions ;).</p>
 
 <h1>Example Map reduce query</h1>
 
@@ -2564,7 +2691,7 @@ adding values for the same key so this way we will know how many occurrences of 
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>To run mapReduce we are using <code>mapReduce</code> function on collection (this example uses collection named &#8220;sites&#8221;), first argument is map function, second is reduce function and third is option but very useful, it is output collection where results will be stored in form of documents. This option lets us run the query at eg. night and see results in the morning :).</p>
+<p>To run mapReduce we are using <code>mapReduce</code> function on collection (this example uses collection named &ldquo;sites&rdquo;), first argument is map function, second is reduce function and third is option but very useful, it is output collection where results will be stored in form of documents. This option lets us run the query at eg. night and see results in the morning :).</p>
 
 <h2>Lets test it</h2>
 
@@ -2651,304 +2778,6 @@ adding values for the same key so this way we will know how many occurrences of 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/">Caching and Serving Stale Content With Nginx</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-03-31T20:18:00+01:00" pubdate data-updated="true">Mar 31<span>st</span>, 2012</time>
-        
-           | <a href="/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/#disqus_thread"
-             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/03/31/caching-and-serving-stale-content-with-nginx/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h1>Caching</h1>
-
-<p>With ruby and rails we often want to have caching of static content so we will try to reduce requests that has to come through rails stack when possible. Nginx in front is a great tool and we can use its abilities to add caching easy.</p>
-
-<h2>App</h2>
-
-<p>lets imagine we have a simple <code>sinatra</code> app. For purpose of this post we will have app with one method <code>/ohhai</code> that shows current time. This is a great way to test if out caching is working fine. Code of the app is really simple:</p>
-
-<figure class='code'><figcaption><span>app.rb</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">ExampleStaleApp</span> <span class="o">&lt;</span> <span class="no">Sinatra</span><span class="o">::</span><span class="no">Base</span>
-</span><span class='line'>  <span class="n">get</span> <span class="s2">&quot;/ohhai&quot;</span> <span class="k">do</span>
-</span><span class='line'>    <span class="nb">sleep</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
-</span><span class='line'>    <span class="no">Time</span><span class="o">.</span><span class="n">now</span><span class="o">.</span><span class="n">to_s</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Also to start it easy i have created a config.ru <code>rackup</code> file describing how to start app (in repo there is start.sh script ;)</p>
-
-<figure class='code'><figcaption><span>config.ru</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="nb">require</span> <span class="s1">&#39;rubygems&#39;</span>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;bundler&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="no">Bundler</span><span class="o">.</span><span class="n">require</span>
-</span><span class='line'>
-</span><span class='line'><span class="nb">require</span> <span class="s1">&#39;./app&#39;</span>
-</span><span class='line'>
-</span><span class='line'><span class="n">run</span> <span class="no">ExampleStaleApp</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>If you are using code from my repo <a href="https://github.com/JakubOboza/003-nginx-cache-stale-example">https://github.com/JakubOboza/003-nginx-cache-stale-example</a> to start it all you need to do is</p>
-
-<figure class='code'><figcaption><span>config.ru</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="err">λ</span> <span class="n">git</span> <span class="nb">clone</span> <span class="n">https</span><span class="ss">:/</span><span class="o">/</span><span class="n">github</span><span class="o">.</span><span class="n">com</span><span class="o">/</span><span class="no">JakubOboza</span><span class="o">/</span><span class="mo">003</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="n">stale</span><span class="o">-</span><span class="n">example</span>
-</span><span class='line'><span class="err">λ</span> <span class="n">cd</span> <span class="mo">003</span><span class="o">-</span><span class="n">nginx</span><span class="o">-</span><span class="n">cache</span><span class="o">-</span><span class="n">stale</span><span class="o">-</span><span class="n">example</span>
-</span><span class='line'><span class="err">λ</span> <span class="n">bundle</span> <span class="n">install</span>
-</span><span class='line'><span class="err">λ</span> <span class="o">.</span><span class="n">/start</span><span class="o">.</span><span class="n">sh</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>
-I configured the app with my own path/uri and to look for upstream server on port 6677 so you need to change it if you are using different settings.</p>
-
-<h1>Caching</h1>
-
-<p> Our app is running now. Lets add caching, for this we will need to add nginx frontend config. In most cases i create a single nginx config for each server in sites-available directory and symlink it in sites-enabled (like apache do by default). I like this setting, it helps a lot to maintain more then one site which is common in development environment and also common on shared applications servers.</p>
-
-<h2>Nginx config file</h2>
-
-<p>I will show complete nginx config file for this example and explain each bit one by one.</p>
-
-<figure class='code'><figcaption><span>nginx.example.caching.conf</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">upstream</span> <span class="s">sinatra_rackup</span><span class="p">{</span>
-</span><span class='line'>  <span class="kn">server</span> <span class="n">0.0.0.0</span><span class="p">:</span><span class="mi">6677</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">proxy_cache_path</span>  <span class="s">/tmp/cache</span> <span class="s">levels=1:2</span> <span class="s">keys_zone=my-test-cache:8m</span> <span class="s">max_size=5000m</span> <span class="s">inactive=300m</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">server</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">server_name</span> <span class="s">example_stale.local</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">root</span> <span class="s">/Users/kuba/Workspace/Ruby/example_stale/public</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kn">access_log</span>  <span class="s">/var/log/nginx/example.stale.access.log</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$http_host</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">200</span> <span class="mi">302</span>  <span class="mi">1m</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">404</span>      <span class="mi">60m</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_use_stale</span>   <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kn">if</span> <span class="s">(-f</span> <span class="nv">$request_filename/index.html</span><span class="s">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kn">rewrite</span> <span class="s">(.*)</span> <span class="nv">$1/index.html</span> <span class="s">break</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="kn">if</span> <span class="s">(-f</span> <span class="nv">$request_filename.html</span><span class="s">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kn">rewrite</span> <span class="s">(.*)</span> <span class="nv">$1.html</span> <span class="s">break</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>      <span class="kn">if</span> <span class="s">(!-f</span> <span class="nv">$request_filename</span><span class="s">)</span> <span class="p">{</span>
-</span><span class='line'>        <span class="kn">proxy_pass</span> <span class="s">http://sinatra_rackup</span><span class="p">;</span>
-</span><span class='line'>        <span class="kn">break</span><span class="p">;</span>
-</span><span class='line'>      <span class="p">}</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kn">error_page</span> <span class="mi">500</span> <span class="mi">502</span> <span class="mi">503</span> <span class="mi">504</span> <span class="s">/50x.html</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">location</span> <span class="p">=</span> <span class="s">/50x.html</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kn">root</span> <span class="s">html</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It isn&#8217;t even so long ;)</p>
-
-<h3>upstream</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">upstream</span> <span class="s">sinatra_rackup</span><span class="p">{</span>
-</span><span class='line'>  <span class="kn">server</span> <span class="n">0.0.0.0</span><span class="p">:</span><span class="mi">6677</span><span class="p">;</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>in this part we create description of our upstream. In other words where our application server will be listening. It is easy to just use port but you can configure it to use unix.socket if you want to gain on performance.</p>
-
-<h3>global cache config</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache_path</span>  <span class="s">/tmp/cache</span> <span class="s">levels=1:2</span> <span class="s">keys_zone=my-test-cache:8m</span> <span class="s">max_size=5000m</span> <span class="s">inactive=300m</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This directive sets the place where cache is stored and sets the zone name and how big it can be. We will refer tot his zone later on in proxy pass cache config.</p>
-
-<h3>app cache config</h3>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">server</span> <span class="p">{</span>
-</span><span class='line'>    <span class="kn">listen</span> <span class="mi">80</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">server_name</span> <span class="s">example_stale.local</span><span class="p">;</span>
-</span><span class='line'>    <span class="kn">root</span> <span class="s">/Users/kuba/Workspace/Ruby/example_stale/public</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>    <span class="kn">location</span> <span class="s">/</span> <span class="p">{</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Real-IP</span> <span class="nv">$remote_addr</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">X-Forwarded-For</span> <span class="nv">$proxy_add_x_forwarded_for</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_set_header</span> <span class="s">Host</span> <span class="nv">$http_host</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">200</span> <span class="mi">302</span>  <span class="mi">1m</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_valid</span>  <span class="mi">404</span>      <span class="mi">60m</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_cache_use_stale</span>   <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
-</span><span class='line'>      <span class="kn">proxy_redirect</span> <span class="no">off</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>      <span class="kn">proxy_pass</span> <span class="s">http://sinatra_rackup</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here we configure server name for out application, port to listen on for it and root directory (this is fixed with my mac so you should change it). Whole magic happens in location description. here you have few important things for us.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache</span> <span class="s">my-test-cache</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Sets which cache zone we will use. We use same cache zone we defined in <code>proxy_cache_path</code> with keys_zone.
-Next we are setting for how long it should be cached. I used 1 minute for 200 and 302 status. this lets us see on our example app how this works each minute we see new time :). This is awesome! Next you can set different caching time expiry for other status. Here we are refreshing 404 status cache each hour (it could be days :) ).</p>
-
-<p>Last but not the least is serving stale content if upstream is dead.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='nginx'><span class='line'><span class="k">proxy_cache_use_stale</span> <span class="s">error</span> <span class="s">timeout</span> <span class="s">invalid_header</span> <span class="s">updating</span><span class="p">;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This sets up for us config that will enable serving stale content if upstream is dead. This is nice if you want to provide some content in case when your backend is dead.</p>
-
-<h1>Test</h1>
-
-<p>You can test it now. Or wait&#8230; with my config you have to add entry to <code>/etc/hosts</code></p>
-
-<figure class='code'><figcaption><span>hosts</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>127.0.0.1 example_stale.local
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now you can go to <code>example_stale.local/ohhai</code> (or just <code>curl example_stale.local/ohhai</code>) and see how our cache works. Even more now you can kill your app server and still see cache being served correctly.</p>
-
-<h2>Results</h2>
-
-<p>First request
-<img src="http://img820.imageshack.us/img820/1484/screenshot20120331at211.png" alt="10 sec before" />
-Next requests
-<img src="http://img4.imageshack.us/img4/1484/screenshot20120331at211.png" alt="few ms after" /></p>
-
-<p>-> <a href="http://www.youtube.com/watch?v=lgoXUzIwXk0">http://www.youtube.com/watch?v=lgoXUzIwXk0</a></p>
-
-<h1>Cheers</h1>
-
-<p>How you can use it? Depends on your app architecture, but for every bit of content that you create which is &#8220;static&#8221; it is great thing to have. I like this feature of nginx and i hope this post will help you ;).</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/4/">&larr; Older</a>
@@ -2968,6 +2797,10 @@ Next requests
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
       </li>
     
@@ -2981,10 +2814,6 @@ Next requests
     
       <li class="post">
         <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
       </li>
     
   </ul>

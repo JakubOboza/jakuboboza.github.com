@@ -4,7 +4,7 @@
   <title><![CDATA[Category: ruby | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/ruby/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -43,7 +43,7 @@ Two things we will notice at start is</code>respond_to :html, :xml, :json<code>t
 
 <ul>
 <li>If we have html request to actions like create, update or destroy we want to redirect on success</li>
-<li>if we have json, xml request to same type of "state changing" actions we want to render response with our format.</li>
+<li>if we have json, xml request to same type of &ldquo;state changing&rdquo; actions we want to render response with our format.</li>
 </ul>
 
 
@@ -103,11 +103,11 @@ respond_with(@venue, :location =&gt; venues_url)
     <link href="http://no-fucking-idea.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1/"/>
     <updated>2012-04-12T21:07:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/04/12/building-orm-slash-odm-using-virtus-for-mongodb-part-1</id>
-    <content type="html"><![CDATA[<p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html</a> (it's really worth reading) and i thought "it's nice". Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM's ORM's is not so common topic across web.</p>
+    <content type="html"><![CDATA[<p>This blog post is start of series on building ORM/ODM libraries for Mongodb in different languages. I am a big fan of mongoid <a href="http://mongoid.org">http://mongoid.org</a> great Ruby ODM for mongodb. But i am even bigger fan of Mongodb <a href="http://www.mongodb.org/">http://www.mongodb.org/</a>. Some time ago i saw post by my friend from <a href="http://www.lunarlogicpolska.com/">http://www.lunarlogicpolska.com/</a> about <code>virtus</code> <a href="http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html">http://solnic.eu/2011/06/06/virtus---attributes-for-your-plain-ruby-objects.html</a> (it&rsquo;s really worth reading) and i thought &ldquo;it&rsquo;s nice&rdquo;. Today i have spent two hours to cook this starter project because i want to learn more about <code>virtus</code> and building ODM&rsquo;s ORM&rsquo;s is not so common topic across web.</p>
 
 <h1>Aim</h1>
 
-<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO's to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named "Muppet". Name describes the project :).</p>
+<p>Building fully featured ODM in two hours from scratch is more then you can expect from me. Goal if first part is to make something that will map ruby PORO&rsquo;s to mongodb collections, be able to save them, find one or many in database and destroy. This looks like a lot but we will do it slowly and the implementation will be very basic. Our ODM will be named &ldquo;Muppet&rdquo;. Name describes the project :).</p>
 
 <h3>Virtus</h3>
 
@@ -131,7 +131,7 @@ Be sure to add rspec :) i used it to describe tests for this project.</p>
 <p>I like do develop things in TDD/BDD style so first thing for me description of api i wanted to implement during this tutorial.
 All this specs are stripped to minimum to enhance readability.
 ``` ruby spec/muppet_spec.rb
-require 'spec_helper'</p>
+require &lsquo;spec_helper&rsquo;</p>
 
 <p>class User
   include Virtus
@@ -144,7 +144,7 @@ end</p>
 
 <p>describe Muppet do</p>
 
-<p>  describe "#configuration" do</p>
+<p>  describe &ldquo;#configuration&rdquo; do</p>
 
 <pre><code>it "should be configurable" do
   lambda do
@@ -168,7 +168,7 @@ end
 
 <p>  end</p>
 
-<p>  describe "#connection" do</p>
+<p>  describe &ldquo;#connection&rdquo; do</p>
 
 <pre><code>it "should connect to mongodb" do
   lambda do
@@ -179,7 +179,7 @@ end
 
 <p>  end</p>
 
-<p>  describe "#inserting" do</p>
+<p>  describe &ldquo;#inserting&rdquo; do</p>
 
 <pre><code>it "should insert values to database" do
   pending
@@ -192,7 +192,7 @@ end
 
 <p>  end</p>
 
-<p>  describe "#quering" do</p>
+<p>  describe &ldquo;#quering&rdquo; do</p>
 
 <pre><code>it "should query all documents from collection" do
   pending
@@ -209,7 +209,7 @@ end
 
 <p>  end</p>
 
-<p>  describe "#destroy" do</p>
+<p>  describe &ldquo;#destroy&rdquo; do</p>
 
 <pre><code>it "should destroy document" do
   pending
@@ -229,11 +229,11 @@ I defined them in order how i wanted to implement this. First configuration and 
 <h1>Third step: layouting Muppet!</h1>
 
 <p>At this moment we should have ready specs, that fail hard throwing errors on unknown tokens. Its good.
-What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO's.
+What i did is simple <code>lib/muppet.rb</code> defines the module we will include into out PORO&rsquo;s.
 ``` ruby muppet.rb
-require "mongo"
-require "muppet/version"
-require "muppet/setup"</p>
+require &ldquo;mongo&rdquo;
+require &ldquo;muppet/version&rdquo;
+require &ldquo;muppet/setup&rdquo;</p>
 
 <p>module Muppet
   extend Muppet::Setup
@@ -282,12 +282,12 @@ Here i defined default configuration and few method to access vital part of our 
 
 <h1>Forth step: support for quering and inserting</h1>
 
-<p>Now lets remove pending marks from specs that  are in "describes" quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.
+<p>Now lets remove pending marks from specs that  are in &ldquo;describes&rdquo; quering and inserting. This will be the heart of our ODM. We will define how he should save and load object from database. Before this we will have to update out <code>lib/muppet.rb</code> to include things we will use.
 ``` ruby lib/muppet.rb
-require "mongo"
-require "muppet/version"
-require "muppet/setup"
-require "muppet/document"</p>
+require &ldquo;mongo&rdquo;
+require &ldquo;muppet/version&rdquo;
+require &ldquo;muppet/setup&rdquo;
+require &ldquo;muppet/document&rdquo;</p>
 
 <p>module Muppet
   extend Muppet::Setup
@@ -350,7 +350,7 @@ end
 <p>  end
 end
 ```
-I could not think of a way to implement it in a more simple way. We have to "sections" first is class methods where we define</p>
+I could not think of a way to implement it in a more simple way. We have to &ldquo;sections&rdquo; first is class methods where we define</p>
 
 <ul>
 <li>collection_name this method says to us what is the collection name (we can override it in model)</li>
@@ -363,14 +363,14 @@ I could not think of a way to implement it in a more simple way. We have to "sec
 
 <p>Instance methods are only two <code>save</code> and <code>destroy</code> save is raw and simple, takes all attributes from using virtues and saves them using mongo native driver. destroy acts in the same way.</p>
 
-<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO's and remove.</p>
+<p>Now we can run the specs and see all is green. We have a basic ODM where we can add documents, map and query them to PORO&rsquo;s and remove.</p>
 
 <h1>Summary</h1>
 
 <p>I really enjoyed writing this code and blog post :).
 You can find code for this blog post here <a href="https://github.com/JakubOboza/muppet">https://github.com/JakubOboza/muppet</a></p>
 
-<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from "Muppet"</p>
+<p>This code is buggy and even specs needs to be enhanced but this is a good start for building new features on top of it. In  future parts i want to implement, updating, proxy objects, relations, embedded objects, dirty tracking(probably using <a href="https://github.com/solnic/virtus-dirty_tracking">https://github.com/solnic/virtus-dirty_tracking</a>) and few other mechanism that will enable us to make a fully functional ODM from &ldquo;Muppet&rdquo;</p>
 
 <p>-Cheers</p>
 ]]></content>
@@ -438,29 +438,29 @@ tmp
 <p>First thing we need to do is set gems we will be using while building our lib. Initial <code>Gemfile</code> looks like this
 ``` bash
 λ cat Gemfile
-source 'https://rubygems.org'</p>
+source &lsquo;<a href="https://rubygems.org">https://rubygems.org</a>&rsquo;</p>
 
-<h1>Specify your gem's dependencies in doctor_toons.gemspec</h1>
+<h1>Specify your gem&rsquo;s dependencies in doctor_toons.gemspec</h1>
 
 <p>gemspec
 <code>
 All production needed gems needs to be added before `gemspec`. So if we will want to add rspec as _development_ dependency we need to put it after `gemspec` term in Gemfile. Eg. if we want to use mongo 1.6.2 as production dependency and rspec 2.9.0 as our development dependency we should do it like this.
 </code> bash cat Gemfile
-source 'https://rubygems.org'</p>
+source &lsquo;<a href="https://rubygems.org">https://rubygems.org</a>&rsquo;</p>
 
-<p>gem 'mongo', '~> 1.6.2'
-gem 'bson',  '~> 1.6.2'</p>
+<p>gem &lsquo;mongo&rsquo;, &lsquo;~> 1.6.2&rsquo;
+gem &lsquo;bson&rsquo;,  &lsquo;~> 1.6.2&rsquo;</p>
 
-<h1>Specify your gem's dependencies in doctor_toons.gemspec</h1>
+<h1>Specify your gem&rsquo;s dependencies in doctor_toons.gemspec</h1>
 
 <p>gemspec</p>
 
-<p>gem 'rspec', '~> 2.9.0'
+<p>gem &lsquo;rspec&rsquo;, &lsquo;~> 2.9.0&rsquo;
 <code>
 Now we can simply bundle all dependencies for our gem by hitting. `bundle install` you should see something like this
 </code> bash
 λ bundle install
-Fetching gem metadata from https://rubygems.org/....
+Fetching gem metadata from <a href="https://rubygems.org/....">https://rubygems.org/....</a>
 Using bson (1.6.2)
 Using diff-lcs (1.1.3)
 Using doctor_toons (0.0.1) from source at /private/tmp/doctor_toons
@@ -478,7 +478,7 @@ Your bundle is complete! Use <code>bundle show [gemname]</code> to see where a b
 <p>Ok now we are ready for next step, building gem! To do it we call <code>gem build &lt; name &gt;.gemspec</code> so lets do it
 ``` bash
 λ gem build doctor_toons.gemspec
-ERROR:  While executing gem ... (Gem::InvalidSpecificationException)</p>
+ERROR:  While executing gem &hellip; (Gem::InvalidSpecificationException)</p>
 
 <pre><code>"FIXME" or "TODO" is not a description
 </code></pre>
@@ -487,22 +487,22 @@ ERROR:  While executing gem ... (Gem::InvalidSpecificationException)</p>
 Error. This means that we need to supply few things before we will build this gem. First of all we need to `emacs &lt; name &gt;.gemspec` to edit the file with gemspec and set few things. By default this file should look like this
 </code> ruby doctor_toons.gemspec</p>
 
-<h1>-<em>- encoding: utf-8 -</em>-</h1>
+<h1>&ndash;<em>&ndash; encoding: utf-8 &ndash;</em>&ndash;</h1>
 
-<p>require File.expand_path('../lib/doctor_toons/version', <strong>FILE</strong>)</p>
+<p>require File.expand_path(&lsquo;../lib/doctor_toons/version&rsquo;, <strong>FILE</strong>)</p>
 
 <p>Gem::Specification.new do |gem|
-  gem.authors       = ["JakubOboza"]
-  gem.email         = ["jakub.oboza@gmail.com"]
+  gem.authors       = [&ldquo;JakubOboza&rdquo;]
+  gem.email         = [&ldquo;<a href="&#x6d;&#x61;&#x69;&#108;&#116;&#111;&#58;&#106;&#x61;&#x6b;&#x75;&#x62;&#x2e;&#111;&#x62;&#x6f;&#x7a;&#x61;&#x40;&#103;&#109;&#97;&#105;&#x6c;&#46;&#x63;&#x6f;&#x6d;">&#x6a;&#97;&#107;&#x75;&#98;&#x2e;&#x6f;&#98;&#x6f;&#x7a;&#97;&#64;&#x67;&#x6d;&#97;&#105;&#x6c;&#x2e;&#99;&#x6f;&#109;</a>&rdquo;]
   gem.description   = %q{TODO: Write a gem description}
   gem.summary       = %q{TODO: Write a gem summary}
-  gem.homepage      = ""</p>
+  gem.homepage      = &ldquo;&rdquo;</p>
 
-<p>  gem.executables   = <code>git ls-files -- bin/*</code>.split("\n").map{ |f| File.basename(f) }
-  gem.files         = <code>git ls-files</code>.split("\n")
-  gem.test_files    = <code>git ls-files -- {test,spec,features}/*</code>.split("\n")
-  gem.name          = "doctor_toons"
-  gem.require_paths = ["lib"]
+<p>  gem.executables   = <code>git ls-files -- bin/*</code>.split(&ldquo;\n&rdquo;).map{ |f| File.basename(f) }
+  gem.files         = <code>git ls-files</code>.split(&ldquo;\n&rdquo;)
+  gem.test_files    = <code>git ls-files -- {test,spec,features}/*</code>.split(&ldquo;\n&rdquo;)
+  gem.name          = &ldquo;doctor_toons&rdquo;
+  gem.require_paths = [&ldquo;lib&rdquo;]
   gem.version       = DoctorToons::VERSION
 end
 <code>
@@ -519,7 +519,7 @@ Yeah now we can build our gem :)
 Lets have a look at gemspec `gem spec doctor_toons-0.0.1.gem` before we will be adding rspec to it :)
 </code> bash
  λ gem spec doctor_toons-0.0.1.gem
---- !ruby/object:Gem::Specification
+&mdash;&ndash; !ruby/object:Gem::Specification
 name: doctor_toons
 version: !ruby/object:Gem::Version
   version: 0.0.1
@@ -527,7 +527,7 @@ version: !ruby/object:Gem::Version
   hash:
 platform: ruby
 authors:
-- JakubOboza
+&ndash; JakubOboza
 autorequire:
 bindir: bin
 cert_chain: []
@@ -535,29 +535,29 @@ date: 2012-04-11 00:00:00.000000000Z
 dependencies: []
 description: He sleeps with a gun, but he loves his son
 email:
-- jakub.oboza@gmail.com
+&ndash; <a href="&#x6d;&#x61;&#x69;&#x6c;&#x74;&#111;&#58;&#106;&#97;&#x6b;&#x75;&#98;&#x2e;&#111;&#98;&#x6f;&#x7a;&#97;&#64;&#x67;&#109;&#x61;&#105;&#108;&#x2e;&#99;&#x6f;&#109;">&#106;&#97;&#x6b;&#x75;&#x62;&#46;&#x6f;&#98;&#111;&#x7a;&#97;&#64;&#103;&#109;&#x61;&#105;&#108;&#x2e;&#x63;&#111;&#109;</a>
 executables: []
 extensions: []
 extra_rdoc_files: []
 files:
-- .gitignore
-- Gemfile
-- LICENSE
-- README.md
-- Rakefile
-- doctor_toons.gemspec
-- lib/doctor_toons.rb
-- lib/doctor_toons/version.rb
-homepage: ''
+&ndash; .gitignore
+&ndash; Gemfile
+&ndash; LICENSE
+&ndash; README.md
+&ndash; Rakefile
+&ndash; doctor_toons.gemspec
+&ndash; lib/doctor_toons.rb
+&ndash; lib/doctor_toons/version.rb
+homepage: &lsquo;&rsquo;
 licenses: []
 post_install_message:
 rdoc_options: []
 require_paths:
-- lib
+&ndash; lib
 required_ruby_version: !ruby/object:Gem::Requirement
   none: false
   requirements:
-  - - ! '>='</p>
+  &ndash; &ndash; ! &lsquo;>=&rsquo;</p>
 
 <pre><code>- !ruby/object:Gem::Version
   version: '0'
@@ -568,7 +568,7 @@ required_ruby_version: !ruby/object:Gem::Requirement
 <p>required_rubygems_version: !ruby/object:Gem::Requirement
   none: false
   requirements:
-  - - ! '>='</p>
+  &ndash; &ndash; ! &lsquo;>=&rsquo;</p>
 
 <pre><code>- !ruby/object:Gem::Version
   version: '0'
@@ -599,12 +599,12 @@ Everything is fine.</p>
 </code>
 Now we need to edit <code>spec_helper.rb</code> and add few things.
 ``` bash
-require 'rubygems'
-require 'bundler/setup'</p>
+require &lsquo;rubygems&rsquo;
+require &lsquo;bundler/setup&rsquo;</p>
 
 <h1>our gem</h1>
 
-<p>require 'doctor_toons'</p>
+<p>require &lsquo;doctor_toons&rsquo;</p>
 
 <p>RSpec.configure do |config|</p>
 
@@ -615,22 +615,22 @@ This is bare minimum `spec_helper.rb` file we can have. All we do is require on 
 
 <h1>!/usr/bin/env rake</h1>
 
-<p>require "bundler/gem_tasks"</p>
+<p>require &ldquo;bundler/gem_tasks&rdquo;</p>
 
-<p>require 'rspec/core/rake_task'</p>
+<p>require &lsquo;rspec/core/rake_task&rsquo;</p>
 
-<p>RSpec::Core::RakeTask.new('spec')</p>
+<p>RSpec::Core::RakeTask.new(&lsquo;spec&rsquo;)</p>
 
 <p>task :default => :spec
 <code>
 This will add `rspec` task called `rake spec` that will run all our specs :)
 Now last thing we need to add first initial spec to our `spec` folder so we will be able to test it.
 </code> ruby spec/doctor_toons_spec.rb
-require 'spec_helper'</p>
+require &lsquo;spec_helper&rsquo;</p>
 
 <p>describe DoctorToons do</p>
 
-<p>  it "should rock" do</p>
+<p>  it &ldquo;should rock&rdquo; do</p>
 
 <pre><code>lambda do
   DoctorToons.rock()
@@ -667,7 +667,7 @@ rake aborted!
 /Users/kuba/.rvm/rubies/ruby-1.9.2-p290/bin/ruby -S rspec ./spec/doctor_toons_spec.rb failed</p>
 
 <p>Tasks: TOP => spec
-(See full trace by running task with --trace)
+(See full trace by running task with &mdash;trace)
 ```
 Wooow works :) now you can implement your library to rock the world!</p>
 

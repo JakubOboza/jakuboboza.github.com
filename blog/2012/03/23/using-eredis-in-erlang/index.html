@@ -124,9 +124,9 @@
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>Client is the &#8220;connection / state&#8221; we will be using with rest of queries.</p>
+<p>Client is the &ldquo;connection / state&rdquo; we will be using with rest of queries.</p>
 
-<p>To query things with redis we will use <code>q</code> method from eredis module which takes &#8220;Connection / Client&#8221; state and list with params.
+<p>To query things with redis we will use <code>q</code> method from eredis module which takes &ldquo;Connection / Client&rdquo; state and list with params.
 This api is very simple here are two most basic examples of get and set.
 GET:</p>
 
@@ -142,11 +142,11 @@ GET:</p>
 </span></code></pre></td></tr></table></div></figure>
 
 
-<p>From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass &#8220;Connection / Client&#8221; as state and also we will build some &#8220;key&#8221; serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
+<p>From my point of view this is ideal candidate to be turned into gen_server behavior. We will pass &ldquo;Connection / Client&rdquo; as state and also we will build some &ldquo;key&rdquo; serialization methods around it to make it more durable and make our life easy if we will decide to refactor it later on.</p>
 
 <h1>Free Api wrapper</h1>
 
-<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server&#8217;s and applications.</p>
+<p>First thing i saw during development using Erlang is that you get free api if you follow simple patterns and encapsulate things into gen_server&rsquo;s and applications.</p>
 
 <figure class='code'><figcaption><span>example_db.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -327,7 +327,7 @@ In most cases when i had to make app scale problem of having code that was glues
 
 <h2>eunit tests</h2>
 
-<p>At line 60. starts the declaration of tests, using <code>rebar</code> and <code>eunit</code> is very easy and it is always good to have test coverage in case of refactoring. I&#8217;m a fan of test driven development so i like to cover in tests first things that i will use or i think they might be error prone. Here is used &#8220;test generators&#8221; to just to show how to write tests for gen_server.</p>
+<p>At line 60. starts the declaration of tests, using <code>rebar</code> and <code>eunit</code> is very easy and it is always good to have test coverage in case of refactoring. I&rsquo;m a fan of test driven development so i like to cover in tests first things that i will use or i think they might be error prone. Here is used &ldquo;test generators&rdquo; to just to show how to write tests for gen_server.</p>
 
 <h1>Rebar</h1>
 
@@ -498,7 +498,7 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
 
 <p>and make it executable with <code>chmod +x start.sh</code></p>
 
-<p>And lets rock &#8216;n&#8217; roll</p>
+<p>And lets rock &lsquo;n&rsquo; roll</p>
 
 <figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
 <span class='line-number'>2</span>
@@ -601,6 +601,10 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
       </li>
     
@@ -614,10 +618,6 @@ After adding our <code>example_db.erl</code> into <code>src</code> directory we 
     
       <li class="post">
         <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/06/09/how-to-use-twitter-for-something-else-than-pics-of-cats/">How to Use Twitter for Something Else Than Pics of Cats</a>
       </li>
     
   </ul>

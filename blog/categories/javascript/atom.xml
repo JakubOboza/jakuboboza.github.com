@@ -4,7 +4,7 @@
   <title><![CDATA[Category: javascript | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/javascript/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -31,7 +31,7 @@ One of them was mocha and at that time i needed something to test my backend cod
 ``` javascript app.spec.js
 (function() {</p>
 
-<p>  describe('Application', function() {</p>
+<p>  describe(&lsquo;Application&rsquo;, function() {</p>
 
 <pre><code>it('should exists', function() {
    var app = new Application();
@@ -43,7 +43,7 @@ One of them was mocha and at that time i needed something to test my backend cod
 
 <p>}).call(this);
 <code>``
-I really like this</code>app.should.be.an.instanceof(Application);` syntax. But if you don't like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
+I really like this</code>app.should.be.an.instanceof(Application);` syntax. But if you don&rsquo;t like it you can use more jasmine like syntax all info can be found here <a href="http://visionmedia.github.com/mocha/">http://visionmedia.github.com/mocha/</a>.</p>
 
 <h1>Handlebars</h1>
 
@@ -60,7 +60,7 @@ I really like this</code>app.should.be.an.instanceof(Application);` syntax. But 
 
 <p> </script>
 <code>``
-This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in</code><code>is getting interpolated. so in this example</code> class= <code>mans that if in rendering context we have class variable render</code>class=value_of_class_variable_in_context<code>as part of li element.</code><code>will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg.</code>underscore.js` templates explode if you don't have any param that you use inside of them.</p>
+This sample show how to in easy way embed handlebars into your html code. Important thing is that only code in</code><code>is getting interpolated. so in this example</code> class= <code>mans that if in rendering context we have class variable render</code>class=value_of_class_variable_in_context<code>as part of li element.</code><code>will render contents of this var from context. If there is no variable with this name or it is undefined it will not be rendered. thats the important bit that can make some debugging harder. Eg.</code>underscore.js` templates explode if you don&rsquo;t have any param that you use inside of them.</p>
 
 <h1>Both tools in action</h1>
 
@@ -72,7 +72,7 @@ This sample show how to in easy way embed handlebars into your html code. Import
 ``` javascript app.spec.js
 (function() {</p>
 
-<p>  describe('Application', function() {</p>
+<p>  describe(&lsquo;Application&rsquo;, function() {</p>
 
 <pre><code>it('should exists', function() {
    var app = new Application();

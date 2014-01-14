@@ -4,7 +4,7 @@
   <title><![CDATA[Category: node | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/node/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T10:24:56+00:00</updated>
+  <updated>2014-01-14T11:10:02+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,34 +18,34 @@
     <link href="http://no-fucking-idea.com/blog/2012/12/17/gems-hidden-in-the-past/"/>
     <updated>2012-12-17T20:52:00+00:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/12/17/gems-hidden-in-the-past</id>
-    <content type="html"><![CDATA[<p>I've been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with "hacker" effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are "new" today like nodejs "the new black" are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment...  That is the things i would like to rant about today.</p>
+    <content type="html"><![CDATA[<p>I&rsquo;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long talk about new Camridge hacker space, that they want to send satelite in space with &ldquo;hacker&rdquo; effort. That is amazing! Suddenly I thought that what we all use now is 50 years old technology. Nothing new. Things that are &ldquo;new&rdquo; today like nodejs &ldquo;the new black&rdquo; are actually technology that is as old as lisp. Maybe we should take a look at past and think for a moment&hellip;  That is the things i would like to rant about today.</p>
 
 <h1>New Discoveries</h1>
 
-<p>"Theory is the thing we all skip and later on regret skipping" (Yes i quoted my self, I heard someone did it before so its not hip). We learn a lot of stuff and some of the things simply slip through and gets forgotten. That is opening for "new discoveries" or "rediscoveries" of some solutions. I have a thesis that "if something is simple it will get its niche" (did it again). This would explain new hipe for Nodejs &lt;nodejs.org>. I don't want to judge technologies I did some stuff in node and i have small portion of experience but this text is not about this, its about technology behind stuff people think it's brilliant and new nowadays.</p>
+<p>&ldquo;Theory is the thing we all skip and later on regret skipping&rdquo; (Yes i quoted my self, I heard someone did it before so its not hip). We learn a lot of stuff and some of the things simply slip through and gets forgotten. That is opening for &ldquo;new discoveries&rdquo; or &ldquo;rediscoveries&rdquo; of some solutions. I have a thesis that &ldquo;if something is simple it will get its niche&rdquo; (did it again). This would explain new hipe for Nodejs &lt;nodejs.org>. I don&rsquo;t want to judge technologies I did some stuff in node and i have small portion of experience but this text is not about this, its about technology behind stuff people think it&rsquo;s brilliant and new nowadays.</p>
 
 <h2>Event loop | Evented solutions</h2>
 
-<p>Event loops exists long long and are nothing new. When someone says event loop first thing i think about is not nodejs or eventmachine or twistted but WinAPI. Yes old WinAPI and suddenly everybody realize that every GUI (Graphical User Interface) solution is evented. QT, WinAPI and many other even older solutions. This is nothing new,  so lets take a trip through the cards of history to find other gems that we can rediscover and become new rocket scientists...or first tech archeologists.</p>
+<p>Event loops exists long long and are nothing new. When someone says event loop first thing i think about is not nodejs or eventmachine or twistted but WinAPI. Yes old WinAPI and suddenly everybody realize that every GUI (Graphical User Interface) solution is evented. QT, WinAPI and many other even older solutions. This is nothing new,  so lets take a trip through the cards of history to find other gems that we can rediscover and become new rocket scientists&hellip;or first tech archeologists.</p>
 
 <h3>Step One: Alternatives to sequencing</h3>
 
 <p>So most common thing people do is sequencing and even if we use brain in other way it is easy to us to think about and form sequences because it is something we understand. This is basic unit of work we think about. So most of people write small function that sequence some action and they build programs from small functions calling small functions in a really big sequence.</p>
 
-<p>Alternative solution to do this is event machine, this solution will enable us to generate a lot of small event and if we will manage to force programmer to make them as small as possible and as fast as possible we can achieve a feeling of multitasking. How does it work ? we have one loop that picks events from event queue and process them and as long as nobody will make event that is blocking everything this will work like charm. Key to this solution is "non blocking".</p>
+<p>Alternative solution to do this is event machine, this solution will enable us to generate a lot of small event and if we will manage to force programmer to make them as small as possible and as fast as possible we can achieve a feeling of multitasking. How does it work ? we have one loop that picks events from event queue and process them and as long as nobody will make event that is blocking everything this will work like charm. Key to this solution is &ldquo;non blocking&rdquo;.</p>
 
 <h4>Achieving Non-blocking</h4>
 
-<p>To do this we need to have a way of "wait until will happen and if it happen'ed trigger event" thing. This can be done by many different solutions. For example for file descriptors (everything is a file) we have stuff like <code>select</code>, <code>poll</code>, <code>epoll</code>, <code>kqueue</code>. and this is not new its the 80'. Later on POSIX first official POSIX thing 1997. 15 years ago! Previously mentioned nodejs is representing this category (ofc from the fresh news!). Does it have flaws ? Yes! People call this async... its not async, not real async. Real async was also implemented in 80's :D</p>
+<p>To do this we need to have a way of &ldquo;wait until will happen and if it happen'ed trigger event&rdquo; thing. This can be done by many different solutions. For example for file descriptors (everything is a file) we have stuff like <code>select</code>, <code>poll</code>, <code>epoll</code>, <code>kqueue</code>. and this is not new its the 80'. Later on POSIX first official POSIX thing 1997. 15 years ago! Previously mentioned nodejs is representing this category (ofc from the fresh news!). Does it have flaws ? Yes! People call this async&hellip; its not async, not real async. Real async was also implemented in 80&rsquo;s :D</p>
 
 <h4>Signals</h4>
 
-<p>Signals are also very old, basically this is similar concept (every concept is similar) You have a slot that handles signal and something that emits signals. It's very handy and was implemented with big success in QT library. Does it has flaws ? basically same as event loop solutions. It's a way of doing "message passing" pattern.</p>
+<p>Signals are also very old, basically this is similar concept (every concept is similar) You have a slot that handles signal and something that emits signals. It&rsquo;s very handy and was implemented with big success in QT library. Does it has flaws ? basically same as event loop solutions. It&rsquo;s a way of doing &ldquo;message passing&rdquo; pattern.</p>
 
 <h4>Message passing</h4>
 
 <p>Message passing really well implemented in Erlang is another way of achieving same result, imho  most clean and good solution in the industry right now. Simply you cast messages and other entities receive them and react. YES THIS IS HOW PEOPLE WORK.
-Most of thins seems to be inspired by nature... but lets not go this route and start religious war.</p>
+Most of thins seems to be inspired by nature&hellip; but lets not go this route and start religious war.</p>
 
 <h4>Async</h4>
 
@@ -58,43 +58,43 @@ Most of thins seems to be inspired by nature... but lets not go this route and s
 <p>int aio_write(struct aiocb <em>aiocbp);
 int aio_read(struct aiocb </em>aiocbp);
 <code>``
-You call</code>aio_write` and write to a file will happen, sometime in future... BEFORE END OF THE WORLD, maybe!</p>
+You call</code>aio_write` and write to a file will happen, sometime in future&hellip; BEFORE END OF THE WORLD, maybe!</p>
 
-<p>Wow! This is fresh! nobody is using it nowadays! you should make new nodejs on it and call it modejs. Or wait ? Can you ? nobody really know how to use them and not be cluster f@cked after five seconds.  Real async syscalls in unix. That is awesome and its older than your son! Lets dig more...</p>
+<p>Wow! This is fresh! nobody is using it nowadays! you should make new nodejs on it and call it modejs. Or wait ? Can you ? nobody really know how to use them and not be cluster f@cked after five seconds.  Real async syscalls in unix. That is awesome and its older than your son! Lets dig more&hellip;</p>
 
 <h4>Reactive programming</h4>
 
-<p>This is the sh*t, real event programming, you have real reactor nothing is faked like in eventloop! But its nothing new... also implemented in 80's.  But what is the difference between reactive programming and event loop ? Not much because this is more conceptual thing around building your reactor. In reactor concept we think about data flows and reacting to changes in them.</p>
+<p>This is the sh*t, real event programming, you have real reactor nothing is faked like in eventloop! But its nothing new&hellip; also implemented in 80&rsquo;s.  But what is the difference between reactive programming and event loop ? Not much because this is more conceptual thing around building your reactor. In reactor concept we think about data flows and reacting to changes in them.</p>
 
-<p>We don't have to research things that are found!</p>
+<p>We don&rsquo;t have to research things that are found!</p>
 
 <h2>Map Reduce, Google, Smart people</h2>
 
-<p>So how mega smart people in Google work ? I don't know I don't work for google and I'm not smart but I assume they want to get sh*t done. And after reading Amazon Dynamo Paper <a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf</a> , Google Big Table paper <a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf">http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf</a> and many other i think they developed it in kitchen. Yes in a kitchen.</p>
+<p>So how mega smart people in Google work ? I don&rsquo;t know I don&rsquo;t work for google and I&rsquo;m not smart but I assume they want to get sh*t done. And after reading Amazon Dynamo Paper <a href="http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf">http://www.read.seas.harvard.edu/~kohler/class/cs239-w08/decandia07dynamo.pdf</a> , Google Big Table paper <a href="http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf">http://static.googleusercontent.com/external_content/untrusted_dlcp/research.google.com/pl//archive/bigtable-osdi06.pdf</a> and many other i think they developed it in kitchen. Yes in a kitchen.</p>
 
-<p>They sat down, people from google and amazon i imagine 6 engineers took 1 apple (Steve Jobs was serving) and asked them self how to how to cut it into 6 parts so they can eat it. They took knife and sliced into 6 parts and split it to each other. Suddenly one stood up (Amazon guy with headphones in avatar) and said. Each part of apple is exclusive (patent trolls have everything exclusive nowadays) to each of us so we can eat them on our own. LETS MAKE DB USING THIS TECH AND WRITE A PAPER ON IT. Next guy said.. yeah we have limited number of apple parts so it is predictable and we form a RING from it... and thats how Big Table and Amazon dynamo was born. The Google cook who was slicing apple said, i sliced apple in parts one by one with one knife... AND HE WROTE MAP REDUCE PAPER.</p>
+<p>They sat down, people from google and amazon i imagine 6 engineers took 1 apple (Steve Jobs was serving) and asked them self how to how to cut it into 6 parts so they can eat it. They took knife and sliced into 6 parts and split it to each other. Suddenly one stood up (Amazon guy with headphones in avatar) and said. Each part of apple is exclusive (patent trolls have everything exclusive nowadays) to each of us so we can eat them on our own. LETS MAKE DB USING THIS TECH AND WRITE A PAPER ON IT. Next guy said.. yeah we have limited number of apple parts so it is predictable and we form a RING from it&hellip; and thats how Big Table and Amazon dynamo was born. The Google cook who was slicing apple said, i sliced apple in parts one by one with one knife&hellip; AND HE WROTE MAP REDUCE PAPER.</p>
 
-<p>They did not invented anything really new, they just approached problem simple. We can't split and scale complex solutions so we will make everything simple. And it happens that most of things can be turned into linear or near linear problem.</p>
+<p>They did not invented anything really new, they just approached problem simple. We can&rsquo;t split and scale complex solutions so we will make everything simple. And it happens that most of things can be turned into linear or near linear problem.</p>
 
 <h3>Is Map Reduce really something new ?</h3>
 
-<p>In my opinion not. Map existed in lisp world probably since 70's. Now someone took map and sequence of data that is exclusive and don't depend on each other and said "What will happen if i will split this list into two parts and run map on each in two or more threads and then just sum results ?" and map reduce was born. Concept is dead simple. But its nothing new! I'm not taking here credit from google engineers. I think guys there are very smart and by using simple things in my eyes they are ^2 smart. But is it something ground breaking new ? No.</p>
+<p>In my opinion not. Map existed in lisp world probably since 70&rsquo;s. Now someone took map and sequence of data that is exclusive and don&rsquo;t depend on each other and said &ldquo;What will happen if i will split this list into two parts and run map on each in two or more threads and then just sum results ?&rdquo; and map reduce was born. Concept is dead simple. But its nothing new! I&rsquo;m not taking here credit from google engineers. I think guys there are very smart and by using simple things in my eyes they are ^2 smart. But is it something ground breaking new ? No.</p>
 
-<p>So maybe we should more often look into past. Maybe we can find more gems like this... i bet google has technology archeology department :D</p>
+<p>So maybe we should more often look into past. Maybe we can find more gems like this&hellip; i bet google has technology archeology department :D</p>
 
 <h3>Step Two: Type writer</h3>
 
-<p>I'm 80' kid. I remember type writers and the sound so for me understanding how files in OS (Unix or in general) works was simple, but when recently i was explaining it to friend who is 90' kid he did not got the concept of that well. Why ? Because he is from age where type writers did not exist. For me it was a bit shocking because i thought everybody knows exactly how they work. And when i said why we have \r and what it is i was for a moment happy that I'm very very old :D.</p>
+<p>I&rsquo;m 80' kid. I remember type writers and the sound so for me understanding how files in OS (Unix or in general) works was simple, but when recently i was explaining it to friend who is 90' kid he did not got the concept of that well. Why ? Because he is from age where type writers did not exist. For me it was a bit shocking because i thought everybody knows exactly how they work. And when i said why we have \r and what it is i was for a moment happy that I&rsquo;m very very old :D.</p>
 
 <h3>Queues, Interpreters and other stuff.</h3>
 
-<p>Technology archeologiest must be open to new things, read about everything and most of all, never stop thinking "this had to be already invented".  When I first suggested Queue as a solution to a problem some people looked at me like i would be snake. FIFO queues, something so basic... still some people don't even think about them. This is dull example but basic data structures should be well known by everybody still... things that freezes blood in your veins happens.</p>
+<p>Technology archeologiest must be open to new things, read about everything and most of all, never stop thinking &ldquo;this had to be already invented&rdquo;.  When I first suggested Queue as a solution to a problem some people looked at me like i would be snake. FIFO queues, something so basic&hellip; still some people don&rsquo;t even think about them. This is dull example but basic data structures should be well known by everybody still&hellip; things that freezes blood in your veins happens.</p>
 
-<p>Building DSL and interpreters is good fun, its not easy often I'm still learning a lot but this should not be "devil" to other programmers.</p>
+<p>Building DSL and interpreters is good fun, its not easy often I&rsquo;m still learning a lot but this should not be &ldquo;devil&rdquo; to other programmers.</p>
 
 <h1>Old manuscripts</h1>
 
-<p>There are books that contains tones of cool knowledge, you can be technology archeologist like me! just venture into them and discover "Stuff". First book i would recall here is Richard Stevens.</p>
+<p>There are books that contains tones of cool knowledge, you can be technology archeologist like me! just venture into them and discover &ldquo;Stuff&rdquo;. First book i would recall here is Richard Stevens.</p>
 
 <ul>
 <li>1990 – UNIX Network Programming – ISBN 0-13-949876-1</li>
@@ -110,21 +110,21 @@ You call</code>aio_write` and write to a file will happen, sometime in future...
 <p>This guy is amazing, books are very good quality talking about topics that today are more than active in our community. 22 year old books!</p>
 
 <ul>
-<li>1989 - Genetic Algorithms in Search, Optimization, and Machine Learning</li>
+<li>1989 &ndash; Genetic Algorithms in Search, Optimization, and Machine Learning</li>
 </ul>
 
 
-<p>Amazing book, I never was big fan of A.I. (maybe i should, that would give me chance to actually have some of I...) but this book opened my eyes on how simple this stuff is. How easy and how powerful. When i was at uni this was one of the books i enjoed the most.</p>
+<p>Amazing book, I never was big fan of A.I. (maybe i should, that would give me chance to actually have some of I&hellip;) but this book opened my eyes on how simple this stuff is. How easy and how powerful. When i was at uni this was one of the books i enjoed the most.</p>
 
 <ul>
-<li>1976 - Algorithms + Data Structures = Programs (Prentice-Hall Series in Automatic Computation) by Wirth.</li>
+<li>1976 &ndash; Algorithms + Data Structures = Programs (Prentice-Hall Series in Automatic Computation) by Wirth.</li>
 </ul>
 
 
 <p>Classic this guy guides you through Pascal and shows you how to program and at the end of book implements subset of language. I say 76' FFS that good books will not be printed after 2006. 44 years ago published. C'mon!</p>
 
 <ul>
-<li>1988 - C Programming Language (2nd Edition)</li>
+<li>1988 &ndash; C Programming Language (2nd Edition)</li>
 </ul>
 
 
@@ -133,25 +133,25 @@ You call</code>aio_write` and write to a file will happen, sometime in future...
 <p>And something fresh</p>
 
 <ul>
-<li>2004 - The Art of C++  by Herbert Schildt</li>
+<li>2004 &ndash; The Art of C++  by Herbert Schildt</li>
 </ul>
 
 
-<p>Really good book, also common pattern in books that i read... guy is implementing language at the end ( subset of C )</p>
+<p>Really good book, also common pattern in books that i read&hellip; guy is implementing language at the end ( subset of C )</p>
 
 <p>Yes this is good stuff. Old books containing knowledge that industry will discover in 6-10 years.</p>
 
 <h2>But what about current research ?</h2>
 
-<p>Current stuff like dependent types... i recon we will hear about them in industry after our deaths ;/ next week apocalypse ;/. Yes there are tones of things to rediscover... and it's fun! lets do it!</p>
+<p>Current stuff like dependent types&hellip; i recon we will hear about them in industry after our deaths ;/ next week apocalypse ;/. Yes there are tones of things to rediscover&hellip; and it&rsquo;s fun! lets do it!</p>
 
 <h1>Summary</h1>
 
 <p>I love when i hear about new stuff and suddenly  after inspection it becomes clear it is just old thing on new cogs. I love this. I love technology archeology and i want to bring more examples of this and write about it on my blog.</p>
 
-<p>Yes sending satelite in space is something new.... another event loop implementation is not.</p>
+<p>Yes sending satelite in space is something new&hellip;. another event loop implementation is not.</p>
 
-<p>Sorry for ranting that much :D... anyway nobody read this :D.</p>
+<p>Sorry for ranting that much :D&hellip; anyway nobody read this :D.</p>
 ]]></content>
   </entry>
   
@@ -160,18 +160,18 @@ You call</code>aio_write` and write to a file will happen, sometime in future...
     <link href="http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js/"/>
     <updated>2012-04-29T20:41:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/04/29/future-toons-processing-logs-with-node-dot-js</id>
-    <content type="html"><![CDATA[<p>I'm using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
+    <content type="html"><![CDATA[<p>I&rsquo;m using new relic for monitoring of my servers and i think it is great tool but recently their marketing wing
 just spammmmmmed, hammered me with emails and when i replied to one of this emails it started to be even worse. My name is not Dave, David, John or Mark its Jakub. So i thought about processing nginx and all application servers on my own just for the lulz :).</p>
 
-<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by "entry". Some of the</p>
+<p>First thing to achieve was to build a tool that will be able to work with logs in a way that will not limit it usage to small files. This is simple, i decided to build a lib that will enable to stream process logs by &ldquo;entry&rdquo;. Some of the</p>
 
 <h1>Initial idea</h1>
 
-<p>We will emit single "entry" so for logs that are build around "lines" we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
+<p>We will emit single &ldquo;entry&rdquo; so for logs that are build around &ldquo;lines&rdquo; we will emit line and for logs like rails we will emit whole entry. Line streaming is easy so few hours ago during watching 3 season of <a href="http://en.wikipedia.org/wiki/Metalocalypse">http://en.wikipedia.org/wiki/Metalocalypse</a> i wrote this.</p>
 
 <h1>Future toons</h1>
 
-<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can't be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That's ok.</p>
+<p>Version 0.0.1 <a href="https://github.com/JakubOboza/future_toons">https://github.com/JakubOboza/future_toons</a> This is my entry point to analytics on big files :). First thing was a benchmark. I said to my self that it can&rsquo;t be more then 0.5sec on my box (i5 MBP) vs 100mb log file from nginx. I took a log from production and checked my initial code. It was 0.37 sec. That&rsquo;s ok.</p>
 
 <p>``` javascript lib/toons.js
 function FutureToons(filename, callback, end_callback){
@@ -201,9 +201,9 @@ this.run(filename);
 util.inherits(FutureToons, events.EventEmitter);
 ```</p>
 
-<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don't need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don't wanna lose your "instance methods" don't you.</p>
+<p>Code of whole thing is very simple. But while building node.js module there are few things that are useful. First of all you don&rsquo;t need to implement your own way of inheritance you can use the one from utils. (Remember to put it just after function definition) because it overrides prototype :) you don&rsquo;t wanna lose your &ldquo;instance methods&rdquo; don&rsquo;t you.</p>
 
-<p>Next nice thing to help users is check of instanceof just at top of "constructor" function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.
+<p>Next nice thing to help users is check of instanceof just at top of &ldquo;constructor&rdquo; function. This prevents users from using it wrong. Well its easier to say it enables them to use it wrong and fixes their mistake.
 <code>javascript
 var toons = require('future_toons');
 new toons("example.js", function(line){});
@@ -223,24 +223,24 @@ This will produce same output and act in same way.</p>
 
 <p>``` javascript</p>
 
-<p>var toons = require('future_toons');</p>
+<p>var toons = require(&lsquo;future_toons&rsquo;);</p>
 
 <p>var on_each_line_callback = function(line){
-  console.log("> " + line);
+  console.log(&ldquo;> &rdquo; + line);
 };</p>
 
-<p>new toons("example.txt", on_each_line_callback);
+<p>new toons(&ldquo;example.txt&rdquo;, on_each_line_callback);
 // this will auto trigger run and process it but you can delay it like this</p>
 
 <p>var streamer = new toons();
 streamer.onLine(on_each_line_callback);
 // you can add function on end! also :)
-streamer.onEnd(function(){console.log("lol")});
+streamer.onEnd(function(){console.log(&ldquo;lol&rdquo;)});
 // run it naow!
-streamer.run("example.txt");
+streamer.run(&ldquo;example.txt&rdquo;);
 // you can reuse it for many files if you want ;p
 ```
-This example will show each line of the file prefixed with ">" symbol and at the end he will print out "lol". This is most common case in real world :) you need to optimize "lol". And for now thats the whole api.</p>
+This example will show each line of the file prefixed with &ldquo;>&rdquo; symbol and at the end he will print out &ldquo;lol&rdquo;. This is most common case in real world :) you need to optimize &ldquo;lol&rdquo;. And for now thats the whole api.</p>
 
 <h1>Command line interface</h1>
 
@@ -253,11 +253,11 @@ It is a bit unsafe now so maybe i will remove it soonish.</p>
 
 <h1>Db vs File</h1>
 
-<p>Some people say they need to put logs into db, i always ask this people "why not just file? this db will have to write it to this file anyway :)"</p>
+<p>Some people say they need to put logs into db, i always ask this people &ldquo;why not just file? this db will have to write it to this file anyway :)&rdquo;</p>
 
 <h1>Summary</h1>
 
-<p>if you will get email from new relic sales guy, ignore! don't reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
+<p>if you will get email from new relic sales guy, ignore! don&rsquo;t reply ever!!! Haha while writing this post i got new email from their sales. Code is on github i hope i will have some time to work on it and it will have rails production.log streaming support soonish.</p>
 
 <p>Cheers!</p>
 ]]></content>
