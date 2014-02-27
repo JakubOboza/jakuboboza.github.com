@@ -4,7 +4,7 @@
   <title><![CDATA[No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T11:37:12+00:00</updated>
+  <updated>2014-02-27T12:25:07+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,67 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Golang New &amp; Make]]></title>
+    <link href="http://no-fucking-idea.com/blog/2014/02/23/golang-new-and-make/"/>
+    <updated>2014-02-23T12:42:11+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2014/02/23/golang-new-and-make</id>
+    <content type="html"><![CDATA[<p>When i first started playing and learning Google <a href="http://golang.org/">GO</a> one if the first things i noticed was
+<code>new</code> and <code>make</code>. At first glance they seemed to be doing same thing. There is a difference and it actually is quite easy to explain.</p>
+
+<h1>Documentation</h1>
+
+<p>If we will go to the golang doc page under <code>http://golang.org/pkg/builtin</code> we can see every builtin function in go. Also <code>new</code> and <code>make</code>. From <a href="http://golang.org/pkg/builtin/#new">new</a> we can read.</p>
+
+<p><em>&ldquo;The new built-in function allocates memory. The first argument is a type, not a value, and the value returned is a pointer to a newly allocated zero value of that type.&rdquo;</em></p>
+
+<p>similar on make.</p>
+
+<p><em>&ldquo;The make built-in function allocates and initializes an object of type slice, map, or chan (only). Like new, the first argument is a type, not a value. Unlike new, make&rsquo;s return type is the same as the type of its argument, not a pointer to it.&rdquo;</em></p>
+
+<p>So we can see that <code>new</code> return pointer to a type and make returns an allocated object of that type. Now this is a difference.</p>
+
+<p>So how can we implement a simplified new ?</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='go'><span class='line'><span class="kd">func</span> <span class="nx">newInt</span><span class="p">()</span> <span class="o">*</span><span class="kt">int</span> <span class="p">{</span>
+</span><span class='line'>  <span class="kd">var</span> <span class="nx">i</span> <span class="kt">int</span>
+</span><span class='line'>  <span class="k">return</span> <span class="o">&amp;</span><span class="nx">i</span>
+</span><span class='line'><span class="p">}</span>
+</span><span class='line'><span class="nx">someVar</span> <span class="o">:=</span> <span class="nx">newInt</span><span class="p">()</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>this is just like we would do <code>someVar := new(int)</code>.</p>
+
+<p>In case of <code>make</code> we can only use it for <code>map</code>, <code>slice</code> and <code>chan</code>.</p>
+
+<p><em>&ldquo;Slice: The size specifies the length. The capacity of the slice is
+equal to its length. A second integer argument may be provided to
+specify a different capacity; it must be no smaller than the
+length, so make([]int, 0, 10) allocates a slice of length 0 and
+capacity 10.
+Map: An initial allocation is made according to the size but the
+resulting map has length 0. The size may be omitted, in which case
+a small starting size is allocated.
+Channel: The channel&rsquo;s buffer is initialized with the specified
+buffer capacity. If zero, or the size is omitted, the channel is
+unbuffered.&rdquo;</em></p>
+
+<p>make creates and allocates all the memory. We can specify size of the element we want in the second parameter but this only works for slice and chan. Map is a special type that doesn&rsquo;t need size.</p>
+
+<p>And make is the only way to create this objects.</p>
+
+<h1>Summary</h1>
+
+<p><code>new</code> is a way of getting pointers to new types while <code>make</code> is for creating channels, maps and slices only.</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Dogecoin Mining on Raspberry Pi LOLMODE]]></title>
@@ -2869,7 +2930,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#x3a;&#x6b;&#x75;&#98;&#97;&#x40;&#x6c;&#x61;&#109;&#98;&#x64;&#x61;&#x63;&#117;&#x2e;&#98;&#101;">&#107;&#x75;&#98;&#x61;&#64;&#108;&#x61;&#109;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#101;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#111;&#58;&#107;&#x75;&#98;&#97;&#x40;&#108;&#97;&#x6d;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#x65;">&#107;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#x62;&#100;&#97;&#x63;&#x75;&#x2e;&#x62;&#101;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
@@ -3609,113 +3670,6 @@ With structure like this</p>
 <p>btw i jsut wrote this from &ldquo;top of my head&rdquo; so it may contain typos and i&rsquo;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
 
 <p>Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Api Prototyping With Rails Respond_with]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/"/>
-    <updated>2012-06-15T23:11:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/06/15/api-prototyping-with-rails-respond-with</id>
-    <content type="html"><![CDATA[<p>Prototyping json / xml RESTfull api with rails is easy. Before we will want to rewrite it to something like erlang webmachine or node.js! For purpose of this we can use syntax introduced in rails 3. (ages ago) with <code>respond_to/respond_with</code> it is very cool.</p>
-
-<h1>Example controller</h1>
-
-<p>How we use this ?  Lets take a peek and simple example:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">VenuesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:json</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venues</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">per</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Two things we will notice at start is <code>respond_to :html, :xml, :json</code> this is something like old merbs <code>provides</code> where we specify to which formats we want to respond. Second change is how we layout the action. All we have to do is to put into <code>respond_with</code> object we want to respond with.</p>
-
-<p>What this buys for us ?</p>
-
-<ul>
-<li>If we have html request to actions like create, update or destroy we want to redirect on success</li>
-<li>if we have json, xml request to same type of &ldquo;state changing&rdquo; actions we want to render response with our format.</li>
-</ul>
-
-
-<p>We achieve both of this with reponds_with in just one line. But lets take a peek at longer example.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">VenuesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">before_filter</span> <span class="ss">:authenticate_user!</span><span class="p">,</span> <span class="ss">:except</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="p">,</span> <span class="ss">:near</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:json</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venues</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">per</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
-</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="n">permalink</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">))</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">new</span>
-</span><span class='line'>    <span class="n">repond_with</span><span class="p">(</span><span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
-</span><span class='line'>    <span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:venue</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venue</span><span class="p">,</span> <span class="ss">:location</span> <span class="o">=&gt;</span> <span class="n">venues_url</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In this example we can see example of <code>create</code> action where we add <code>:location =&gt; venues_url</code> this will in case of format: html success redirect to this url.</p>
-
-<h1>Summary</h1>
-
-<p>Using this helps to write stuff fast and readable, you can still use plain old <code>respond_to</code> in action with old <code>format.html</code> syntax..</p>
-
-<p>I hope you liked it :)</p>
 ]]></content>
   </entry>
   

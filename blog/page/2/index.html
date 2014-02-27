@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="I&rsquo;ve been talking with my friend about Haskell, Ocaml ( Objective CaML), Functional programming, dependent types and INDUSTRY. We had a long &hellip;">
+  <meta name="description" content="Recently with friends we are building side project called &ldquo;Midway&rdquo; its a simple battleship server. The whole point of the game is to &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,196 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/01/22/making-request-to-rest-resources-in-erlang/">Making Request to REST Resources in Erlang</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-01-22T19:42:00+00:00" pubdate data-updated="true">Jan 22<span>nd</span>, 2013</time>
+        
+           | <a href="/blog/2013/01/22/making-request-to-rest-resources-in-erlang/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2013/01/22/making-request-to-rest-resources-in-erlang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently with friends we are building side project called &ldquo;Midway&rdquo; its a simple battleship server. The whole point of the game is to create a client and defeat other people maps! winner takes it all! The person with lowest number of hits/won-map wins! This is again a not to self type of entry. So i created some placeholder libs to building clients and while working through Erlang placeholder i made some notes on stuff.</p>
+
+<h1>Making request</h1>
+
+<p>So first of all i used builtin inets for making requests.
+So first thing to do is to start inets!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nn">inets</span><span class="p">:</span><span class="n">start</span><span class="p">().</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Ok i generalized using httpc to really simple thing</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nf">post</span><span class="p">(</span><span class="nv">URL</span><span class="p">,</span> <span class="nv">ContentType</span><span class="p">,</span> <span class="nv">Body</span><span class="p">)</span> <span class="o">-&gt;</span> <span class="n">request</span><span class="p">(</span><span class="n">post</span><span class="p">,</span> <span class="p">{</span><span class="nv">URL</span><span class="p">,</span> <span class="p">[],</span> <span class="nv">ContentType</span><span class="p">,</span> <span class="nv">Body</span><span class="p">}).</span>
+</span><span class='line'><span class="nb">get</span><span class="p">(</span><span class="nv">URL</span><span class="p">)</span>                     <span class="o">-&gt;</span> <span class="n">request</span><span class="p">(</span><span class="nb">get</span><span class="p">,</span>  <span class="p">{</span><span class="nv">URL</span><span class="p">,</span> <span class="p">[]}).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">request</span><span class="p">(</span><span class="nv">Method</span><span class="p">,</span> <span class="nv">Body</span><span class="p">)</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nn">httpc</span><span class="p">:</span><span class="n">request</span><span class="p">(</span><span class="nv">Method</span><span class="p">,</span> <span class="nv">Body</span><span class="p">,</span> <span class="p">[],</span> <span class="p">[]).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So if you will a call you will get something like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nn">httpc</span><span class="p">:</span><span class="nf">request</span><span class="p">(</span><span class="nb">get</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;http://www.youtube.com/watch?v=JvxG3zl_WhU&quot;</span><span class="p">,</span> <span class="p">[]},</span> <span class="p">[],</span> <span class="p">[]).</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="err">\</span><span class="p">{</span> <span class="err">\</span><span class="p">{</span><span class="s">&quot;HTTP/1.1&quot;</span><span class="p">,</span><span class="mi">200</span><span class="p">,</span><span class="s">&quot;OK&quot;</span><span class="p">},</span>
+</span><span class='line'>     <span class="p">[{</span><span class="s">&quot;cache-control&quot;</span><span class="p">,</span><span class="s">&quot;no-cache&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;date&quot;</span><span class="p">,</span><span class="s">&quot;Tue, 22 Jan 2013 20:36:16 GMT&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;server&quot;</span><span class="p">,</span><span class="s">&quot;gwiseguy/2.0&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;content-length&quot;</span><span class="p">,</span><span class="s">&quot;221233&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;content-type&quot;</span><span class="p">,</span><span class="s">&quot;text/html; charset=utf-8&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;expires&quot;</span><span class="p">,</span><span class="s">&quot;Tue, 27 Apr 1971 19:44:06 EST&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;set-cookie&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;PREF=f1=50000000; path=/; domain=.youtube.com; expires=Fri, 20-Jan-2023 20:36:15 GMT&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;set-cookie&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;use_hitbox=d5c5516c3379125f43aa0d495d100d6ddAEAAAAw; path=/; domain=.youtube.com&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;set-cookie&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;VISITOR_INFO1_LIVE=99hU0tGtAng; path=/; domain=.youtube.com; expires=Thu, 19-Sep-2013 20:36:15 GMT&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;set-cookie&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;recently_watched_video_id_list=dda4a4415949369ee6eb305306b40e47WwEAAABzCwAAAEp2eEczemxfV2hV; path=/; domain=.youtube.com&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;x-frame-options&quot;</span><span class="p">,</span><span class="s">&quot;SAMEORIGIN&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;x-content-type-options&quot;</span><span class="p">,</span><span class="s">&quot;nosniff&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;p3p&quot;</span><span class="p">,</span>
+</span><span class='line'>       <span class="s">&quot;CP=</span><span class="se">\&quot;</span><span class="s">This is not a P3P policy! See http://support.google.com/accounts/bin/answer.py?answer=151657&amp;hl=en-GB for more info.</span><span class="se">\&quot;</span><span class="s">&quot;</span><span class="p">},</span>
+</span><span class='line'>      <span class="p">{</span><span class="s">&quot;x-xss-protection&quot;</span><span class="p">,</span><span class="s">&quot;1; mode=block&quot;</span><span class="p">}],</span>
+</span><span class='line'>     <span class="p">[</span><span class="mi">60</span><span class="p">,</span><span class="mi">33</span><span class="p">,</span><span class="mi">68</span><span class="p">,</span><span class="mi">79</span><span class="p">,</span><span class="mi">67</span><span class="p">,</span><span class="mi">84</span><span class="p">,</span><span class="mi">89</span><span class="p">,</span><span class="mi">80</span><span class="p">,</span><span class="mi">69</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">104</span><span class="p">,</span><span class="mi">116</span><span class="p">,</span><span class="mi">109</span><span class="p">,</span><span class="mi">108</span><span class="p">,</span><span class="mi">62</span><span class="p">,</span><span class="mi">60</span><span class="p">,</span><span class="mi">104</span><span class="p">,</span>
+</span><span class='line'>      <span class="mi">116</span><span class="p">,</span><span class="mi">109</span><span class="p">,</span><span class="mi">108</span><span class="p">,</span><span class="mi">32</span><span class="p">,</span><span class="mi">108</span><span class="p">,</span><span class="mi">97</span><span class="p">,</span><span class="mi">110</span><span class="p">|...]}}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One more thing i added was extracting body of the response</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'>  <span class="n">response_body</span><span class="p">({</span><span class="n">ok</span><span class="p">,</span> <span class="p">{</span> <span class="p">_,</span> <span class="p">_,</span> <span class="nv">Body</span><span class="p">}})</span> <span class="o">-&gt;</span> <span class="nv">Body</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So after calling it on response we can get body</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'>  <span class="nv">Response</span> <span class="o">=</span> <span class="nn">httpc</span><span class="p">:</span><span class="n">request</span><span class="p">(</span><span class="nb">get</span><span class="p">,</span> <span class="p">{</span><span class="s">&quot;http://www.youtube.com/watch?v=JvxG3zl_WhU&quot;</span><span class="p">,</span> <span class="p">[]},</span> <span class="p">[],</span> <span class="p">[]).</span>
+</span><span class='line'>  <span class="nv">Body</span> <span class="o">=</span> <span class="n">response_body</span><span class="p">(</span><span class="nv">Response</span><span class="p">).</span>
+</span><span class='line'>  <span class="nn">io</span><span class="p">:</span><span class="n">format</span><span class="p">(</span><span class="s">&quot;</span><span class="si">~s~n</span><span class="s">&quot;</span><span class="p">,[</span><span class="nv">Body</span><span class="p">]).</span>
+</span><span class='line'>  <span class="o">&lt;!</span><span class="nv">DOCTYPE</span> <span class="n">html</span><span class="o">&gt;&lt;</span><span class="n">html</span> <span class="n">lang</span><span class="o">=</span><span class="s">&quot;en&quot;</span><span class="o">&gt;&lt;</span><span class="n">head</span><span class="o">&gt;</span> <span class="p">...</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<h1>Parsing Json</h1>
+
+<p> So next thing to do was to parse json :)  for this pupose use two libs mochijson2 or jiffy.</p>
+
+<h2>Mochijson2</h2>
+
+<p>So this one is easy to find and use. All you need to do is grab file from mochiweb project and compile it :) it has two method encode and decode.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nn">mochijson2</span><span class="p">:</span><span class="n">decode</span><span class="p">(</span><span class="nv">STUFF</span><span class="p">).</span>
+</span><span class='line'><span class="nn">mochijson2</span><span class="p">:</span><span class="n">endcode</span><span class="p">(</span><span class="nv">STUFF</span><span class="p">).</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>One thing worth mentioning is that it expects input in a bit structured format.</p>
+
+<p>So typycaly it will use &ldquo;struct&rdquo; symbol for json &ldquo;{}&rdquo; objects.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">{</span><span class="n">struct</span><span class="p">,</span> <span class="p">[{</span><span class="n">name</span><span class="p">,</span> <span class="o">&lt;&lt;</span><span class="s">&quot;jakub&quot;</span><span class="o">&gt;&gt;</span><span class="p">},</span> <span class="p">{</span><span class="n">age</span><span class="p">,</span> <span class="mi">27</span><span class="p">},</span> <span class="p">{</span><span class="n">ids</span><span class="p">,</span> <span class="p">[</span><span class="mi">1</span><span class="p">,</span><span class="mi">2</span><span class="p">]}]}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>So array in json will be list but object will have to be in tuple with struct. It is awkward at first but you can get used to it. but there is easier thing to use&hellip;</p>
+
+<h2>Jiffy</h2>
+
+<p>This! There is a good example on main page.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="nv">Eshell</span> <span class="nv">V5</span><span class="p">.</span><span class="mi">8</span><span class="p">.</span><span class="mi">2</span>  <span class="p">(</span><span class="n">abort</span> <span class="n">with</span> <span class="err">^</span><span class="nv">G</span><span class="p">)</span>
+</span><span class='line'><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">jiffy</span><span class="p">:</span><span class="n">decode</span><span class="p">(</span><span class="o">&lt;&lt;</span><span class="s">&quot;{</span><span class="se">\&quot;</span><span class="s">foo</span><span class="se">\&quot;</span><span class="s">: </span><span class="se">\&quot;</span><span class="s">bar</span><span class="se">\&quot;</span><span class="s">}&quot;</span><span class="o">&gt;&gt;</span><span class="p">).</span>
+</span><span class='line'><span class="p">{[{</span><span class="o">&lt;&lt;</span><span class="s">&quot;foo&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="o">&lt;&lt;</span><span class="s">&quot;bar&quot;</span><span class="o">&gt;&gt;</span><span class="p">}]}</span>
+</span><span class='line'><span class="mi">2</span><span class="o">&gt;</span> <span class="nv">Doc</span> <span class="o">=</span> <span class="p">{[{</span><span class="n">foo</span><span class="p">,</span> <span class="p">[</span><span class="o">&lt;&lt;</span><span class="s">&quot;bing&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span> <span class="mi">2</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span> <span class="n">true</span><span class="p">]}]}.</span>
+</span><span class='line'><span class="p">{[{</span><span class="n">foo</span><span class="p">,[</span><span class="o">&lt;&lt;</span><span class="s">&quot;bing&quot;</span><span class="o">&gt;&gt;</span><span class="p">,</span><span class="mi">2</span><span class="p">.</span><span class="mi">3</span><span class="p">,</span><span class="n">true</span><span class="p">]}]}</span>
+</span><span class='line'><span class="mi">3</span><span class="o">&gt;</span> <span class="nn">jiffy</span><span class="p">:</span><span class="n">encode</span><span class="p">(</span><span class="nv">Doc</span><span class="p">).</span>
+</span><span class='line'><span class="o">&lt;&lt;</span><span class="s">&quot;{</span><span class="se">\&quot;</span><span class="s">foo</span><span class="se">\&quot;</span><span class="s">:[</span><span class="se">\&quot;</span><span class="s">bing</span><span class="se">\&quot;</span><span class="s">,2.2999999999999998224,true]}&quot;</span><span class="o">&gt;&gt;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This shows how nice it is to use :D no &lsquo;struct&rsquo; pure love!</p>
+
+<p>You can get it here <a href="https://github.com/davisp/jiffy">https://github.com/davisp/jiffy</a></p>
+
+<h1>Summary</h1>
+
+<p>This is just note to self to not be checking up docs looking for this stuff again :).</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1449,7 +1639,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
   </header>
 
 
-  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#x3a;&#x6b;&#x75;&#98;&#97;&#x40;&#x6c;&#x61;&#109;&#98;&#x64;&#x61;&#x63;&#117;&#x2e;&#98;&#101;">&#107;&#x75;&#98;&#x61;&#64;&#108;&#x61;&#109;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#101;</a> =)</p>
+  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#111;&#58;&#107;&#x75;&#98;&#97;&#x40;&#108;&#97;&#x6d;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#x65;">&#107;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#x62;&#100;&#97;&#x63;&#x75;&#x2e;&#x62;&#101;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
@@ -2256,143 +2446,6 @@ With structure like this</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/">Api Prototyping With Rails Respond_with</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-06-15T23:11:00+01:00" pubdate data-updated="true">Jun 15<span>th</span>, 2012</time>
-        
-           | <a href="/blog/2012/06/15/api-prototyping-with-rails-respond-with/#disqus_thread"
-             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/06/15/api-prototyping-with-rails-respond-with/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Prototyping json / xml RESTfull api with rails is easy. Before we will want to rewrite it to something like erlang webmachine or node.js! For purpose of this we can use syntax introduced in rails 3. (ages ago) with <code>respond_to/respond_with</code> it is very cool.</p>
-
-<h1>Example controller</h1>
-
-<p>How we use this ?  Lets take a peek and simple example:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">VenuesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:json</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venues</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">per</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Two things we will notice at start is <code>respond_to :html, :xml, :json</code> this is something like old merbs <code>provides</code> where we specify to which formats we want to respond. Second change is how we layout the action. All we have to do is to put into <code>respond_with</code> object we want to respond with.</p>
-
-<p>What this buys for us ?</p>
-
-<ul>
-<li>If we have html request to actions like create, update or destroy we want to redirect on success</li>
-<li>if we have json, xml request to same type of &ldquo;state changing&rdquo; actions we want to render response with our format.</li>
-</ul>
-
-
-<p>We achieve both of this with reponds_with in just one line. But lets take a peek at longer example.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">VenuesController</span> <span class="o">&lt;</span> <span class="no">ApplicationController</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">before_filter</span> <span class="ss">:authenticate_user!</span><span class="p">,</span> <span class="ss">:except</span> <span class="o">=&gt;</span> <span class="o">[</span><span class="ss">:index</span><span class="p">,</span> <span class="ss">:show</span><span class="p">,</span> <span class="ss">:near</span><span class="o">]</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">respond_to</span> <span class="ss">:html</span><span class="p">,</span> <span class="ss">:xml</span><span class="p">,</span> <span class="ss">:json</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">index</span>
-</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venues</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">all</span><span class="o">.</span><span class="n">page</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:page</span><span class="o">]</span><span class="p">)</span><span class="o">.</span><span class="n">per</span><span class="p">(</span><span class="mi">20</span><span class="p">))</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">show</span>
-</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">find_by</span><span class="p">(</span><span class="n">permalink</span><span class="p">:</span> <span class="n">params</span><span class="o">[</span><span class="ss">:id</span><span class="o">]</span><span class="p">))</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">new</span>
-</span><span class='line'>    <span class="n">repond_with</span><span class="p">(</span><span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">new</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">def</span> <span class="nf">create</span>
-</span><span class='line'>    <span class="vi">@venue</span> <span class="o">=</span> <span class="no">Venue</span><span class="o">.</span><span class="n">create</span><span class="p">(</span><span class="n">params</span><span class="o">[</span><span class="ss">:venue</span><span class="o">]</span><span class="p">)</span>
-</span><span class='line'>    <span class="n">respond_with</span><span class="p">(</span><span class="vi">@venue</span><span class="p">,</span> <span class="ss">:location</span> <span class="o">=&gt;</span> <span class="n">venues_url</span><span class="p">)</span>
-</span><span class='line'>  <span class="k">end</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="k">end</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>In this example we can see example of <code>create</code> action where we add <code>:location =&gt; venues_url</code> this will in case of format: html success redirect to this url.</p>
-
-<h1>Summary</h1>
-
-<p>Using this helps to write stuff fast and readable, you can still use plain old <code>respond_to</code> in action with old <code>format.html</code> syntax..</p>
-
-<p>I hope you liked it :)</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2412,6 +2465,10 @@ With structure like this</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/02/23/golang-new-and-make/">Golang New &amp; Make</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
       </li>
     
@@ -2425,10 +2482,6 @@ With structure like this</p>
     
       <li class="post">
         <a href="/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/">Erlang E17 and Second Edition of Programming Erlang</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/07/02/redis-setex-to-the-rescue/">Redis SETEX to the Rescue</a>
       </li>
     
   </ul>

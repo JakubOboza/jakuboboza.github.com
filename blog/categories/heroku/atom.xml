@@ -4,7 +4,7 @@
   <title><![CDATA[Category: heroku | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/heroku/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-01-14T11:37:12+00:00</updated>
+  <updated>2014-02-27T12:25:07+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -40,14 +40,14 @@ Package version: (0.0.0)
 Project homepage: (none) no-fucking-idea.com
 Project git repository: (none)
 Author name: Jakub Oboza
-Author email: (none) <a href="&#x6d;&#97;&#105;&#x6c;&#x74;&#x6f;&#58;&#x6a;&#x61;&#107;&#x75;&#98;&#46;&#x6f;&#x62;&#111;&#x7a;&#x61;&#x40;&#103;&#x6d;&#x61;&#105;&#108;&#46;&#x63;&#x6f;&#x6d;">&#x6a;&#x61;&#107;&#117;&#98;&#46;&#111;&#x62;&#111;&#122;&#97;&#x40;&#x67;&#x6d;&#x61;&#x69;&#x6c;&#46;&#99;&#111;&#x6d;</a>
+Author email: (none) <a href="&#x6d;&#x61;&#105;&#x6c;&#x74;&#111;&#58;&#106;&#97;&#x6b;&#117;&#x62;&#x2e;&#111;&#98;&#111;&#122;&#97;&#64;&#103;&#109;&#x61;&#105;&#108;&#46;&#x63;&#x6f;&#x6d;">&#106;&#97;&#107;&#x75;&#x62;&#46;&#111;&#98;&#111;&#122;&#97;&#64;&#x67;&#109;&#97;&#x69;&#x6c;&#46;&#x63;&#x6f;&#x6d;</a>
 Author url: (none) no-fucking-idea.com
 Main module/entry point: (none)
 Test command: (none) mocha -R landing lib/my_first_module.js      <br/>
 About to write to /private/tmp/my_first_module/package.json</p>
 
 <p>{
-  &ldquo;author&rdquo;: &ldquo;Jakub Oboza <a href="&#x6d;&#97;&#x69;&#x6c;&#x74;&#x6f;&#x3a;&#106;&#97;&#107;&#x75;&#98;&#46;&#111;&#98;&#x6f;&#122;&#x61;&#x40;&#103;&#109;&#97;&#x69;&#x6c;&#x2e;&#x63;&#111;&#x6d;">&#x6a;&#97;&#x6b;&#117;&#x62;&#46;&#x6f;&#98;&#x6f;&#122;&#97;&#64;&#x67;&#109;&#97;&#x69;&#108;&#46;&#99;&#111;&#x6d;</a> (no-fucking-idea.com)&rdquo;,
+  &ldquo;author&rdquo;: &ldquo;Jakub Oboza <a href="&#109;&#x61;&#x69;&#x6c;&#116;&#x6f;&#x3a;&#x6a;&#x61;&#107;&#x75;&#x62;&#46;&#111;&#98;&#x6f;&#122;&#x61;&#x40;&#103;&#x6d;&#97;&#x69;&#108;&#46;&#99;&#x6f;&#109;">&#106;&#97;&#x6b;&#117;&#x62;&#x2e;&#x6f;&#x62;&#111;&#122;&#97;&#x40;&#x67;&#x6d;&#97;&#x69;&#x6c;&#x2e;&#99;&#x6f;&#109;</a> (no-fucking-idea.com)&rdquo;,
   &ldquo;name&rdquo;: &ldquo;my_first_module&rdquo;,
   &ldquo;description&rdquo;: &ldquo;my first module&rdquo;,
   &ldquo;version&rdquo;: &ldquo;0.0.0&rdquo;,
@@ -101,7 +101,7 @@ Ok so we created <code>lib</code> directory with out module code, empty module f
 ``` bash
 λ npm test</p>
 
-<blockquote><p><a href="&#x6d;&#97;&#x69;&#x6c;&#116;&#x6f;&#58;&#x6d;&#x79;&#95;&#102;&#105;&#x72;&#115;&#x74;&#x5f;&#109;&#x6f;&#100;&#117;&#x6c;&#101;&#x40;&#x30;&#46;&#x30;&#x2e;&#48;">&#x6d;&#x79;&#95;&#x66;&#105;&#x72;&#115;&#116;&#95;&#x6d;&#x6f;&#100;&#x75;&#x6c;&#101;&#64;&#x30;&#x2e;&#x30;&#x2e;&#48;</a> test /private/my_first_module
+<blockquote><p><a href="&#109;&#x61;&#x69;&#108;&#x74;&#x6f;&#58;&#x6d;&#121;&#95;&#x66;&#105;&#114;&#x73;&#116;&#x5f;&#109;&#x6f;&#x64;&#x75;&#108;&#x65;&#64;&#x30;&#x2e;&#x30;&#x2e;&#48;">&#109;&#121;&#95;&#102;&#105;&#114;&#115;&#x74;&#x5f;&#109;&#111;&#100;&#117;&#108;&#101;&#64;&#x30;&#46;&#x30;&#46;&#48;</a> test /private/my_first_module
 mocha -R landing lib/my_first_module.js</p></blockquote>
 
 <p>  ✔ 0 tests complete (1ms)</p>
@@ -146,7 +146,7 @@ First we define empty body of function next we have `module.exports =` this is t
 </code> bash
  λ npm test</p>
 
-<blockquote><p><a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#58;&#109;&#121;&#x5f;&#102;&#105;&#x72;&#x73;&#116;&#95;&#x6d;&#111;&#x64;&#117;&#x6c;&#x65;&#x40;&#48;&#x2e;&#x30;&#x2e;&#48;">&#109;&#x79;&#95;&#102;&#x69;&#x72;&#115;&#116;&#95;&#109;&#x6f;&#x64;&#x75;&#x6c;&#x65;&#64;&#48;&#x2e;&#x30;&#x2e;&#x30;</a> test /private/tmp/my_first_module
+<blockquote><p><a href="&#x6d;&#x61;&#105;&#108;&#x74;&#x6f;&#x3a;&#109;&#121;&#95;&#102;&#x69;&#114;&#115;&#x74;&#95;&#109;&#111;&#100;&#117;&#108;&#101;&#x40;&#48;&#46;&#x30;&#46;&#x30;">&#x6d;&#121;&#x5f;&#102;&#x69;&#x72;&#115;&#116;&#95;&#x6d;&#111;&#x64;&#x75;&#x6c;&#101;&#64;&#x30;&#x2e;&#48;&#46;&#x30;</a> test /private/tmp/my_first_module
 mocha -R landing lib/my_first_module.js</p>
 
 <hr />
@@ -197,7 +197,7 @@ And run</code>npm test`</p>
 <p>``` bash
 λ npm test</p>
 
-<blockquote><p><a href="&#109;&#97;&#105;&#x6c;&#x74;&#111;&#58;&#x6d;&#x79;&#95;&#x66;&#105;&#114;&#x73;&#x74;&#x5f;&#x6d;&#111;&#100;&#117;&#x6c;&#x65;&#x40;&#48;&#46;&#48;&#46;&#x30;">&#x6d;&#x79;&#95;&#x66;&#x69;&#114;&#115;&#x74;&#95;&#109;&#111;&#x64;&#117;&#x6c;&#101;&#64;&#x30;&#x2e;&#x30;&#46;&#x30;</a> test /private/tmp/lol/my_first_module
+<blockquote><p><a href="&#109;&#97;&#x69;&#108;&#x74;&#111;&#x3a;&#x6d;&#121;&#95;&#102;&#105;&#x72;&#115;&#x74;&#95;&#109;&#x6f;&#100;&#x75;&#x6c;&#x65;&#x40;&#48;&#x2e;&#x30;&#46;&#48;">&#x6d;&#121;&#x5f;&#102;&#105;&#x72;&#115;&#116;&#x5f;&#x6d;&#x6f;&#x64;&#x75;&#x6c;&#x65;&#64;&#x30;&#46;&#48;&#x2e;&#x30;</a> test /private/tmp/lol/my_first_module
 mocha -R landing lib/my_first_module.js</p>
 
 <hr />

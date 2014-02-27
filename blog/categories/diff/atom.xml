@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: diff | No F*cking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/diff/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2014-02-27T12:25:07+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Golang new &amp; make]]></title>
+    <link href="http://no-fucking-idea.com/blog/2014/02/23/golang-new-and-make/"/>
+    <updated>2014-02-23T12:42:11+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2014/02/23/golang-new-and-make</id>
+    <content type="html"><![CDATA[<p>When i first started playing and learning Google <a href="http://golang.org/">GO</a> one if the first things i noticed was
+<code>new</code> and <code>make</code>. At first glance they seemed to be doing same thing. There is a difference and it actually is quite easy to explain.</p>
+
+<h1>Documentation</h1>
+
+<p>If we will go to the golang doc page under <code>http://golang.org/pkg/builtin</code> we can see every builtin function in go. Also <code>new</code> and <code>make</code>. From <a href="http://golang.org/pkg/builtin/#new">new</a> we can read.</p>
+
+<p><em>&ldquo;The new built-in function allocates memory. The first argument is a type, not a value, and the value returned is a pointer to a newly allocated zero value of that type.&rdquo;</em></p>
+
+<p>similar on make.</p>
+
+<p><em>&ldquo;The make built-in function allocates and initializes an object of type slice, map, or chan (only). Like new, the first argument is a type, not a value. Unlike new, make&rsquo;s return type is the same as the type of its argument, not a pointer to it.&rdquo;</em></p>
+
+<p>So we can see that <code>new</code> return pointer to a type and make returns an allocated object of that type. Now this is a difference.</p>
+
+<p>So how can we implement a simplified new ?</p>
+
+<p><code>go
+func newInt() *int {
+  var i int
+  return &amp;i
+}
+someVar := newInt()
+</code></p>
+
+<p>this is just like we would do <code>someVar := new(int)</code>.</p>
+
+<p>In case of <code>make</code> we can only use it for <code>map</code>, <code>slice</code> and <code>chan</code>.</p>
+
+<p><em>&ldquo;Slice: The size specifies the length. The capacity of the slice is
+equal to its length. A second integer argument may be provided to
+specify a different capacity; it must be no smaller than the
+length, so make([]int, 0, 10) allocates a slice of length 0 and
+capacity 10.
+Map: An initial allocation is made according to the size but the
+resulting map has length 0. The size may be omitted, in which case
+a small starting size is allocated.
+Channel: The channel&rsquo;s buffer is initialized with the specified
+buffer capacity. If zero, or the size is omitted, the channel is
+unbuffered.&rdquo;</em></p>
+
+<p>make creates and allocates all the memory. We can specify size of the element we want in the second parameter but this only works for slice and chan. Map is a special type that doesn&rsquo;t need size.</p>
+
+<p>And make is the only way to create this objects.</p>
+
+<h1>Summary</h1>
+
+<p><code>new</code> is a way of getting pointers to new types while <code>make</code> is for creating channels, maps and slices only.</p>
+]]></content>
+  </entry>
+  
+</feed>
