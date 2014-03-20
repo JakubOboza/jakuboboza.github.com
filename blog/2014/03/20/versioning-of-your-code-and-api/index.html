@@ -1,0 +1,405 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>Versioning of Your Code and API - No F*cking Idea</title>
+  <meta name="author" content="Jakub Oboza">
+
+  
+  <meta name="description" content="People that delt with application in production often are hit with this question. How to version your api and code.
+We had similar issue where I work &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="No F*cking Idea" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-17523816-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">No F*cking Idea</a></h1>
+  
+    <h2>Common answer to everything</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:no-fucking-idea.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/link-lib">LIB!</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">Versioning of Your Code and API</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-20T22:20:25+00:00" pubdate data-updated="true">Mar 20<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>People that delt with application in production often are hit with this question. How to version your api and code.
+We had similar issue where I work and i will present my idea on the topic.</p>
+
+<h1>Motivation</h1>
+
+<p>Different clients requests features, you upgrade your codebase and mvoe along for example streamlining api. You need a way to version the code so old clients have time to move work on upgrade and new clients can use new api without having problems.</p>
+
+<h1>Restful API</h1>
+
+<p>This is the first part and its easy so i will be fast on this. In my opinion using subdomains/CNAM&#8217;es for versions like</p>
+
+<p><code>v1., v2., v3.yourdomain.com</code> or <code>20012013.yourdomain.com</code> is the best way to handle changes in API from client side. As we spoke internally using headers or any other thing can make clients go mental because they are using other type of software and
+some change could be not trivial.  Yes actually people have this type of problems with very old bash/perl systems.</p>
+
+<p>But why subdomains are cool in my opinion will unroll in next section.</p>
+
+<h1>But what about the code ?</h1>
+
+<p>Most important thing is how easy it will be for developer to add things without breaking other things.
+Yes this is the problem! Most people will think that rolling a solution with some sort of scoping, inheritance is ok.</p>
+
+<p>eg.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">V2</span><span class="o">::</span><span class="no">People</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">V1</span><span class="o">::</span><span class="no">People</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No its not. This is actually sh*t. Why ? Even with good code test coverage you still have issue becasue each of this class is using other classes basically sharing them. And changes in their code can affect other version of api. And with V1 and V2 it is managable but if you have 5-9 versions its starts to be crazy.</p>
+
+<h1>How to solve it ?</h1>
+
+<p>Imagine a queue of versions in form of deployed boxes.</p>
+
+<p>My idea is very simple. You simply tag version codebase and deploy new version on new box while pointing new subdomain to new app.</p>
+
+<p>What do you gain ?</p>
+
+<ul>
+<li>You are sure you can deploy from 0 your app in production in isolated environment BIG WIN</li>
+<li>You know you can upgrade OS/packages in your production app with each release BIG WIN</li>
+<li>You know how many people are still on some version</li>
+<li>Your developer can develop in new version just like in any other app without caring for compatibility issues</li>
+</ul>
+
+
+<p>We live in age of cloud deploy so spinning new instance is not that expensive!</p>
+
+<p>There is only one point you have to be very aware, that is data persistence. If you are using SQL you can only ADD COLUMNS/TABLEs never remove anything. But in most thing you will do exactly this anyway.</p>
+
+<h1>Ok that was fast lets recap it</h1>
+
+<p>Process! how would you implement this in real life ? Simple!</p>
+
+<p>When you have an app and you deploy it using eg. puppet + capistrano. When you deploy first version you make a tag in git with name eg <code>version-1</code> or <code>20032014-deploy</code> and deploy it to a box assigning a CNAME.</p>
+
+<p>Next you start working on new version and when you will get new version you tag it <code>21032014-deploy</code> and deploy to a new box. This must contain &ldquo;build whole box script&rdquo; in puppet or if you are using docker. This way if you eg. added redis to stack you need to be sure your production deployment scripts are ready. This makes you be focused on keeping your &ldquo;production ready setup&rdquo; always up to date.</p>
+
+<p>And after deploy you move along and work on new version. When you need to decomision old version you just kill the box. Also each version should be monitored how many requests it actually gets to the API because if you will have 20 versions up and some are getting 0 traffic you can kill them.</p>
+
+<h1>Rollback ?</h1>
+
+<p>How do you rollback ? simply checkout deployment tag and deploy :)</p>
+
+<h1>The gain ?</h1>
+
+<p>The gain in this strategy is isolation, if you need more boxes for your main version you have ready production scripts so all you have to do is to spin them and be sure that CNAME is load balanced.</p>
+
+<h1>Summary</h1>
+
+<p>I don&rsquo;t think this strategy has any problem / hidden traps. You get smaller codebase to work with, ability to upgrade your production boxes and application libs/frameworks as you always move forward and deploy from scratch. You don&rsquo;t do upgrade-production box deploy but fresh deploy. Also fresh deploy can be smoke-tested by tester before putting it into production.
+Deployment scripts makes you by default ready to scale your app horizontally.</p>
+
+<p>Again What you do:</p>
+
+<ul>
+<li>start: Deploy version to a fresh box</li>
+<li>Upgrade Code/OS and add features</li>
+<li>Tag new version</li>
+<li>goto start:</li>
+</ul>
+
+
+<p>IMHO everyone should move to this type of strategy in context of api versions.</p>
+
+<p>Cheers
+&ndash; Jakub Oboza</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jakub Oboza</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-20T22:20:25+00:00" pubdate data-updated="true">Mar 20<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/api/'>api</a>, <a class='category' href='/blog/categories/code/'>code</a>, <a class='category' href='/blog/categories/versioning/'>versioning</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api/" data-via="JakubOboza" data-counturl="http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/02/23/golang-new-and-make/" title="Previous Post: Golang new &amp; make">&laquo; Golang new &amp; make</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <a class="coinbase-button" data-code="a093222bb846e484c7f9123c4ec983e5" data-button-style="donation_large" href="https://coinbase.com/checkouts/a093222bb846e484c7f9123c4ec983e5">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/versioning-of-your-code-and-api/">Versioning of Your Code and API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/23/golang-new-and-make/">Golang New &amp; Make</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2013/12/12/forkio-and-friends/">forkIO and Friends</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'JakubOboza',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/101398174644580064637?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Jakub Oboza -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'nofuckingidea';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api/';
+        var disqus_url = 'http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

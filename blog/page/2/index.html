@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Recently with friends we are building side project called &ldquo;Midway&rdquo; its a simple battleship server. The whole point of the game is to &hellip;">
+  <meta name="description" content="I&rsquo;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&rsquo;t &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,281 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/05/building-ffi-extensions-in-erlang/">Building FFI Extensions in Erlang</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-05T20:20:00+00:00" pubdate data-updated="true">Feb 5<span>th</span>, 2013</time>
+        
+           | <a href="/blog/2013/02/05/building-ffi-extensions-in-erlang/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>I&rsquo;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&rsquo;t want to build whole app in C because i know how this can end when you are 1500 &ndash; 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
+
+<h1>Ports</h1>
+
+<p>Firt thought was to build small C program that will check stuff periodically or just &ldquo;check stuff&rdquo; in SHT1x and just print it out to output. So my first attempt was</p>
+
+<p>For the example here i will use <code>/proc/cpuinfo</code></p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">mycpuinfo</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">info</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">CMD</span><span class="p">,</span> <span class="s">&quot;cat /proc/cpuinfo&quot;</span><span class="p">).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">info</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="nv">Port</span> <span class="o">=</span> <span class="nb">open_port</span><span class="p">({</span><span class="nb">spawn</span><span class="p">,</span> <span class="o">?</span><span class="nv">CMD</span><span class="p">},</span> <span class="p">[{</span><span class="n">packet</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="n">use_stdio</span><span class="p">,</span> <span class="n">exit_status</span><span class="p">,</span> <span class="n">binary</span><span class="p">]),</span>
+</span><span class='line'>    <span class="nb">port_command</span><span class="p">(</span><span class="nv">Port</span><span class="p">,</span> <span class="o">&lt;&lt;&gt;&gt;</span><span class="p">),</span>
+</span><span class='line'>    <span class="k">receive</span>
+</span><span class='line'>  <span class="p">{</span><span class="nv">Port</span><span class="p">,</span> <span class="p">{</span><span class="n">data</span><span class="p">,</span> <span class="nv">Response</span><span class="p">}}</span> <span class="o">-&gt;</span>
+</span><span class='line'>      <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">{</span><span class="n">cpuinfo</span><span class="p">,</span> <span class="nv">Response</span><span class="p">}};</span>
+</span><span class='line'>  <span class="p">_</span>  <span class="o">-&gt;</span> <span class="n">error</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span><span class='line'>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Nothing super special, except that raspberry pi is not really cool with different packet sizes and it can for example not read whole input properly. I observed some issues with it. So i decided to explore more FFI.</p>
+
+<h1>erl_interface</h1>
+
+<p>The thing i found is called erl_interface and it is designed for FFI. This is it! What you do is you build process like thing in C and micro module in erlang that handles this. (It is just to make it look nice). But there are few glitches!</p>
+
+<p>This is my module posting back &ldquo;pong&rdquo; on &ldquo;ping&rdquo; message</p>
+
+<figure class='code'><figcaption><span>lolpong.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/types.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;sys/socket.h&gt;</span>
+</span><span class='line'><span class="cp">#include &lt;netinet/in.h&gt;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#include &quot;erl_interface.h&quot;</span>
+</span><span class='line'><span class="cp">#include &quot;ei.h&quot;</span>
+</span><span class='line'>
+</span><span class='line'><span class="cp">#define BUFFSIZE 100</span>
+</span><span class='line'>
+</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">BUFFSIZE</span><span class="p">];</span>
+</span><span class='line'>  <span class="n">ErlMessage</span> <span class="n">emsg</span><span class="p">;</span>
+</span><span class='line'>  <span class="kt">int</span> <span class="n">msg_type</span><span class="p">;</span>
+</span><span class='line'>  <span class="n">ETERM</span> <span class="o">*</span><span class="n">fromp</span><span class="p">,</span> <span class="o">*</span><span class="n">argp</span><span class="p">,</span> <span class="o">*</span><span class="n">rsp</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="n">erl_init</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">erl_connect_init</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;cookie&quot;</span><span class="p">,</span>  <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">){</span>
+</span><span class='line'>    <span class="n">erl_err_quit</span><span class="p">(</span><span class="s">&quot;init failed&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">if</span><span class="p">((</span><span class="n">fd</span> <span class="o">=</span> <span class="n">erl_connect</span><span class="p">(</span><span class="s">&quot;emu@raspberrypi&quot;</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="p">){</span>
+</span><span class='line'>    <span class="n">erl_err_quit</span><span class="p">(</span><span class="s">&quot;Emus could won war with australia but you still can&#39;t connect to emu :(&quot;</span><span class="p">);</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">){</span>
+</span><span class='line'>    <span class="n">msg_type</span> <span class="o">=</span> <span class="n">erl_receive_msg</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">BUFFSIZE</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">emsg</span><span class="p">);</span>
+</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">msg_type</span> <span class="o">==</span> <span class="n">ERL_TICK</span><span class="p">){</span>
+</span><span class='line'>      <span class="cm">/* Emu is checking australian defences, Polish people are safe! so I can ignore this */</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">msg_type</span> <span class="o">==</span> <span class="n">ERL_ERROR</span><span class="p">){</span>
+</span><span class='line'>      <span class="cm">/* Huston we have an Emu! */</span>
+</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
+</span><span class='line'>      <span class="cm">/* our pro msg */</span>
+</span><span class='line'>      <span class="n">fromp</span> <span class="o">=</span> <span class="n">erl_element</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">emsg</span><span class="p">.</span><span class="n">msg</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">argp</span> <span class="o">=</span> <span class="n">erl_element</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">emsg</span><span class="p">.</span><span class="n">msg</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">rsp</span> <span class="o">=</span> <span class="n">erl_format</span><span class="p">(</span><span class="s">&quot;pong&quot;</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">erl_send</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">fromp</span><span class="p">,</span> <span class="n">rsp</span><span class="p">);</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">emsg</span><span class="p">.</span><span class="n">from</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">emsg</span><span class="p">.</span><span class="n">msg</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">fromp</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">argp</span><span class="p">);</span>
+</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">rsp</span><span class="p">);</span>
+</span><span class='line'>    <span class="p">}</span>
+</span><span class='line'>  <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
+</span><span class='line'>
+</span><span class='line'><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called &ldquo;emu@raspberrypi&rdquo; and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means &ldquo;memory leak&rdquo;.</p>
+
+<p>But most important thing is how to build this and run.</p>
+
+<h2>Building</h2>
+
+<p>My make file looks like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='make'><span class='line'><span class="nf">all</span><span class="o">:</span>
+</span><span class='line'>  gcc -o lolpong -I/usr/lib/erlang/lib/erl_interface-3.7.7/include -L/usr/lib/erlang/lib/erl_interface-3.7.7/lib lolpong.c -lerl_interface -lei -pthread
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>It is important to remember about -pthread.</p>
+
+<h2>Running everything.</h2>
+
+<p>No how to make everything work&hellip; we need module</p>
+
+<figure class='code'><figcaption><span>lolpong.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">lolpong</span><span class="p">).</span>
+</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">ping</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span>
+</span><span class='line'>    <span class="p">{</span><span class="n">any</span><span class="p">,</span> <span class="n">&#39;c1@raspberrypi&#39;</span><span class="p">}</span> <span class="o">!</span> <span class="p">{</span><span class="n">self</span><span class="p">(),</span> <span class="n">ping</span><span class="p">},</span>
+</span><span class='line'>    <span class="k">receive</span>
+</span><span class='line'>  <span class="nv">R</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">R</span><span class="p">}</span>
+</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>`
+This c1 is for c extension 1 not super obvious :) cN will be for c extension N =).</p>
+
+<p>And finally we need to spawn our node&hellip;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ  erl -sname <span class="s2">&quot;emu&quot;</span> -setcookie <span class="s2">&quot;cookie&quot;</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This spawns node named emu@raspberrypi on my mini box with cookie &ldquo;cookie&rdquo; now &hellip; i said finally&hellip; but it was not final step.</p>
+
+<p>Final step is to run out <code>lolpong</code> binary. It is important to run it after node is up because it will try to connect to this node.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>./lolpong
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Now we can run in our erlang shell check if everything works!</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">(</span><span class="n">emu</span><span class="p">@</span><span class="n">raspberrypi</span><span class="p">)</span><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">lolpong</span><span class="p">:</span><span class="n">ping</span><span class="p">().</span>
+</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">pong</span><span class="p">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Works!</p>
+
+<h1>Summary</h1>
+
+<p>It is good fun, now i need to wait for the parts to assemble everything and build rest of application :)</p>
+
+<p>Cheers!!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1639,7 +1914,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
   </header>
 
 
-  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#111;&#58;&#107;&#x75;&#98;&#97;&#x40;&#108;&#97;&#x6d;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#x65;">&#107;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#x62;&#100;&#97;&#x63;&#x75;&#x2e;&#x62;&#101;</a> =)</p>
+  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#116;&#x6f;&#58;&#107;&#x75;&#98;&#x61;&#64;&#108;&#97;&#109;&#98;&#100;&#x61;&#x63;&#x75;&#x2e;&#x62;&#101;">&#x6b;&#117;&#98;&#x61;&#x40;&#x6c;&#97;&#109;&#x62;&#x64;&#97;&#99;&#x75;&#x2e;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
@@ -2066,386 +2341,6 @@ with</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/">Designing Todo App Backend Using Redis and Mongodb</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-07-26T18:06:00+01:00" pubdate data-updated="true">Jul 26<span>th</span>, 2012</time>
-        
-           | <a href="/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/#disqus_thread"
-             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><h2>side note</h2>
-
-<p>Upgrading octopress is a @!#!@pain! :></p>
-
-<h1>What is this post about :)</h1>
-
-<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &ldquo;how i would design it in different databases&rdquo;. (i&rsquo;m taking only about data model)</p>
-
-<h2>Requirements</h2>
-
-<p>What we know:</p>
-
-<ul>
-<li>User has some sort of id. (number, email, hash of something)</li>
-<li>We need to be able to have different todo lists</li>
-<li>User can choose his todo list and see tasks ( obvious )</li>
-<li>User can tag tasks!</li>
-<li>User can query tasks in list by tags</li>
-<li>User can see all tags.</li>
-</ul>
-
-
-<h1>Design using Redis</h1>
-
-<p>How to do it with redis ? :)</p>
-
-<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &ldquo;todoapp&rdquo;.</p>
-
-<p>So lets start with user and his list of todo lists :). This gives us first key</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:todolist:next <span class="o">=</span>&gt; auto incrementing counter <span class="k">for </span>lists id
-</span><span class='line'>todo:&lt;user_id&gt;:todolists <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
-</span><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:name <span class="o">=</span>&gt; list name
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here we have two keys, first is  list id counter that we will bump to get new list counter :), second is list of todolists ids. Why do it this way ? Well people can add and remove todo lists.</p>
-
-<p>Ok so how to create new list ?</p>
-
-<figure class='code'><figcaption><span>example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:next
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; RPUSH todo:kuba:todolists 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolists 0 -1
-</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:todolist:1:name <span class="s2">&quot;things to do&quot;</span>
-</span><span class='line'>OK
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Hey ! we just added id of our first list to list of our todo lists (lots of list word here!). Ok so now lets add a task.</p>
-
-<p>list:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:next <span class="o">=</span>&gt; auto incrementing counter <span class="k">for </span>tasks id
-</span><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt; <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and task:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt; <span class="o">=</span>&gt; content of task eg. <span class="s2">&quot;finish blog post&quot;</span>
-</span><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:created_at <span class="o">=</span>&gt; epoch <span class="nb">time </span>when it was created handled by app
-</span><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:updated_at <span class="o">=</span>&gt; epoch <span class="nb">time </span>when it was last updated handled by app
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok so how to i add task to my list</p>
-
-<figure class='code'><figcaption><span>adding task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:1:next
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:todolist:1 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1 <span class="s2">&quot;finish blog post&quot;</span>
-</span><span class='line'>OK
-</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:created_at  1343324314
-</span><span class='line'>OK
-</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:updated_at  1343324315
-</span><span class='line'>OK
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And we have our first task in. How do we get tasks from out todo list simple!</p>
-
-<figure class='code'><figcaption><span>peeking task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
-</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; GET todo:kuba:task:1
-</span><span class='line'><span class="s2">&quot;finish blog post&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; GET todo:kuba:task:1:created_at
-</span><span class='line'><span class="s2">&quot;1343324314&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok so now we have very simple todo lists with tasks, well at least overview. Ofc you can use sets for todo lists or zsets but lets stay with lists to keep it simple for now.</p>
-
-<p>How ro remove task from the list ?</p>
-
-<figure class='code'><figcaption><span>removing task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LREM todo:kuba:todolist:1 -1 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
-</span><span class='line'><span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Good, now we can add tasks, remove tasks, same sotry with adding todo lists and removing todo lists.
-One last thing is to add tags!. Simply here each task will have list of tags and each tag will have list of tasks related with.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:tags <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
-</span><span class='line'>todo:&lt;user_id&gt;:tag:&lt;tag&gt;:tasks <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So how we will add tags to tasks ? Simple!</p>
-
-<figure class='code'><figcaption><span>tagging</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags <span class="s2">&quot;redis&quot;</span>
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags <span class="s2">&quot;design&quot;</span>
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 2
-</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:redis:tasks 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:design:tasks 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:tag:design:tasks 0 -1
-</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:task:1:tags 0 -1
-</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;design&quot;</span>
-</span><span class='line'>2<span class="o">)</span> <span class="s2">&quot;redis&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &ldquo;redis&rdquo; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
-
-<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &ldquo;ultimate&rdquo;  non splittable lists.</p>
-
-<h1>Design using Mongodb</h1>
-
-<p>Well this case upfront is easier to grasp because for each list we can use single document or collection of documents lets talk about both solutions.</p>
-
-<h2>Todolist = Document</h2>
-
-<p>In this example we will use built in &ldquo;array&rdquo; operators</p>
-
-<figure class='code'><figcaption><span>creating</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">save</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span> <span class="nx">tasks</span><span class="o">:</span> <span class="p">[]})</span>
-</span><span class='line'><span class="s2">&quot;ok&quot;</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">})</span>
-</span><span class='line'><span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
-</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So lets add a task :)</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">update</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">},{</span><span class="nx">$push</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;tasks&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;mongo&quot;</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span> <span class="p">})</span>
-</span><span class='line'><span class="s2">&quot;ok&quot;</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">})</span>
-</span><span class='line'><span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
-</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>       <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span>   <span class="s2">&quot;tags&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="s2">&quot;mongo&quot;</span> <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'>      <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>this will create empty todo list with name &ldquo;House work&rdquo; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &ldquo;lists&rdquo; while doing search.</p>
-
-<p>Lets try it out how to find out mongo tagged entries?</p>
-
-<figure class='code'><figcaption><span>find by tag</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="s2">&quot;tasks.tags&quot;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$in</span> <span class="o">:</span> <span class="p">[</span><span class="s2">&quot;mongo&quot;</span><span class="p">]</span> <span class="p">}</span> <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
-</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>        <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span>   <span class="s2">&quot;tags&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="s2">&quot;mongo&quot;</span> <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'>      <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>This way we can find whole todolist with task that contains tag &ldquo;mongo&rdquo; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this</p>
-
-<figure class='code'><figcaption><span>todo list structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
-</span><span class='line'> <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
-</span><span class='line'> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;&lt;name&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'> <span class="nx">tasks</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>   <span class="p">{</span>
-</span><span class='line'>    <span class="nx">text</span> <span class="o">:</span> <span class="s2">&quot;todo text&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">tags</span> <span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>      <span class="s2">&quot;Tag1&quot;</span><span class="p">,</span> <span class="s2">&quot;Tag2&quot;</span>
-</span><span class='line'>    <span class="p">]</span>
-</span><span class='line'>    <span class="nx">created_at</span> <span class="o">:</span> <span class="nx">Time</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">updated_at</span> <span class="o">:</span> <span class="nx">Time</span>
-</span><span class='line'>   <span class="p">}</span>
-</span><span class='line'> <span class="p">]</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Using redis we could wrapp stuff into MULTI command while using mongodb &ldquo;array&rdquo; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
-
-<h2>Todolist = many documents</h2>
-
-<p>Using this approach we can leverage more of our stuff on mongodb search in this approach each task will be a different document.
-With structure like this</p>
-
-<figure class='code'><figcaption><span>task structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nx">todo_list</span><span class="o">:</span> <span class="s2">&quot;todo list id&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">text</span><span class="o">:</span> <span class="s2">&quot;todo text&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">tags</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;Tag1&quot;</span><span class="p">,</span> <span class="s2">&quot;Tag2&quot;</span><span class="p">]</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This way we will have a lot of documents, more disk space consumption and still we will have to have second collection with with objects with structure like this</p>
-
-<figure class='code'><figcaption><span>structure of todolist</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nx">todo_list</span><span class="o">:</span> <span class="s2">&quot;todo list id&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;todo list name&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="c1">// tasks: [Tasks OBjectID Array] you could have this and remove todo_list id from tasks choice is yours :)</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And this way we can use <code>find</code> tool very easy and get documents fast.</p>
-
-<h1>Summary</h1>
-
-<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &ldquo;strucutres&rdquo; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
-
-<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&rsquo;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &ldquo;rawly&rdquo; in redis hiredis client.</p>
-
-<p>btw i jsut wrote this from &ldquo;top of my head&rdquo; so it may contain typos and i&rsquo;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
-
-<p>Cheers!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2465,6 +2360,10 @@ With structure like this</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/03/20/versioning-of-your-code-and-api/">Versioning of Your Code and API</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/23/golang-new-and-make/">Golang New &amp; Make</a>
       </li>
     
@@ -2478,10 +2377,6 @@ With structure like this</p>
     
       <li class="post">
         <a href="/blog/2013/12/12/forkio-and-friends/">forkIO and Friends</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/">Erlang E17 and Second Edition of Programming Erlang</a>
       </li>
     
   </ul>

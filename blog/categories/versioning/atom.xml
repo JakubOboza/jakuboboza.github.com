@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: versioning | No F*cking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/versioning/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2014-03-20T22:54:25+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Versioning of your code and API]]></title>
+    <link href="http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api/"/>
+    <updated>2014-03-20T22:20:25+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api</id>
+    <content type="html"><![CDATA[<p>People that delt with application in production often are hit with this question. How to version your api and code.
+We had similar issue where I work and i will present my idea on the topic.</p>
+
+<h1>Motivation</h1>
+
+<p>Different clients requests features, you upgrade your codebase and mvoe along for example streamlining api. You need a way to version the code so old clients have time to move work on upgrade and new clients can use new api without having problems.</p>
+
+<h1>Restful API</h1>
+
+<p>This is the first part and its easy so i will be fast on this. In my opinion using subdomains/CNAM'es for versions like</p>
+
+<p><code>v1., v2., v3.yourdomain.com</code> or <code>20012013.yourdomain.com</code> is the best way to handle changes in API from client side. As we spoke internally using headers or any other thing can make clients go mental because they are using other type of software and
+some change could be not trivial.  Yes actually people have this type of problems with very old bash/perl systems.</p>
+
+<p>But why subdomains are cool in my opinion will unroll in next section.</p>
+
+<h1>But what about the code ?</h1>
+
+<p>Most important thing is how easy it will be for developer to add things without breaking other things.
+Yes this is the problem! Most people will think that rolling a solution with some sort of scoping, inheritance is ok.</p>
+
+<p>eg.
+``` ruby
+class V2::People
+class V1::People</p>
+
+<p>```</p>
+
+<p>No its not. This is actually sh*t. Why ? Even with good code test coverage you still have issue becasue each of this class is using other classes basically sharing them. And changes in their code can affect other version of api. And with V1 and V2 it is managable but if you have 5-9 versions its starts to be crazy.</p>
+
+<h1>How to solve it ?</h1>
+
+<p>Imagine a queue of versions in form of deployed boxes.</p>
+
+<p>My idea is very simple. You simply tag version codebase and deploy new version on new box while pointing new subdomain to new app.</p>
+
+<p>What do you gain ?</p>
+
+<ul>
+<li>You are sure you can deploy from 0 your app in production in isolated environment BIG WIN</li>
+<li>You know you can upgrade OS/packages in your production app with each release BIG WIN</li>
+<li>You know how many people are still on some version</li>
+<li>Your developer can develop in new version just like in any other app without caring for compatibility issues</li>
+</ul>
+
+
+<p>We live in age of cloud deploy so spinning new instance is not that expensive!</p>
+
+<p>There is only one point you have to be very aware, that is data persistence. If you are using SQL you can only ADD COLUMNS/TABLEs never remove anything. But in most thing you will do exactly this anyway.</p>
+
+<h1>Ok that was fast lets recap it</h1>
+
+<p>Process! how would you implement this in real life ? Simple!</p>
+
+<p>When you have an app and you deploy it using eg. puppet + capistrano. When you deploy first version you make a tag in git with name eg <code>version-1</code> or <code>20032014-deploy</code> and deploy it to a box assigning a CNAME.</p>
+
+<p>Next you start working on new version and when you will get new version you tag it <code>21032014-deploy</code> and deploy to a new box. This must contain &ldquo;build whole box script&rdquo; in puppet or if you are using docker. This way if you eg. added redis to stack you need to be sure your production deployment scripts are ready. This makes you be focused on keeping your &ldquo;production ready setup&rdquo; always up to date.</p>
+
+<p>And after deploy you move along and work on new version. When you need to decomision old version you just kill the box. Also each version should be monitored how many requests it actually gets to the API because if you will have 20 versions up and some are getting 0 traffic you can kill them.</p>
+
+<h1>Rollback ?</h1>
+
+<p>How do you rollback ? simply checkout deployment tag and deploy :)</p>
+
+<h1>The gain ?</h1>
+
+<p>The gain in this strategy is isolation, if you need more boxes for your main version you have ready production scripts so all you have to do is to spin them and be sure that CNAME is load balanced.</p>
+
+<h1>Summary</h1>
+
+<p>I don&rsquo;t think this strategy has any problem / hidden traps. You get smaller codebase to work with, ability to upgrade your production boxes and application libs/frameworks as you always move forward and deploy from scratch. You don&rsquo;t do upgrade-production box deploy but fresh deploy. Also fresh deploy can be smoke-tested by tester before putting it into production.
+Deployment scripts makes you by default ready to scale your app horizontally.</p>
+
+<p>Again What you do:</p>
+
+<ul>
+<li>start: Deploy version to a fresh box</li>
+<li>Upgrade Code/OS and add features</li>
+<li>Tag new version</li>
+<li>goto start:</li>
+</ul>
+
+
+<p>IMHO everyone should move to this type of strategy in context of api versions.</p>
+
+<p>Cheers
+&ndash; Jakub Oboza</p>
+]]></content>
+  </entry>
+  
+</feed>

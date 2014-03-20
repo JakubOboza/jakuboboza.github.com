@@ -9,8 +9,8 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="When i first started playing and learning Google GO one if the first things i noticed was
-new and make. At first glance they seemed to be doing same &hellip;">
+  <meta name="description" content="People that delt with application in production often are hit with this question. How to version your api and code.
+We had similar issue where I work &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -79,6 +79,133 @@ new and make. At first glance they seemed to be doing same &hellip;">
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/03/20/versioning-of-your-code-and-api/">Versioning of Your Code and API</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-03-20T22:20:25+00:00" pubdate data-updated="true">Mar 20<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/03/20/versioning-of-your-code-and-api/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>People that delt with application in production often are hit with this question. How to version your api and code.
+We had similar issue where I work and i will present my idea on the topic.</p>
+
+<h1>Motivation</h1>
+
+<p>Different clients requests features, you upgrade your codebase and mvoe along for example streamlining api. You need a way to version the code so old clients have time to move work on upgrade and new clients can use new api without having problems.</p>
+
+<h1>Restful API</h1>
+
+<p>This is the first part and its easy so i will be fast on this. In my opinion using subdomains/CNAM&#8217;es for versions like</p>
+
+<p><code>v1., v2., v3.yourdomain.com</code> or <code>20012013.yourdomain.com</code> is the best way to handle changes in API from client side. As we spoke internally using headers or any other thing can make clients go mental because they are using other type of software and
+some change could be not trivial.  Yes actually people have this type of problems with very old bash/perl systems.</p>
+
+<p>But why subdomains are cool in my opinion will unroll in next section.</p>
+
+<h1>But what about the code ?</h1>
+
+<p>Most important thing is how easy it will be for developer to add things without breaking other things.
+Yes this is the problem! Most people will think that rolling a solution with some sort of scoping, inheritance is ok.</p>
+
+<p>eg.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">V2</span><span class="o">::</span><span class="no">People</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">V1</span><span class="o">::</span><span class="no">People</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No its not. This is actually sh*t. Why ? Even with good code test coverage you still have issue becasue each of this class is using other classes basically sharing them. And changes in their code can affect other version of api. And with V1 and V2 it is managable but if you have 5-9 versions its starts to be crazy.</p>
+
+<h1>How to solve it ?</h1>
+
+<p>Imagine a queue of versions in form of deployed boxes.</p>
+
+<p>My idea is very simple. You simply tag version codebase and deploy new version on new box while pointing new subdomain to new app.</p>
+
+<p>What do you gain ?</p>
+
+<ul>
+<li>You are sure you can deploy from 0 your app in production in isolated environment BIG WIN</li>
+<li>You know you can upgrade OS/packages in your production app with each release BIG WIN</li>
+<li>You know how many people are still on some version</li>
+<li>Your developer can develop in new version just like in any other app without caring for compatibility issues</li>
+</ul>
+
+
+<p>We live in age of cloud deploy so spinning new instance is not that expensive!</p>
+
+<p>There is only one point you have to be very aware, that is data persistence. If you are using SQL you can only ADD COLUMNS/TABLEs never remove anything. But in most thing you will do exactly this anyway.</p>
+
+<h1>Ok that was fast lets recap it</h1>
+
+<p>Process! how would you implement this in real life ? Simple!</p>
+
+<p>When you have an app and you deploy it using eg. puppet + capistrano. When you deploy first version you make a tag in git with name eg <code>version-1</code> or <code>20032014-deploy</code> and deploy it to a box assigning a CNAME.</p>
+
+<p>Next you start working on new version and when you will get new version you tag it <code>21032014-deploy</code> and deploy to a new box. This must contain &ldquo;build whole box script&rdquo; in puppet or if you are using docker. This way if you eg. added redis to stack you need to be sure your production deployment scripts are ready. This makes you be focused on keeping your &ldquo;production ready setup&rdquo; always up to date.</p>
+
+<p>And after deploy you move along and work on new version. When you need to decomision old version you just kill the box. Also each version should be monitored how many requests it actually gets to the API because if you will have 20 versions up and some are getting 0 traffic you can kill them.</p>
+
+<h1>Rollback ?</h1>
+
+<p>How do you rollback ? simply checkout deployment tag and deploy :)</p>
+
+<h1>The gain ?</h1>
+
+<p>The gain in this strategy is isolation, if you need more boxes for your main version you have ready production scripts so all you have to do is to spin them and be sure that CNAME is load balanced.</p>
+
+<h1>Summary</h1>
+
+<p>I don&rsquo;t think this strategy has any problem / hidden traps. You get smaller codebase to work with, ability to upgrade your production boxes and application libs/frameworks as you always move forward and deploy from scratch. You don&rsquo;t do upgrade-production box deploy but fresh deploy. Also fresh deploy can be smoke-tested by tester before putting it into production.
+Deployment scripts makes you by default ready to scale your app horizontally.</p>
+
+<p>Again What you do:</p>
+
+<ul>
+<li>start: Deploy version to a fresh box</li>
+<li>Upgrade Code/OS and add features</li>
+<li>Tag new version</li>
+<li>goto start:</li>
+</ul>
+
+
+<p>IMHO everyone should move to this type of strategy in context of api versions.</p>
+
+<p>Cheers
+&ndash; Jakub Oboza</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1698,281 +1825,6 @@ Lets have a look</p>
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/05/building-ffi-extensions-in-erlang/">Building FFI Extensions in Erlang</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-05T20:20:00+00:00" pubdate data-updated="true">Feb 5<span>th</span>, 2013</time>
-        
-           | <a href="/blog/2013/02/05/building-ffi-extensions-in-erlang/#disqus_thread"
-             data-disqus-identifier="http://no-fucking-idea.com/blog/2013/02/05/building-ffi-extensions-in-erlang/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>I&rsquo;m preparing to upgrade my old humidity/temperature meeeeeter solution with raspberry pi. While it is easy to read stuff in C i don&rsquo;t want to build whole app in C because i know how this can end when you are 1500 &ndash; 3000 km from home and app stops to respond and the only living person to fix it is your Cat Haskell. So i want to have everything in <code>Erlang</code> and only small module reading stuff in C.</p>
-
-<h1>Ports</h1>
-
-<p>Firt thought was to build small C program that will check stuff periodically or just &ldquo;check stuff&rdquo; in SHT1x and just print it out to output. So my first attempt was</p>
-
-<p>For the example here i will use <code>/proc/cpuinfo</code></p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">mycpuinfo</span><span class="p">).</span>
-</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">info</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">-</span><span class="ni">define</span><span class="p">(</span><span class="no">CMD</span><span class="p">,</span> <span class="s">&quot;cat /proc/cpuinfo&quot;</span><span class="p">).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">info</span><span class="p">()</span> <span class="o">-&gt;</span>
-</span><span class='line'>    <span class="nv">Port</span> <span class="o">=</span> <span class="nb">open_port</span><span class="p">({</span><span class="nb">spawn</span><span class="p">,</span> <span class="o">?</span><span class="nv">CMD</span><span class="p">},</span> <span class="p">[{</span><span class="n">packet</span><span class="p">,</span> <span class="mi">1</span><span class="p">},</span> <span class="n">use_stdio</span><span class="p">,</span> <span class="n">exit_status</span><span class="p">,</span> <span class="n">binary</span><span class="p">]),</span>
-</span><span class='line'>    <span class="nb">port_command</span><span class="p">(</span><span class="nv">Port</span><span class="p">,</span> <span class="o">&lt;&lt;&gt;&gt;</span><span class="p">),</span>
-</span><span class='line'>    <span class="k">receive</span>
-</span><span class='line'>  <span class="p">{</span><span class="nv">Port</span><span class="p">,</span> <span class="p">{</span><span class="n">data</span><span class="p">,</span> <span class="nv">Response</span><span class="p">}}</span> <span class="o">-&gt;</span>
-</span><span class='line'>      <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="p">{</span><span class="n">cpuinfo</span><span class="p">,</span> <span class="nv">Response</span><span class="p">}};</span>
-</span><span class='line'>  <span class="p">_</span>  <span class="o">-&gt;</span> <span class="n">error</span>
-</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
-</span><span class='line'>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Nothing super special, except that raspberry pi is not really cool with different packet sizes and it can for example not read whole input properly. I observed some issues with it. So i decided to explore more FFI.</p>
-
-<h1>erl_interface</h1>
-
-<p>The thing i found is called erl_interface and it is designed for FFI. This is it! What you do is you build process like thing in C and micro module in erlang that handles this. (It is just to make it look nice). But there are few glitches!</p>
-
-<p>This is my module posting back &ldquo;pong&rdquo; on &ldquo;ping&rdquo; message</p>
-
-<figure class='code'><figcaption><span>lolpong.c</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-</pre></td><td class='code'><pre><code class='c'><span class='line'><span class="cp">#include &lt;stdio.h&gt;</span>
-</span><span class='line'><span class="cp">#include &lt;sys/types.h&gt;</span>
-</span><span class='line'><span class="cp">#include &lt;sys/socket.h&gt;</span>
-</span><span class='line'><span class="cp">#include &lt;netinet/in.h&gt;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#include &quot;erl_interface.h&quot;</span>
-</span><span class='line'><span class="cp">#include &quot;ei.h&quot;</span>
-</span><span class='line'>
-</span><span class='line'><span class="cp">#define BUFFSIZE 100</span>
-</span><span class='line'>
-</span><span class='line'><span class="kt">int</span> <span class="n">main</span><span class="p">(</span><span class="kt">int</span> <span class="n">argc</span><span class="p">,</span> <span class="kt">char</span><span class="o">**</span> <span class="n">argv</span><span class="p">){</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">fd</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">unsigned</span> <span class="kt">char</span> <span class="n">buf</span><span class="p">[</span><span class="n">BUFFSIZE</span><span class="p">];</span>
-</span><span class='line'>  <span class="n">ErlMessage</span> <span class="n">emsg</span><span class="p">;</span>
-</span><span class='line'>  <span class="kt">int</span> <span class="n">msg_type</span><span class="p">;</span>
-</span><span class='line'>  <span class="n">ETERM</span> <span class="o">*</span><span class="n">fromp</span><span class="p">,</span> <span class="o">*</span><span class="n">argp</span><span class="p">,</span> <span class="o">*</span><span class="n">rsp</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="n">erl_init</span><span class="p">(</span><span class="nb">NULL</span><span class="p">,</span> <span class="mi">0</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span><span class="p">(</span><span class="n">erl_connect_init</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="s">&quot;cookie&quot;</span><span class="p">,</span>  <span class="mi">0</span><span class="p">)</span> <span class="o">==</span> <span class="o">-</span><span class="mi">1</span><span class="p">){</span>
-</span><span class='line'>    <span class="n">erl_err_quit</span><span class="p">(</span><span class="s">&quot;init failed&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">if</span><span class="p">((</span><span class="n">fd</span> <span class="o">=</span> <span class="n">erl_connect</span><span class="p">(</span><span class="s">&quot;emu@raspberrypi&quot;</span><span class="p">))</span> <span class="o">&lt;</span> <span class="mi">0</span> <span class="p">){</span>
-</span><span class='line'>    <span class="n">erl_err_quit</span><span class="p">(</span><span class="s">&quot;Emus could won war with australia but you still can&#39;t connect to emu :(&quot;</span><span class="p">);</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">while</span><span class="p">(</span><span class="mi">1</span><span class="p">){</span>
-</span><span class='line'>    <span class="n">msg_type</span> <span class="o">=</span> <span class="n">erl_receive_msg</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">buf</span><span class="p">,</span> <span class="n">BUFFSIZE</span><span class="p">,</span> <span class="o">&amp;</span><span class="n">emsg</span><span class="p">);</span>
-</span><span class='line'>    <span class="k">if</span><span class="p">(</span><span class="n">msg_type</span> <span class="o">==</span> <span class="n">ERL_TICK</span><span class="p">){</span>
-</span><span class='line'>      <span class="cm">/* Emu is checking australian defences, Polish people are safe! so I can ignore this */</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">else</span> <span class="k">if</span><span class="p">(</span><span class="n">msg_type</span> <span class="o">==</span> <span class="n">ERL_ERROR</span><span class="p">){</span>
-</span><span class='line'>      <span class="cm">/* Huston we have an Emu! */</span>
-</span><span class='line'>      <span class="k">break</span><span class="p">;</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>    <span class="k">else</span> <span class="p">{</span>
-</span><span class='line'>      <span class="cm">/* our pro msg */</span>
-</span><span class='line'>      <span class="n">fromp</span> <span class="o">=</span> <span class="n">erl_element</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="n">emsg</span><span class="p">.</span><span class="n">msg</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">argp</span> <span class="o">=</span> <span class="n">erl_element</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">emsg</span><span class="p">.</span><span class="n">msg</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">rsp</span> <span class="o">=</span> <span class="n">erl_format</span><span class="p">(</span><span class="s">&quot;pong&quot;</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">erl_send</span><span class="p">(</span><span class="n">fd</span><span class="p">,</span> <span class="n">fromp</span><span class="p">,</span> <span class="n">rsp</span><span class="p">);</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">emsg</span><span class="p">.</span><span class="n">from</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">emsg</span><span class="p">.</span><span class="n">msg</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">fromp</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">argp</span><span class="p">);</span>
-</span><span class='line'>      <span class="n">erl_free_term</span><span class="p">(</span><span class="n">rsp</span><span class="p">);</span>
-</span><span class='line'>    <span class="p">}</span>
-</span><span class='line'>  <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'>  <span class="k">return</span> <span class="mi">0</span><span class="p">;</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>First of all complexity goes p fast. You have to think about many things. Here i know that my host is called &ldquo;emu@raspberrypi&rdquo; and this is actually process that runs so if you will not remember about freeing memory you will fast learn what means &ldquo;memory leak&rdquo;.</p>
-
-<p>But most important thing is how to build this and run.</p>
-
-<h2>Building</h2>
-
-<p>My make file looks like this</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='make'><span class='line'><span class="nf">all</span><span class="o">:</span>
-</span><span class='line'>  gcc -o lolpong -I/usr/lib/erlang/lib/erl_interface-3.7.7/include -L/usr/lib/erlang/lib/erl_interface-3.7.7/lib lolpong.c -lerl_interface -lei -pthread
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>It is important to remember about -pthread.</p>
-
-<h2>Running everything.</h2>
-
-<p>No how to make everything work&hellip; we need module</p>
-
-<figure class='code'><figcaption><span>lolpong.erl</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">-</span><span class="ni">module</span><span class="p">(</span><span class="n">lolpong</span><span class="p">).</span>
-</span><span class='line'><span class="p">-</span><span class="ni">export</span><span class="p">([</span><span class="n">ping</span><span class="o">/</span><span class="mi">0</span><span class="p">]).</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">ping</span><span class="p">()</span> <span class="o">-&gt;</span>
-</span><span class='line'>    <span class="p">{</span><span class="n">any</span><span class="p">,</span> <span class="n">&#39;c1@raspberrypi&#39;</span><span class="p">}</span> <span class="o">!</span> <span class="p">{</span><span class="n">self</span><span class="p">(),</span> <span class="n">ping</span><span class="p">},</span>
-</span><span class='line'>    <span class="k">receive</span>
-</span><span class='line'>  <span class="nv">R</span> <span class="o">-&gt;</span> <span class="p">{</span><span class="n">ok</span><span class="p">,</span> <span class="nv">R</span><span class="p">}</span>
-</span><span class='line'>    <span class="k">end</span><span class="p">.</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>`
-This c1 is for c extension 1 not super obvious :) cN will be for c extension N =).</p>
-
-<p>And finally we need to spawn our node&hellip;</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>λ  erl -sname <span class="s2">&quot;emu&quot;</span> -setcookie <span class="s2">&quot;cookie&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This spawns node named emu@raspberrypi on my mini box with cookie &ldquo;cookie&rdquo; now &hellip; i said finally&hellip; but it was not final step.</p>
-
-<p>Final step is to run out <code>lolpong</code> binary. It is important to run it after node is up because it will try to connect to this node.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>./lolpong
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Now we can run in our erlang shell check if everything works!</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='erlang'><span class='line'><span class="p">(</span><span class="n">emu</span><span class="p">@</span><span class="n">raspberrypi</span><span class="p">)</span><span class="mi">1</span><span class="o">&gt;</span> <span class="nn">lolpong</span><span class="p">:</span><span class="n">ping</span><span class="p">().</span>
-</span><span class='line'><span class="p">{</span><span class="n">ok</span><span class="p">,</span><span class="n">pong</span><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Works!</p>
-
-<h1>Summary</h1>
-
-<p>It is good fun, now i need to wait for the parts to assemble everything and build rest of application :)</p>
-
-<p>Cheers!!</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1990,6 +1842,10 @@ This c1 is for c extension 1 not super obvious :) cN will be for c extension N =
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/03/20/versioning-of-your-code-and-api/">Versioning of Your Code and API</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/02/23/golang-new-and-make/">Golang New &amp; Make</a>
       </li>
     
@@ -2003,10 +1859,6 @@ This c1 is for c extension 1 not super obvious :) cN will be for c extension N =
     
       <li class="post">
         <a href="/blog/2013/12/12/forkio-and-friends/">forkIO and Friends</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/10/21/erlang-e17-and-second-edition-of-programming-erlang/">Erlang E17 and Second Edition of Programming Erlang</a>
       </li>
     
   </ul>

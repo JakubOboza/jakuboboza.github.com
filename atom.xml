@@ -4,7 +4,7 @@
   <title><![CDATA[No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-02-27T12:25:07+00:00</updated>
+  <updated>2014-03-20T22:54:25+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,103 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[Versioning of Your Code and API]]></title>
+    <link href="http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api/"/>
+    <updated>2014-03-20T22:20:25+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api</id>
+    <content type="html"><![CDATA[<p>People that delt with application in production often are hit with this question. How to version your api and code.
+We had similar issue where I work and i will present my idea on the topic.</p>
+
+<h1>Motivation</h1>
+
+<p>Different clients requests features, you upgrade your codebase and mvoe along for example streamlining api. You need a way to version the code so old clients have time to move work on upgrade and new clients can use new api without having problems.</p>
+
+<h1>Restful API</h1>
+
+<p>This is the first part and its easy so i will be fast on this. In my opinion using subdomains/CNAM&#8217;es for versions like</p>
+
+<p><code>v1., v2., v3.yourdomain.com</code> or <code>20012013.yourdomain.com</code> is the best way to handle changes in API from client side. As we spoke internally using headers or any other thing can make clients go mental because they are using other type of software and
+some change could be not trivial.  Yes actually people have this type of problems with very old bash/perl systems.</p>
+
+<p>But why subdomains are cool in my opinion will unroll in next section.</p>
+
+<h1>But what about the code ?</h1>
+
+<p>Most important thing is how easy it will be for developer to add things without breaking other things.
+Yes this is the problem! Most people will think that rolling a solution with some sort of scoping, inheritance is ok.</p>
+
+<p>eg.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+</pre></td><td class='code'><pre><code class='ruby'><span class='line'><span class="k">class</span> <span class="nc">V2</span><span class="o">::</span><span class="no">People</span>
+</span><span class='line'><span class="k">class</span> <span class="nc">V1</span><span class="o">::</span><span class="no">People</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>No its not. This is actually sh*t. Why ? Even with good code test coverage you still have issue becasue each of this class is using other classes basically sharing them. And changes in their code can affect other version of api. And with V1 and V2 it is managable but if you have 5-9 versions its starts to be crazy.</p>
+
+<h1>How to solve it ?</h1>
+
+<p>Imagine a queue of versions in form of deployed boxes.</p>
+
+<p>My idea is very simple. You simply tag version codebase and deploy new version on new box while pointing new subdomain to new app.</p>
+
+<p>What do you gain ?</p>
+
+<ul>
+<li>You are sure you can deploy from 0 your app in production in isolated environment BIG WIN</li>
+<li>You know you can upgrade OS/packages in your production app with each release BIG WIN</li>
+<li>You know how many people are still on some version</li>
+<li>Your developer can develop in new version just like in any other app without caring for compatibility issues</li>
+</ul>
+
+
+<p>We live in age of cloud deploy so spinning new instance is not that expensive!</p>
+
+<p>There is only one point you have to be very aware, that is data persistence. If you are using SQL you can only ADD COLUMNS/TABLEs never remove anything. But in most thing you will do exactly this anyway.</p>
+
+<h1>Ok that was fast lets recap it</h1>
+
+<p>Process! how would you implement this in real life ? Simple!</p>
+
+<p>When you have an app and you deploy it using eg. puppet + capistrano. When you deploy first version you make a tag in git with name eg <code>version-1</code> or <code>20032014-deploy</code> and deploy it to a box assigning a CNAME.</p>
+
+<p>Next you start working on new version and when you will get new version you tag it <code>21032014-deploy</code> and deploy to a new box. This must contain &ldquo;build whole box script&rdquo; in puppet or if you are using docker. This way if you eg. added redis to stack you need to be sure your production deployment scripts are ready. This makes you be focused on keeping your &ldquo;production ready setup&rdquo; always up to date.</p>
+
+<p>And after deploy you move along and work on new version. When you need to decomision old version you just kill the box. Also each version should be monitored how many requests it actually gets to the API because if you will have 20 versions up and some are getting 0 traffic you can kill them.</p>
+
+<h1>Rollback ?</h1>
+
+<p>How do you rollback ? simply checkout deployment tag and deploy :)</p>
+
+<h1>The gain ?</h1>
+
+<p>The gain in this strategy is isolation, if you need more boxes for your main version you have ready production scripts so all you have to do is to spin them and be sure that CNAME is load balanced.</p>
+
+<h1>Summary</h1>
+
+<p>I don&rsquo;t think this strategy has any problem / hidden traps. You get smaller codebase to work with, ability to upgrade your production boxes and application libs/frameworks as you always move forward and deploy from scratch. You don&rsquo;t do upgrade-production box deploy but fresh deploy. Also fresh deploy can be smoke-tested by tester before putting it into production.
+Deployment scripts makes you by default ready to scale your app horizontally.</p>
+
+<p>Again What you do:</p>
+
+<ul>
+<li>start: Deploy version to a fresh box</li>
+<li>Upgrade Code/OS and add features</li>
+<li>Tag new version</li>
+<li>goto start:</li>
+</ul>
+
+
+<p>IMHO everyone should move to this type of strategy in context of api versions.</p>
+
+<p>Cheers
+&ndash; Jakub Oboza</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Golang New &amp; Make]]></title>
@@ -2930,7 +3027,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#108;&#x74;&#111;&#58;&#107;&#x75;&#98;&#97;&#x40;&#108;&#97;&#x6d;&#98;&#x64;&#97;&#99;&#117;&#x2e;&#98;&#x65;">&#107;&#x75;&#98;&#97;&#64;&#x6c;&#x61;&#109;&#x62;&#100;&#97;&#x63;&#x75;&#x2e;&#x62;&#101;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#116;&#x6f;&#58;&#107;&#x75;&#98;&#x61;&#64;&#108;&#97;&#109;&#98;&#100;&#x61;&#x63;&#x75;&#x2e;&#x62;&#101;">&#x6b;&#117;&#98;&#x61;&#x40;&#x6c;&#97;&#109;&#x62;&#x64;&#97;&#99;&#x75;&#x2e;&#98;&#x65;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
@@ -3318,356 +3415,6 @@ with</p>
 <p>On average you will need to do around 10-30 hits into redis to get data if you plan to do it in a &ldquo;lazy way&rdquo; you can minimize number of hits to around 10.</p>
 
 <p>If you see problem with my design comment i want to know it!.  The core of this design is that each user post data is stored into one redis instance. This is important because of access and race condition stories if you will have many redis instances. But achieving &ldquo;sharding&rdquo; in application layer is not hard. Only thing that i would care about is post id generator. This is single point of failure because i have a strong assertion that post_id is unique in whole system.</p>
-
-<p>Cheers!</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Designing Todo App Backend Using Redis and Mongodb]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb/"/>
-    <updated>2012-07-26T18:06:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/07/26/designing-todo-app-backend-using-redis-and-mongodb</id>
-    <content type="html"><![CDATA[<h2>side note</h2>
-
-<p>Upgrading octopress is a @!#!@pain! :></p>
-
-<h1>What is this post about :)</h1>
-
-<p>Long time nothing new here so i will glue something together about stuff that we were talking about today with my friend Jarek. We talked about building backend for Todo app :). Yes simple todo app. How to build scalable backend. So my initial thought was &ldquo;how i would design it in different databases&rdquo;. (i&rsquo;m taking only about data model)</p>
-
-<h2>Requirements</h2>
-
-<p>What we know:</p>
-
-<ul>
-<li>User has some sort of id. (number, email, hash of something)</li>
-<li>We need to be able to have different todo lists</li>
-<li>User can choose his todo list and see tasks ( obvious )</li>
-<li>User can tag tasks!</li>
-<li>User can query tasks in list by tags</li>
-<li>User can see all tags.</li>
-</ul>
-
-
-<h1>Design using Redis</h1>
-
-<p>How to do it with redis ? :)</p>
-
-<p>First few facts i assumed at start. Single todo task has body and timestamps [created_at, updated_at] and base for key will be phrase &ldquo;todoapp&rdquo;.</p>
-
-<p>So lets start with user and his list of todo lists :). This gives us first key</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:todolist:next <span class="o">=</span>&gt; auto incrementing counter <span class="k">for </span>lists id
-</span><span class='line'>todo:&lt;user_id&gt;:todolists <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
-</span><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:name <span class="o">=</span>&gt; list name
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Here we have two keys, first is  list id counter that we will bump to get new list counter :), second is list of todolists ids. Why do it this way ? Well people can add and remove todo lists.</p>
-
-<p>Ok so how to create new list ?</p>
-
-<figure class='code'><figcaption><span>example</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:next
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; RPUSH todo:kuba:todolists 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolists 0 -1
-</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:todolist:1:name <span class="s2">&quot;things to do&quot;</span>
-</span><span class='line'>OK
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Hey ! we just added id of our first list to list of our todo lists (lots of list word here!). Ok so now lets add a task.</p>
-
-<p>list:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt;:next <span class="o">=</span>&gt; auto incrementing counter <span class="k">for </span>tasks id
-</span><span class='line'>todo:&lt;user_id&gt;:todolist:&lt;todo_list_id&gt; <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and task:</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt; <span class="o">=</span>&gt; content of task eg. <span class="s2">&quot;finish blog post&quot;</span>
-</span><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:created_at <span class="o">=</span>&gt; epoch <span class="nb">time </span>when it was created handled by app
-</span><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:updated_at <span class="o">=</span>&gt; epoch <span class="nb">time </span>when it was last updated handled by app
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok so how to i add task to my list</p>
-
-<figure class='code'><figcaption><span>adding task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; INCR todo:kuba:todolist:1:next
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:todolist:1 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1 <span class="s2">&quot;finish blog post&quot;</span>
-</span><span class='line'>OK
-</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:created_at  1343324314
-</span><span class='line'>OK
-</span><span class='line'>redis 127.0.0.1:6379&gt; SET todo:kuba:task:1:updated_at  1343324315
-</span><span class='line'>OK
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And we have our first task in. How do we get tasks from out todo list simple!</p>
-
-<figure class='code'><figcaption><span>peeking task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
-</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; GET todo:kuba:task:1
-</span><span class='line'><span class="s2">&quot;finish blog post&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; GET todo:kuba:task:1:created_at
-</span><span class='line'><span class="s2">&quot;1343324314&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Ok so now we have very simple todo lists with tasks, well at least overview. Ofc you can use sets for todo lists or zsets but lets stay with lists to keep it simple for now.</p>
-
-<p>How ro remove task from the list ?</p>
-
-<figure class='code'><figcaption><span>removing task</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LREM todo:kuba:todolist:1 -1 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:todolist:1 0 -1
-</span><span class='line'><span class="o">(</span>empty list or <span class="nb">set</span><span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Good, now we can add tasks, remove tasks, same sotry with adding todo lists and removing todo lists.
-One last thing is to add tags!. Simply here each task will have list of tags and each tag will have list of tasks related with.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>todo:&lt;user_id&gt;:task:&lt;task_id&gt;:tags <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
-</span><span class='line'>todo:&lt;user_id&gt;:tag:&lt;tag&gt;:tasks <span class="o">=</span>&gt; <span class="o">[</span>LIST<span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So how we will add tags to tasks ? Simple!</p>
-
-<figure class='code'><figcaption><span>tagging</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags <span class="s2">&quot;redis&quot;</span>
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:task:1:tags <span class="s2">&quot;design&quot;</span>
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 2
-</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:redis:tasks 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LPUSH todo:kuba:tag:design:tasks 1
-</span><span class='line'><span class="o">(</span>integer<span class="o">)</span> 1
-</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:tag:design:tasks 0 -1
-</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;1&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; LRANGE todo:kuba:task:1:tags 0 -1
-</span><span class='line'>1<span class="o">)</span> <span class="s2">&quot;design&quot;</span>
-</span><span class='line'>2<span class="o">)</span> <span class="s2">&quot;redis&quot;</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This example shows what we need to do to tag a task with something and how to peek tasks tagged with it. Why we have both lists ? To make it fast while searching. If user will click on particular tag like &ldquo;redis&rdquo; you want to get it O(1) time not O(N) after searching all keys. And same the other way, normal ui will pull task test, when it was created and tags to display so we want to have this data ready.</p>
-
-<p>This is whole design for the todo app. We have 8 types of keys.  Things like pagination, calculating time are all left to app layer. Important thing is that i scope everything to user key / id. This is because i want to isolate each user space easy. Each user in his own space will have short lists, there is no danger of &ldquo;ultimate&rdquo;  non splittable lists.</p>
-
-<h1>Design using Mongodb</h1>
-
-<p>Well this case upfront is easier to grasp because for each list we can use single document or collection of documents lets talk about both solutions.</p>
-
-<h2>Todolist = Document</h2>
-
-<p>In this example we will use built in &ldquo;array&rdquo; operators</p>
-
-<figure class='code'><figcaption><span>creating</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">save</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span> <span class="nx">tasks</span><span class="o">:</span> <span class="p">[]})</span>
-</span><span class='line'><span class="s2">&quot;ok&quot;</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">})</span>
-</span><span class='line'><span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
-</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So lets add a task :)</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">update</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">},{</span><span class="nx">$push</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;tasks&quot;</span><span class="o">:</span><span class="p">{</span><span class="s2">&quot;name&quot;</span><span class="o">:</span><span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span> <span class="s2">&quot;tags&quot;</span><span class="o">:</span><span class="p">[</span><span class="s2">&quot;mongo&quot;</span><span class="p">]</span> <span class="p">}</span> <span class="p">}</span> <span class="p">})</span>
-</span><span class='line'><span class="s2">&quot;ok&quot;</span>
-</span><span class='line'><span class="o">&gt;</span> <span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">})</span>
-</span><span class='line'><span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
-</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>       <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span>   <span class="s2">&quot;tags&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="s2">&quot;mongo&quot;</span> <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'>      <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>this will create empty todo list with name &ldquo;House work&rdquo; of course this way we will not omit building sub lists of tags etc, we have to build in a same way like in redis but as part of document. The story is exactly the same like above in redis. Mongodb lets us query nested documents and this will enable us to skip some of the extra &ldquo;lists&rdquo; while doing search.</p>
-
-<p>Lets try it out how to find out mongo tagged entries?</p>
-
-<figure class='code'><figcaption><span>find by tag</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="o">&gt;</span> <span class="nx">db</span><span class="p">.</span><span class="nx">todolists</span><span class="p">.</span><span class="nx">find</span><span class="p">({</span><span class="s2">&quot;tasks.tags&quot;</span><span class="o">:</span> <span class="p">{</span> <span class="nx">$in</span> <span class="o">:</span> <span class="p">[</span><span class="s2">&quot;mongo&quot;</span><span class="p">]</span> <span class="p">}</span> <span class="p">})</span>
-</span><span class='line'>
-</span><span class='line'><span class="p">[</span>
-</span><span class='line'>  <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;House work&quot;</span><span class="p">,</span>   <span class="s2">&quot;_id&quot;</span> <span class="o">:</span> <span class="p">{</span>   <span class="s2">&quot;$oid&quot;</span> <span class="o">:</span> <span class="s2">&quot;50118742cc93742e0d0b6f7c&quot;</span>   <span class="p">},</span>
-</span><span class='line'>      <span class="s2">&quot;tasks&quot;</span> <span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>        <span class="p">{</span>   <span class="s2">&quot;name&quot;</span> <span class="o">:</span> <span class="s2">&quot;finish blog post&quot;</span><span class="p">,</span>   <span class="s2">&quot;tags&quot;</span> <span class="o">:</span> <span class="p">[</span>   <span class="s2">&quot;mongo&quot;</span> <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'>      <span class="p">]</span>   <span class="p">}</span>
-</span><span class='line'><span class="p">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p></p>
-
-<p>This way we can find whole todolist with task that contains tag &ldquo;mongo&rdquo; but after that we will have to work out from the document  in app the task that we are interested int. Using it like this we will have a document with structure like this</p>
-
-<figure class='code'><figcaption><span>todo list structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
-</span><span class='line'> <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
-</span><span class='line'> <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;&lt;name&gt;&quot;</span><span class="p">,</span>
-</span><span class='line'> <span class="nx">tasks</span><span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>   <span class="p">{</span>
-</span><span class='line'>    <span class="nx">text</span> <span class="o">:</span> <span class="s2">&quot;todo text&quot;</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">tags</span> <span class="o">:</span> <span class="p">[</span>
-</span><span class='line'>      <span class="s2">&quot;Tag1&quot;</span><span class="p">,</span> <span class="s2">&quot;Tag2&quot;</span>
-</span><span class='line'>    <span class="p">]</span>
-</span><span class='line'>    <span class="nx">created_at</span> <span class="o">:</span> <span class="nx">Time</span><span class="p">,</span>
-</span><span class='line'>    <span class="nx">updated_at</span> <span class="o">:</span> <span class="nx">Time</span>
-</span><span class='line'>   <span class="p">}</span>
-</span><span class='line'> <span class="p">]</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Using redis we could wrapp stuff into MULTI command while using mongodb &ldquo;array&rdquo; command we are a bit cowboishing. They could remove wrong stuff in we will not be cautious :). (well same in redis!) Big plus of Mongodb is native time type!</p>
-
-<h2>Todolist = many documents</h2>
-
-<p>Using this approach we can leverage more of our stuff on mongodb search in this approach each task will be a different document.
-With structure like this</p>
-
-<figure class='code'><figcaption><span>task structure</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nx">todo_list</span><span class="o">:</span> <span class="s2">&quot;todo list id&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">text</span><span class="o">:</span> <span class="s2">&quot;todo text&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">tags</span><span class="o">:</span> <span class="p">[</span><span class="s2">&quot;Tag1&quot;</span><span class="p">,</span> <span class="s2">&quot;Tag2&quot;</span><span class="p">]</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This way we will have a lot of documents, more disk space consumption and still we will have to have second collection with with objects with structure like this</p>
-
-<figure class='code'><figcaption><span>structure of todolist</span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-</pre></td><td class='code'><pre><code class='javascript'><span class='line'><span class="p">{</span>
-</span><span class='line'>  <span class="nx">todo_list</span><span class="o">:</span> <span class="s2">&quot;todo list id&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">name</span><span class="o">:</span> <span class="s2">&quot;todo list name&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="nx">user</span><span class="o">:</span> <span class="s2">&quot;user id&quot;</span><span class="p">,</span>
-</span><span class='line'>  <span class="c1">// tasks: [Tasks OBjectID Array] you could have this and remove todo_list id from tasks choice is yours :)</span>
-</span><span class='line'><span class="p">}</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And this way we can use <code>find</code> tool very easy and get documents fast.</p>
-
-<h1>Summary</h1>
-
-<p>All of this solutions have some pros and cons, mongodb excels better when documents are bigger (limit is set on 16 mb per document) than loads of small documents (massive waste of space). Solution in redis is really fast and if you will implement lazy loading it will be very fast.  You can adjust this designs to your situation by changing lists to sets etc. The place where redis OWNS mongodb in this context is &ldquo;strucutres&rdquo; and we use a lot of them to store data like this, lists sets, zsets. Implementing priority list in mongodb will be totally custom solution while in redis we can just use zset.</p>
-
-<p>This is just my point of view on this. I will supply some code to cover it more in part two. This is next problem, i&rsquo;m sure solution in mongodb using things like mongoid <a href="http://mongoid.org">http://mongoid.org</a> will be much more developer friendly then building things &ldquo;rawly&rdquo; in redis hiredis client.</p>
-
-<p>btw i jsut wrote this from &ldquo;top of my head&rdquo; so it may contain typos and i&rsquo;m sure keys, structures can be optimized :) This is just to open discussion with my friend :)</p>
 
 <p>Cheers!</p>
 ]]></content>
