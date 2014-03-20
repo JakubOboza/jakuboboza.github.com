@@ -4,7 +4,7 @@
   <title><![CDATA[Category: code | No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/blog/categories/code/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-03-20T22:54:25+00:00</updated>
+  <updated>2014-03-20T23:02:05+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -18,7 +18,7 @@
     <link href="http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api/"/>
     <updated>2014-03-20T22:20:25+00:00</updated>
     <id>http://no-fucking-idea.com/blog/2014/03/20/versioning-of-your-code-and-api</id>
-    <content type="html"><![CDATA[<p>People that delt with application in production often are hit with this question. How to version your api and code.
+    <content type="html"><![CDATA[<p>People that deal with evolving applications in &lsquo;the wild&rsquo; are often hit with quite a tricky question. How do you version your api and the code behind it?
 We had similar issue where I work and i will present my idea on the topic.</p>
 
 <h1>Motivation</h1>
