@@ -162,6 +162,9 @@ Yes this is the problem! Most people will think that rolling a solution with som
 
 <p>There is only one point you have to be very aware, that is data persistence. If you are using SQL you can only ADD COLUMNS/TABLEs never remove anything. But in most thing you will do exactly this anyway.</p>
 
+<p>Version deploy&rsquo;s on virtual machines example:
+<img src="http://i.imgur.com/9oEfbnD.png" alt="Image of V'm boxes in the web" /></p>
+
 <h1>Ok that was fast lets recap it</h1>
 
 <p>Process! how would you implement this in real life ? Simple!</p>
@@ -171,6 +174,9 @@ Yes this is the problem! Most people will think that rolling a solution with som
 <p>Next you start working on new version and when you will get new version you tag it <code>21032014-deploy</code> and deploy to a new box. This must contain &ldquo;build whole box script&rdquo; in puppet or if you are using docker. This way if you eg. added redis to stack you need to be sure your production deployment scripts are ready. This makes you be focused on keeping your &ldquo;production ready setup&rdquo; always up to date.</p>
 
 <p>And after deploy you move along and work on new version. When you need to decomision old version you just kill the box. Also each version should be monitored how many requests it actually gets to the API because if you will have 20 versions up and some are getting 0 traffic you can kill them.</p>
+
+<p>Example where many versions use same db &ldquo;ring&rdquo; / &ldquo;cluster&rdquo;:
+<img src="http://i.imgur.com/Fd3OvKm.png" alt="V'ms using DB" /></p>
 
 <h1>Rollback ?</h1>
 

@@ -4,7 +4,7 @@
   <title><![CDATA[No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-03-20T23:02:05+00:00</updated>
+  <updated>2014-03-21T16:15:31+00:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -70,6 +70,9 @@ Yes this is the problem! Most people will think that rolling a solution with som
 
 <p>There is only one point you have to be very aware, that is data persistence. If you are using SQL you can only ADD COLUMNS/TABLEs never remove anything. But in most thing you will do exactly this anyway.</p>
 
+<p>Version deploy&rsquo;s on virtual machines example:
+<img src="http://i.imgur.com/9oEfbnD.png" alt="Image of V'm boxes in the web" /></p>
+
 <h1>Ok that was fast lets recap it</h1>
 
 <p>Process! how would you implement this in real life ? Simple!</p>
@@ -79,6 +82,9 @@ Yes this is the problem! Most people will think that rolling a solution with som
 <p>Next you start working on new version and when you will get new version you tag it <code>21032014-deploy</code> and deploy to a new box. This must contain &ldquo;build whole box script&rdquo; in puppet or if you are using docker. This way if you eg. added redis to stack you need to be sure your production deployment scripts are ready. This makes you be focused on keeping your &ldquo;production ready setup&rdquo; always up to date.</p>
 
 <p>And after deploy you move along and work on new version. When you need to decomision old version you just kill the box. Also each version should be monitored how many requests it actually gets to the API because if you will have 20 versions up and some are getting 0 traffic you can kill them.</p>
+
+<p>Example where many versions use same db &ldquo;ring&rdquo; / &ldquo;cluster&rdquo;:
+<img src="http://i.imgur.com/Fd3OvKm.png" alt="V'ms using DB" /></p>
 
 <h1>Rollback ?</h1>
 
@@ -3027,7 +3033,7 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
     <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
     <updated>2012-09-26T20:54:00+01:00</updated>
     <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#109;&#97;&#105;&#108;&#116;&#x6f;&#x3a;&#x6b;&#117;&#x62;&#x61;&#x40;&#108;&#x61;&#x6d;&#x62;&#x64;&#x61;&#99;&#117;&#46;&#x62;&#101;">&#107;&#117;&#98;&#97;&#64;&#x6c;&#x61;&#x6d;&#x62;&#x64;&#x61;&#99;&#x75;&#46;&#x62;&#x65;</a> =)</p>
+    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#97;&#x69;&#108;&#x74;&#x6f;&#x3a;&#x6b;&#x75;&#x62;&#x61;&#x40;&#108;&#97;&#109;&#98;&#100;&#x61;&#99;&#117;&#x2e;&#x62;&#x65;">&#107;&#x75;&#98;&#97;&#x40;&#108;&#97;&#109;&#98;&#100;&#x61;&#99;&#x75;&#46;&#x62;&#101;</a> =)</p>
 
 <p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
 
