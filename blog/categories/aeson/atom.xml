@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: aeson | No F*cking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/aeson/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2014-03-23T11:20:13+00:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[Shortest way to work with json in Haskell]]></title>
+    <link href="http://no-fucking-idea.com/blog/2014/03/23/shortest-way-to-work-with-json-in-haskell/"/>
+    <updated>2014-03-23T10:52:17+00:00</updated>
+    <id>http://no-fucking-idea.com/blog/2014/03/23/shortest-way-to-work-with-json-in-haskell</id>
+    <content type="html"><![CDATA[<p><code>Data.Aeson</code> is a great package for working with json data in <code>Haskell</code> but you can make it work even in fewer lines of code.</p>
+
+<p>if you will use <code>DeriveGeneric</code> from GHC and <code>GHC.Generics</code> in your module you can parse stuff super easy ;O.</p>
+
+<p>This is my example that explains how to use it.</p>
+
+<p>``` haskell json_example.hs
+{&ndash;# LANGUAGE OverloadedStrings, DeriveGeneric #&ndash;}</p>
+
+<p>import Data.Aeson
+import GHC.Generics</p>
+
+<p>data Profile = Profile {
+  age       :: Int,
+  isNice    :: Bool
+} deriving (Show, Generic)</p>
+
+<p>data User = User {
+  id        :: Int,
+  name      :: String,
+  profile   :: Profile
+} deriving (Show, Generic)</p>
+
+<p>instance FromJSON Profile
+instance ToJSON Profile</p>
+
+<p>instance FromJSON User
+instance ToJSON User</p>
+
+<p>main = do
+  let profile = Profile 29 True
+  let user = User 1 &ldquo;Kuba&rdquo; profile
+  putStrLn $ show user</p>
+
+<p>  &mdash; encode will give you back ByteString</p>
+
+<p>  let json = encode user
+  putStrLn $ show json</p>
+
+<p>  &mdash; decode will give you back Maybe</p>
+
+<p>  let parsedUser = decode json :: Maybe User
+  case parsedUser of</p>
+
+<pre><code>Just newUser -&gt; putStrLn $ show newUser
+Nothing -&gt; putStrLn "Sorry mate this is not happening"
+</code></pre>
+
+<p>```</p>
+
+<p>result</p>
+
+<p><code>bash result
+User {id = 1, name = "Kuba", profile = Profile {age = 29, isNice = True}}
+"{\"id\":1,\"name\":\"Kuba\",\"profile\":{\"isNice\":true,\"age\":29}}"
+User {id = 1, name = "Kuba", profile = Profile {age = 29, isNice = True}}
+</code></p>
+
+<p>Here i made shortest possible example to show off how you can work with Aeson. First of all if you will use Generics you don&rsquo;t have to write real implementation of <code>ToJSON</code> and <code>FromJSON</code> GHC will do this or you!</p>
+
+<p>Only thing to remember is that <code>encode</code> will give you back <code>ByteString</code> and decode will give you <code>Maybe A</code> and thats it.</p>
+
+<p>You always can fallback to normal way of describing <code>FromJSON</code> and <code>ToJSON</code> :)</p>
+]]></content>
+  </entry>
+  
+</feed>

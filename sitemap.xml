@@ -165,12 +165,18 @@
         <lastmod>2014-03-21T16:15:02+00:00</lastmod>
     </url>
     <url>
+        <loc>
+            http://no-fucking-idea.com/blog/2014/03/23/shortest-way-to-work-with-json-in-haskell/
+        </loc>
+        <lastmod>2014-03-23T11:19:37+00:00</lastmod>
+    </url>
+    <url>
         <loc>http://no-fucking-idea.com/blog/archives/</loc>
-        <lastmod>2014-03-21T16:15:02+00:00</lastmod>
+        <lastmod>2014-03-23T11:19:37+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/</loc>
-        <lastmod>2014-03-21T16:15:02+00:00</lastmod>
+        <lastmod>2014-03-23T11:19:37+00:00</lastmod>
     </url>
     <url>
         <loc>http://no-fucking-idea.com/link-lib/</loc>
