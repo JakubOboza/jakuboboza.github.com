@@ -1,0 +1,631 @@
+
+<!DOCTYPE html>
+<!--[if IEMobile 7 ]><html class="no-js iem7"><![endif]-->
+<!--[if lt IE 9]><html class="no-js lte-ie8"><![endif]-->
+<!--[if (gt IE 8)|(gt IEMobile 7)|!(IEMobile)|!(IE)]><!--><html class="no-js" lang="en"><!--<![endif]-->
+<head>
+  <meta charset="utf-8">
+  <title>java.util.concurrent Goodies - No F*cking Idea</title>
+  <meta name="author" content="Jakub Oboza">
+
+  
+  <meta name="description" content="JVM as a virtual machine is great. I&rsquo;m not in love with java as i think too many {} can kill anyone regardless of faith. It was really really &hellip;">
+  
+
+  <!-- http://t.co/dKP3o1e -->
+  <meta name="HandheldFriendly" content="True">
+  <meta name="MobileOptimized" content="320">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  
+  <link rel="canonical" href="http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies">
+  <link href="/favicon.png" rel="icon">
+  <link href="/stylesheets/screen.css" media="screen, projection" rel="stylesheet" type="text/css">
+  <link href="/atom.xml" rel="alternate" title="No F*cking Idea" type="application/atom+xml">
+  <script src="/javascripts/modernizr-2.0.js"></script>
+  <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
+  <script>!window.jQuery && document.write(unescape('%3Cscript src="./javascripts/libs/jquery.min.js"%3E%3C/script%3E'))</script>
+  <script src="/javascripts/octopress.js" type="text/javascript"></script>
+  <!--Fonts from Google"s Web font directory at http://google.com/webfonts -->
+<link href="http://fonts.googleapis.com/css?family=PT+Serif:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+<link href="http://fonts.googleapis.com/css?family=PT+Sans:regular,italic,bold,bolditalic" rel="stylesheet" type="text/css">
+
+  
+  <script type="text/javascript">
+    var _gaq = _gaq || [];
+    _gaq.push(['_setAccount', 'UA-17523816-2']);
+    _gaq.push(['_trackPageview']);
+
+    (function() {
+      var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+      ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+    })();
+  </script>
+
+
+</head>
+
+<body   >
+  <header role="banner"><hgroup>
+  <h1><a href="/">No F*cking Idea</a></h1>
+  
+    <h2>Common answer to everything</h2>
+  
+</hgroup>
+
+</header>
+  <nav role="navigation"><ul class="subscription" data-subscription="rss">
+  <li><a href="/atom.xml" rel="subscribe-rss" title="subscribe via RSS">RSS</a></li>
+  
+</ul>
+  
+<form action="http://google.com/search" method="get">
+  <fieldset role="search">
+    <input type="hidden" name="q" value="site:no-fucking-idea.com" />
+    <input class="search" type="text" name="q" results="0" placeholder="Search"/>
+  </fieldset>
+</form>
+  
+<ul class="main-navigation">
+  <li><a href="/">Blog</a></li>
+  <li><a href="/blog/archives">Archives</a></li>
+  <li><a href="/link-lib">LIB!</a></li>
+</ul>
+
+</nav>
+  <div id="main">
+    <div id="content">
+      <div>
+<article class="hentry" role="article">
+  
+  <header>
+    
+      <h1 class="entry-title">java.util.concurrent Goodies</h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-25T16:42:41+01:00" pubdate data-updated="true">Aug 25<span>th</span>, 2014</time>
+        
+           | <a href="#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+<div class="entry-content"><p>JVM as a virtual machine is great. I&rsquo;m not in love with java as i think too many <code>{}</code> can kill anyone regardless of faith. It was really really long time since i wrote anything for the blog and today as it is &ldquo;summer bank holiday&rdquo; i decided to finally sit down and write few things that are interesting.</p>
+
+<h1>java.util.concurrent</h1>
+
+<p>Even if i will be talking about java.util.concurrent i will give few examples using Scala. I like Scala and i think it is much easier to understand and read than java. Simply less tokens. And less tokens mean more fun.</p>
+
+<p>I don&rsquo;t know if explore how much nice things there is in JVM, one of thme is truffle (added in java 8 but i will not be talking about it.). One of the great things is called java.util.concurrent this set of tools/lib gives us  tools to work with concurrency.</p>
+
+<p>In times of agents such a set of tools could feel a bit outdated but still they can gives us valuable lessons about concurrency and maybe be useful in present/future.</p>
+
+<h1>Abstracts</h1>
+
+<p>So as we all know java is full of design patterns and one of the first things you will not while looking into docs are abstract classes. This kinda gives us overview of what we can expect in the package. Just like a movie teaser but&hellip; boring :).
+First thing we notice while looking at <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html">http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html</a> is probably <code>BlockingDeque</code> and <code>BlockingQueue</code>. And this is out first example.</p>
+
+<h1>ArrayBlockingQueue</h1>
+
+<p>If you ever worked with threads or any concurrent constructs you know how useful are channels/queues. First concrete class in the package is <code>ArrayBlockingQueue[T]</code> which lets us construct queues. For those who don&rsquo;t know what queue is, it is a FIFO construct, FIFO means First In, First Out. So elements that get in first will be picked up at the receiving end of queue before rest. It is like a queue for tickets before a big summer blockbuster release.</p>
+
+<p>Let us try this ArrayBlockingQueue out:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.control.Breaks._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">queue</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ArrayBlockingQueue</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">100</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">producer1</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="mi">0</span> <span class="n">to</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">n</span><span class="o">)){}</span>
+</span><span class='line'>      <span class="o">})</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">})</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">consumer1</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">breakable</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">){</span>
+</span><span class='line'>          <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">take</span><span class="o">()</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="n">toString</span><span class="o">()</span> <span class="o">++</span> <span class="s">&quot;,&quot;</span><span class="o">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">&gt;</span> <span class="mi">999</span><span class="o">){</span>
+</span><span class='line'>            <span class="n">break</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">})</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">consumer1</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">producer1</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What are we doing here ? We simply demonstrate a producer and consumer type of situation.</p>
+
+<p>There are few things to look at, first initialization</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">queue</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ArrayBlockingQueue</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">100</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>where we create our queue with a total capacity of 100, this can be skipped for no capacity but this could be risky in terms of memory. So we wanna omit unpredictable parts of code.</p>
+
+<p>How to add stuff to the queue</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">while</span><span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">n</span><span class="o">)){}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Why like this ? lets not forget it is a blocking queue so once it will fill the capacity it will block. If the queue is full <code>offer</code> method will return false and the element will not be added tot he queue thats why we have to retry this. Of course in this case it might not be the perfect example as it will grind CPU until it can add it to the queue. So maybe adding <code>Thread.sleep(50)</code> sleep for 50 miliseconds could be good here.</p>
+
+<p>Now lets look at consumer, here the job is simple we use take, this will simply block if we can get anything from queue and wait. In most cases this is the behavior we want. Thread simply sitting there and waiting for something to appear in the queue.</p>
+
+<p>There is also option to use <code>add</code> function to add stuff to the queue but this will trigger an exception in case queue is full and i&rsquo;m not a big fan of handling exceptions in this type of scenarios.</p>
+
+<p>More info about ArrayblockingQueue api can be found here <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html">http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html</a></p>
+
+<h1>ConcurrentHashMap[K,V]</h1>
+
+<p>Concurrent Hash Map lets you use a single dictionary / hash by many threads. This is great as it makes all the synchronization work for us. Of course often writes/updates by many threads will make it perform very very slow, but if we can eg. use it as a form of reduction result that would be great simplification.</p>
+
+<p>If we will use it like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Mapper</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">times</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">hash</span><span class="k">:</span> <span class="kt">ConcurrentHashMap</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">])</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">(){</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">times</span><span class="o">).</span><span class="n">sum</span>
+</span><span class='line'>    <span class="n">hash</span><span class="o">.</span><span class="n">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">hash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">resultHash</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">threads</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">)),</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">)),</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">))</span>
+</span><span class='line'>    <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">threads</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">start</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">threads</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">join</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="s">&quot;Key &#39;one&#39; =&gt; &quot;</span> <span class="o">+</span> <span class="n">resultHash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">).</span><span class="n">toString</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="s">&quot;Key &#39;two&#39; =&gt; &quot;</span> <span class="o">+</span> <span class="n">resultHash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">).</span><span class="n">toString</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course it will work but it will  often cause troubles, this code is racy :D and often it will end up with same results  for both one and two even if it is synced.  Well we now know we can use this structure from any number of threads but to make it work it would be more useful to create another thread that would be reducing values or simply have a queue where we put in partial results and a single thread that is updating the hash.  Still this can have some use, if you have a one reducer that is updating this hash or simply many different reducers updating dedicated key spaces while many other threads are simply using this hash in readonly mode. The big issue is when you want to update it as it doesn&rsquo;t support transactions and what you really want to do here is a transaction.</p>
+
+<h1>Atomic variables</h1>
+
+<p>Well we all love simplicity of a single variable, and in concurrent env it is simply easy to forget about goodies of sequential world and use a raw variable to store results of some execution.</p>
+
+<p>Let us write some dodgy code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Counter</span><span class="o">()</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="mi">1</span> <span class="n">until</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span> <span class="k">=</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span> <span class="o">+</span> <span class="n">n</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">var</span> <span class="n">counter</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="n">counter</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Result should be 999000 but&hellip; you will get stuff like 907369&hellip; This happens because of both threads randomly reading and updating with garbage same val. Thats why we need atomic values :) lets convert it into less dodgy thing.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent.atomic._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Counter</span><span class="o">()</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="mi">1</span> <span class="n">until</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">addAndGet</span><span class="o">(</span><span class="n">n</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">var</span> <span class="n">counter</span><span class="k">:</span> <span class="kt">AtomicInteger</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="n">counter</span><span class="o">.</span><span class="n">get</span><span class="o">())</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After adding AtomicInteger and changing how we update to atomic updates we always get same results and it is the correct answer. It doesn&rsquo;t look good yet because of this Example.counter but that is just an example.</p>
+
+<h1>A lot more&hellip;</h1>
+
+<p>There is a lot more in this awesome package to cover, i will cover one more thing next time and that are Cyclic Barriers for better synchronization of threads but for now this is it :). I hope this was a useful read. I don&rsquo;t have much time to play with Scala so if something looks &ldquo;too simple&rdquo; :D yeah i&rsquo;m not a scala expert.</p>
+
+<p>Cheers!</p>
+</div>
+
+
+  <footer>
+    <p class="meta">
+      
+  
+
+<span class="byline author vcard">Posted by <span class="fn">Jakub Oboza</span></span>
+
+      
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-25T16:42:41+01:00" pubdate data-updated="true">Aug 25<span>th</span>, 2014</time>
+      
+
+<span class="categories">
+  
+    <a class='category' href='/blog/categories/concurrent/'>concurrent</a>, <a class='category' href='/blog/categories/goodies/'>goodies</a>, <a class='category' href='/blog/categories/java/'>java</a>, <a class='category' href='/blog/categories/scala/'>scala</a>
+  
+</span>
+
+
+    </p>
+    
+      <div class="sharing">
+  
+  <a href="//twitter.com/share" class="twitter-share-button" data-url="http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/" data-via="JakubOboza" data-counturl="http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/" >Tweet</a>
+  
+  
+  <div class="g-plusone" data-size="medium"></div>
+  
+  
+    <div class="fb-like" data-send="true" data-width="450" data-show-faces="false"></div>
+  
+</div>
+
+    
+    <p class="meta">
+      
+        <a class="basic-alignment left" href="/blog/2014/03/23/shortest-way-to-work-with-json-in-haskell/" title="Previous Post: Shortest way to work with json in Haskell">&laquo; Shortest way to work with json in Haskell</a>
+      
+      
+    </p>
+  </footer>
+</article>
+
+  <section>
+    <h1>Comments</h1>
+    <div id="disqus_thread" aria-live="polite"><noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+</div>
+  </section>
+
+</div>
+
+<aside class="sidebar">
+  
+    <section>
+  <a class="coinbase-button" data-code="a093222bb846e484c7f9123c4ec983e5" data-button-style="donation_large" href="https://coinbase.com/checkouts/a093222bb846e484c7f9123c4ec983e5">Donate Bitcoins</a><script src="https://coinbase.com/assets/button.js" type="text/javascript"></script>
+</section><section>
+  <h1>Recent Posts</h1>
+  <ul id="recent_posts">
+    
+      <li class="post">
+        <a href="/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/">java.util.concurrent Goodies</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/23/shortest-way-to-work-with-json-in-haskell/">Shortest Way to Work With Json in Haskell</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/03/20/versioning-of-your-code-and-api/">Versioning of Your Code and API</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/02/23/golang-new-and-make/">Golang New &amp; Make</a>
+      </li>
+    
+      <li class="post">
+        <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
+      </li>
+    
+  </ul>
+</section>
+
+<section>
+  <h1>GitHub Repos</h1>
+  <ul id="gh_repos">
+    <li class="loading">Status updating...</li>
+  </ul>
+  
+  <a href="https://github.com/JakubOboza">@JakubOboza</a> on GitHub
+  
+  <script type="text/javascript">
+    $(document).ready(function(){
+        if (!window.jXHR){
+            var jxhr = document.createElement('script');
+            jxhr.type = 'text/javascript';
+            jxhr.src = '/javascripts/libs/jXHR.js';
+            var s = document.getElementsByTagName('script')[0];
+            s.parentNode.insertBefore(jxhr, s);
+        }
+
+        github.showRepos({
+            user: 'JakubOboza',
+            count: 0,
+            skip_forks: true,
+            target: '#gh_repos'
+        });
+    });
+  </script>
+  <script src="/javascripts/github.js" type="text/javascript"> </script>
+</section>
+
+
+
+<section class="googleplus">
+  <h1>
+    <a href="https://plus.google.com/101398174644580064637?rel=author">
+      <img src="http://www.google.com/images/icons/ui/gprofile_button-32.png" width="32" height="32">
+      Google+
+    </a>
+  </h1>
+</section>
+
+
+
+  
+</aside>
+
+
+    </div>
+  </div>
+  <footer role="contentinfo"><p>
+  Copyright &copy; 2014 - Jakub Oboza -
+  <span class="credit">Powered by <a href="http://octopress.org">Octopress</a></span>
+</p>
+
+</footer>
+  
+
+<script type="text/javascript">
+      var disqus_shortname = 'nofuckingidea';
+      
+        
+        // var disqus_developer = 1;
+        var disqus_identifier = 'http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/';
+        var disqus_url = 'http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/';
+        var disqus_script = 'embed.js';
+      
+    (function () {
+      var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+      dsq.src = '//' + disqus_shortname + '.disqus.com/' + disqus_script;
+      (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+    }());
+</script>
+
+
+
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) {return;}
+  js = d.createElement(s); js.id = id; js.async = true;
+  js.src = "//connect.facebook.net/en_US/all.js#appId=212934732101925&xfbml=1";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+
+
+
+  <script type="text/javascript">
+    (function() {
+      var script = document.createElement('script'); script.type = 'text/javascript'; script.async = true;
+      script.src = 'https://apis.google.com/js/plusone.js';
+      var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(script, s);
+    })();
+  </script>
+
+
+
+  <script type="text/javascript">
+    (function(){
+      var twitterWidgets = document.createElement('script');
+      twitterWidgets.type = 'text/javascript';
+      twitterWidgets.async = true;
+      twitterWidgets.src = '//platform.twitter.com/widgets.js';
+      document.getElementsByTagName('head')[0].appendChild(twitterWidgets);
+    })();
+  </script>
+
+
+
+
+
+</body>
+</html>

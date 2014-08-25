@@ -1,0 +1,244 @@
+<?xml version="1.0" encoding="utf-8"?>
+<feed xmlns="http://www.w3.org/2005/Atom">
+
+  <title><![CDATA[Category: scala | No F*cking Idea]]></title>
+  <link href="http://no-fucking-idea.com/blog/categories/scala/atom.xml" rel="self"/>
+  <link href="http://no-fucking-idea.com/"/>
+  <updated>2014-08-25T19:37:27+01:00</updated>
+  <id>http://no-fucking-idea.com/</id>
+  <author>
+    <name><![CDATA[Jakub Oboza]]></name>
+    <email><![CDATA[jakub.oboza@gmail.com]]></email>
+  </author>
+  <generator uri="http://octopress.org/">Octopress</generator>
+
+  
+  <entry>
+    <title type="html"><![CDATA[java.util.concurrent goodies]]></title>
+    <link href="http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/"/>
+    <updated>2014-08-25T16:42:41+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies</id>
+    <content type="html"><![CDATA[<p>JVM as a virtual machine is great. I&rsquo;m not in love with java as i think too many <code>{}</code> can kill anyone regardless of faith. It was really really long time since i wrote anything for the blog and today as it is &ldquo;summer bank holiday&rdquo; i decided to finally sit down and write few things that are interesting.</p>
+
+<h1>java.util.concurrent</h1>
+
+<p>Even if i will be talking about java.util.concurrent i will give few examples using Scala. I like Scala and i think it is much easier to understand and read than java. Simply less tokens. And less tokens mean more fun.</p>
+
+<p>I don&rsquo;t know if explore how much nice things there is in JVM, one of thme is truffle (added in java 8 but i will not be talking about it.). One of the great things is called java.util.concurrent this set of tools/lib gives us  tools to work with concurrency.</p>
+
+<p>In times of agents such a set of tools could feel a bit outdated but still they can gives us valuable lessons about concurrency and maybe be useful in present/future.</p>
+
+<h1>Abstracts</h1>
+
+<p>So as we all know java is full of design patterns and one of the first things you will not while looking into docs are abstract classes. This kinda gives us overview of what we can expect in the package. Just like a movie teaser but&hellip; boring :).
+First thing we notice while looking at <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html">http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html</a> is probably <code>BlockingDeque</code> and <code>BlockingQueue</code>. And this is out first example.</p>
+
+<h1>ArrayBlockingQueue</h1>
+
+<p>If you ever worked with threads or any concurrent constructs you know how useful are channels/queues. First concrete class in the package is <code>ArrayBlockingQueue[T]</code> which lets us construct queues. For those who don&rsquo;t know what queue is, it is a FIFO construct, FIFO means First In, First Out. So elements that get in first will be picked up at the receiving end of queue before rest. It is like a queue for tickets before a big summer blockbuster release.</p>
+
+<p>Let us try this ArrayBlockingQueue out:</p>
+
+<p>``` scala
+import java.util.concurrent.<em>
+import scala.util.control.Breaks.</em></p>
+
+<p>object Example {
+  val queue = new ArrayBlockingQueue<a href="100">Int</a></p>
+
+<p>  val producer1 = new Thread(new Runnable {</p>
+
+<pre><code>def run() {
+  (0 to 1000).map( n =&gt; {
+    while(!queue.offer(n)){}
+  })
+}
+</code></pre>
+
+<p>  })</p>
+
+<p>  val consumer1 = new Thread(new Runnable {</p>
+
+<pre><code>def run() {
+  breakable {
+    while(true){
+      val result = queue.take()
+      print(result.toString() ++ ",")
+      if (result &gt; 999){
+        break
+      }
+    }
+  }
+}
+</code></pre>
+
+<p>  })</p>
+
+<p>  def main(args: Array[String]): Unit = {</p>
+
+<pre><code>consumer1.start
+producer1.start
+</code></pre>
+
+<p>  }</p>
+
+<p>}
+```</p>
+
+<p>What are we doing here ? We simply demonstrate a producer and consumer type of situation.</p>
+
+<p>There are few things to look at, first initialization</p>
+
+<p><code>scala
+val queue = new ArrayBlockingQueue[Int](100)
+</code></p>
+
+<p>where we create our queue with a total capacity of 100, this can be skipped for no capacity but this could be risky in terms of memory. So we wanna omit unpredictable parts of code.</p>
+
+<p>How to add stuff to the queue</p>
+
+<p><code>scala
+  while(!queue.offer(n)){}
+</code></p>
+
+<p>Why like this ? lets not forget it is a blocking queue so once it will fill the capacity it will block. If the queue is full <code>offer</code> method will return false and the element will not be added tot he queue thats why we have to retry this. Of course in this case it might not be the perfect example as it will grind CPU until it can add it to the queue. So maybe adding <code>Thread.sleep(50)</code> sleep for 50 miliseconds could be good here.</p>
+
+<p>Now lets look at consumer, here the job is simple we use take, this will simply block if we can get anything from queue and wait. In most cases this is the behavior we want. Thread simply sitting there and waiting for something to appear in the queue.</p>
+
+<p>There is also option to use <code>add</code> function to add stuff to the queue but this will trigger an exception in case queue is full and i&rsquo;m not a big fan of handling exceptions in this type of scenarios.</p>
+
+<p>More info about ArrayblockingQueue api can be found here <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html">http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html</a></p>
+
+<h1>ConcurrentHashMap[K,V]</h1>
+
+<p>Concurrent Hash Map lets you use a single dictionary / hash by many threads. This is great as it makes all the synchronization work for us. Of course often writes/updates by many threads will make it perform very very slow, but if we can eg. use it as a form of reduction result that would be great simplification.</p>
+
+<p>If we will use it like this</p>
+
+<p>``` scala
+import java.util.concurrent._</p>
+
+<p>case class Mapper(key: String, times: Int, hash: ConcurrentHashMap[String, Int]) extends Runnable {
+  def run(){</p>
+
+<pre><code>val sum = (1 to times).sum
+hash.put(key, sum + hash.get(key))
+</code></pre>
+
+<p>  }
+}</p>
+
+<p>object Example {</p>
+
+<p>  val resultHash = new ConcurrentHashMap<a href="">String, Int</a></p>
+
+<p>  def main(args: Array[String]) : Unit = {</p>
+
+<pre><code>val threads = Array(
+  new Thread(Mapper("one", 1000, resultHash)),
+  new Thread(Mapper("two", 1000, resultHash)),
+  new Thread(Mapper("one", 1000, resultHash))
+)
+
+threads.map(_.start)
+threads.map(_.join)
+
+print("Key 'one' =&gt; " + resultHash.get("one").toString + "\n")
+print("Key 'two' =&gt; " + resultHash.get("two").toString + "\n")
+</code></pre>
+
+<p>  }</p>
+
+<p>}</p>
+
+<p>```</p>
+
+<p>Of course it will work but it will  often cause troubles, this code is racy :D and often it will end up with same results  for both one and two even if it is synced.  Well we now know we can use this structure from any number of threads but to make it work it would be more useful to create another thread that would be reducing values or simply have a queue where we put in partial results and a single thread that is updating the hash.  Still this can have some use, if you have a one reducer that is updating this hash or simply many different reducers updating dedicated key spaces while many other threads are simply using this hash in readonly mode. The big issue is when you want to update it as it doesn&rsquo;t support transactions and what you really want to do here is a transaction.</p>
+
+<h1>Atomic variables</h1>
+
+<p>Well we all love simplicity of a single variable, and in concurrent env it is simply easy to forget about goodies of sequential world and use a raw variable to store results of some execution.</p>
+
+<p>Let us write some dodgy code:</p>
+
+<p>``` scala
+import java.util.concurrent._</p>
+
+<p>case class Counter() extends Runnable {</p>
+
+<p>  def run() {</p>
+
+<pre><code>(1 until 1000).map( n =&gt; Example.counter = Example.counter + n)
+</code></pre>
+
+<p>  }</p>
+
+<p>}</p>
+
+<p>object Example {</p>
+
+<p>  var counter: Int = 0</p>
+
+<p>  def main(args: Array[String]) : Unit = {</p>
+
+<pre><code>val t = new Thread(Counter())
+val t2 = new Thread(Counter())
+t.start
+t2.start
+t.join
+t2.join
+
+print(counter)
+</code></pre>
+
+<p>  }
+}
+```</p>
+
+<p>Result should be 999000 but&hellip; you will get stuff like 907369&hellip; This happens because of both threads randomly reading and updating with garbage same val. Thats why we need atomic values :) lets convert it into less dodgy thing.</p>
+
+<p>``` scala</p>
+
+<p>import java.util.concurrent.atomic._</p>
+
+<p>case class Counter() extends Runnable {</p>
+
+<p>  def run() {</p>
+
+<pre><code>(1 until 1000).map( n =&gt; Example.counter.addAndGet(n))
+</code></pre>
+
+<p>  }</p>
+
+<p>}</p>
+
+<p>object Example {</p>
+
+<p>  var counter: AtomicInteger = new AtomicInteger()</p>
+
+<p>  def main(args: Array[String]) : Unit = {</p>
+
+<pre><code>val t = new Thread(Counter())
+val t2 = new Thread(Counter())
+t.start
+t2.start
+t.join
+t2.join
+
+print(counter.get())
+</code></pre>
+
+<p>  }
+}
+```
+After adding AtomicInteger and changing how we update to atomic updates we always get same results and it is the correct answer. It doesn&rsquo;t look good yet because of this Example.counter but that is just an example.</p>
+
+<h1>A lot more&hellip;</h1>
+
+<p>There is a lot more in this awesome package to cover, i will cover one more thing next time and that are Cyclic Barriers for better synchronization of threads but for now this is it :). I hope this was a useful read. I don&rsquo;t have much time to play with Scala so if something looks &ldquo;too simple&rdquo; :D yeah i&rsquo;m not a scala expert.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
+  
+</feed>

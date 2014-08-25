@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Recently we have a very very exploit rich winter. By now most of people connects everything to YAML and in general deserializing stuff. But I will &hellip;">
+  <meta name="description" content="Recently i was working on a project that is processing campaigns. I asked my self if I can improve it a bit, but not by refactoring existing code but &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,476 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2013/02/21/if-the-real-game-changer/">&#8216;If&#8217; the Real Game Changer</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2013-02-21T21:35:00+00:00" pubdate data-updated="true">Feb 21<span>st</span>, 2013</time>
+        
+           | <a href="/blog/2013/02/21/if-the-real-game-changer/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2013/02/21/if-the-real-game-changer/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>Recently i was working on a project that is processing campaigns. I asked my self if I can improve it a bit, but not by refactoring existing code but by trying to approach it from a different angle.</p>
+
+<h1>Observations</h1>
+
+<p>I started making mind notes of things that i understand about system i&rsquo;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
+
+<h2>Observation 1</h2>
+
+<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &ldquo;this is simple&rdquo;. We can represent it by list of actions like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But this is true only for simple campaigns and most of them are NOT like this :(</p>
+
+<h2>Observation 2</h2>
+
+<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &ldquo;if&rdquo; i WIN !
+Lets have a look</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>                     /&gt; <span class="o">[</span>step<span class="o">]</span>
+</span><span class='line'>                   <span class="o">(</span>No<span class="o">)</span>
+</span><span class='line'>                    |
+</span><span class='line'>  <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span><span class="k">if </span>a &lt; 5<span class="o">]</span> - <span class="o">(</span> yes <span class="o">)</span> -&gt; <span class="o">[</span>step<span class="o">]</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Yes! This was it, i think this is solution to all problems, ability to represent campaign as a sequence of steps mixed with if statements essentially abstract syntax tree of campaign.</p>
+
+<h2>Observation 3</h2>
+
+<p>It is not a tree&hellip;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&hellip; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
+
+<h1>AST</h1>
+
+<p>I wrote simple grammar and made a parser of a very simple &ldquo;ify&rdquo; language. My language starts like this&hellip;</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+</pre></td><td class='code'><pre><code class='bash'><span class='line'>-- Grammar
+</span><span class='line'>-- x is variable
+</span><span class='line'>-- a is artmetic thing aka number
+</span><span class='line'>-- n is actual number eg. 1
+</span><span class='line'>-- b is boolean
+</span><span class='line'>-- opa is arthmetic operator
+</span><span class='line'>-- opb is boolean operator
+</span><span class='line'>-- opr is comparison operator
+</span><span class='line'>-- S is statement
+</span><span class='line'>--  a   ::<span class="o">=</span> x | n | - a | a opa a
+</span><span class='line'>--  b   ::<span class="o">=</span> <span class="nb">true</span> | <span class="nb">false</span> | not b | b opb b | a opr a
+</span><span class='line'>--  opa ::<span class="o">=</span> + | - | * | /
+</span><span class='line'>--  opb ::<span class="o">=</span> and | or
+</span><span class='line'>--  opr ::<span class="o">=</span> &gt; | &lt;
+</span><span class='line'>--  S   ::<span class="o">=</span> x | x &lt;- a | S1; S2 | <span class="o">(</span> S <span class="o">)</span> | <span class="k">if </span>b <span class="k">then </span>S1 <span class="k">else </span>S2
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>This shows that the grammar is very simple, we can have assigments, operators to test and compare and ofc IF statement ;) this is our key to divnity!</p>
+
+<p>Parser looks kinda ugly because i used parts of the code i wrote before and had i in different projects.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+<span class='line-number'>36</span>
+<span class='line-number'>37</span>
+<span class='line-number'>38</span>
+<span class='line-number'>39</span>
+<span class='line-number'>40</span>
+<span class='line-number'>41</span>
+<span class='line-number'>42</span>
+<span class='line-number'>43</span>
+<span class='line-number'>44</span>
+<span class='line-number'>45</span>
+<span class='line-number'>46</span>
+<span class='line-number'>47</span>
+<span class='line-number'>48</span>
+<span class='line-number'>49</span>
+<span class='line-number'>50</span>
+<span class='line-number'>51</span>
+<span class='line-number'>52</span>
+<span class='line-number'>53</span>
+<span class='line-number'>54</span>
+<span class='line-number'>55</span>
+<span class='line-number'>56</span>
+<span class='line-number'>57</span>
+<span class='line-number'>58</span>
+<span class='line-number'>59</span>
+<span class='line-number'>60</span>
+<span class='line-number'>61</span>
+<span class='line-number'>62</span>
+<span class='line-number'>63</span>
+<span class='line-number'>64</span>
+<span class='line-number'>65</span>
+<span class='line-number'>66</span>
+<span class='line-number'>67</span>
+<span class='line-number'>68</span>
+<span class='line-number'>69</span>
+<span class='line-number'>70</span>
+<span class='line-number'>71</span>
+<span class='line-number'>72</span>
+<span class='line-number'>73</span>
+<span class='line-number'>74</span>
+<span class='line-number'>75</span>
+<span class='line-number'>76</span>
+<span class='line-number'>77</span>
+<span class='line-number'>78</span>
+<span class='line-number'>79</span>
+<span class='line-number'>80</span>
+<span class='line-number'>81</span>
+<span class='line-number'>82</span>
+<span class='line-number'>83</span>
+<span class='line-number'>84</span>
+<span class='line-number'>85</span>
+<span class='line-number'>86</span>
+<span class='line-number'>87</span>
+<span class='line-number'>88</span>
+<span class='line-number'>89</span>
+<span class='line-number'>90</span>
+<span class='line-number'>91</span>
+<span class='line-number'>92</span>
+<span class='line-number'>93</span>
+<span class='line-number'>94</span>
+<span class='line-number'>95</span>
+<span class='line-number'>96</span>
+<span class='line-number'>97</span>
+<span class='line-number'>98</span>
+<span class='line-number'>99</span>
+<span class='line-number'>100</span>
+<span class='line-number'>101</span>
+<span class='line-number'>102</span>
+<span class='line-number'>103</span>
+<span class='line-number'>104</span>
+<span class='line-number'>105</span>
+<span class='line-number'>106</span>
+<span class='line-number'>107</span>
+<span class='line-number'>108</span>
+<span class='line-number'>109</span>
+<span class='line-number'>110</span>
+<span class='line-number'>111</span>
+<span class='line-number'>112</span>
+<span class='line-number'>113</span>
+<span class='line-number'>114</span>
+<span class='line-number'>115</span>
+<span class='line-number'>116</span>
+<span class='line-number'>117</span>
+<span class='line-number'>118</span>
+<span class='line-number'>119</span>
+<span class='line-number'>120</span>
+<span class='line-number'>121</span>
+<span class='line-number'>122</span>
+<span class='line-number'>123</span>
+<span class='line-number'>124</span>
+<span class='line-number'>125</span>
+<span class='line-number'>126</span>
+<span class='line-number'>127</span>
+<span class='line-number'>128</span>
+<span class='line-number'>129</span>
+<span class='line-number'>130</span>
+<span class='line-number'>131</span>
+<span class='line-number'>132</span>
+<span class='line-number'>133</span>
+<span class='line-number'>134</span>
+<span class='line-number'>135</span>
+<span class='line-number'>136</span>
+<span class='line-number'>137</span>
+<span class='line-number'>138</span>
+<span class='line-number'>139</span>
+<span class='line-number'>140</span>
+<span class='line-number'>141</span>
+<span class='line-number'>142</span>
+<span class='line-number'>143</span>
+<span class='line-number'>144</span>
+<span class='line-number'>145</span>
+<span class='line-number'>146</span>
+<span class='line-number'>147</span>
+<span class='line-number'>148</span>
+<span class='line-number'>149</span>
+<span class='line-number'>150</span>
+<span class='line-number'>151</span>
+<span class='line-number'>152</span>
+<span class='line-number'>153</span>
+<span class='line-number'>154</span>
+<span class='line-number'>155</span>
+<span class='line-number'>156</span>
+<span class='line-number'>157</span>
+<span class='line-number'>158</span>
+<span class='line-number'>159</span>
+<span class='line-number'>160</span>
+<span class='line-number'>161</span>
+<span class='line-number'>162</span>
+<span class='line-number'>163</span>
+<span class='line-number'>164</span>
+<span class='line-number'>165</span>
+<span class='line-number'>166</span>
+<span class='line-number'>167</span>
+<span class='line-number'>168</span>
+<span class='line-number'>169</span>
+<span class='line-number'>170</span>
+<span class='line-number'>171</span>
+<span class='line-number'>172</span>
+<span class='line-number'>173</span>
+<span class='line-number'>174</span>
+</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">import</span> <span class="nn">System.Environment</span><span class="p">(</span><span class="n">getArgs</span><span class="p">)</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">System.IO</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Control.Monad</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec.Expr</span>
+</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec.Language</span>
+</span><span class='line'><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Text.ParserCombinators.Parsec.Token</span> <span class="k">as</span> <span class="n">Token</span>
+</span><span class='line'>
+</span><span class='line'><span class="c1">--  Grammar</span>
+</span><span class='line'><span class="c1">-- x is variable</span>
+</span><span class='line'><span class="c1">-- a is artmetic thing aka number</span>
+</span><span class='line'><span class="c1">-- n is actual number eg. 1</span>
+</span><span class='line'><span class="c1">-- b is boolean</span>
+</span><span class='line'><span class="c1">-- opa is arthmetic operator</span>
+</span><span class='line'><span class="c1">-- opb is boolean operator</span>
+</span><span class='line'><span class="c1">-- opr is comparison operator</span>
+</span><span class='line'><span class="c1">-- S is statement</span>
+</span><span class='line'><span class="c1">--  a   ::= x | n | - a | a opa a</span>
+</span><span class='line'><span class="c1">--  b   ::= true | false | not b | b opb b | a opr a</span>
+</span><span class='line'><span class="c1">--  opa ::= + | - | * | /</span>
+</span><span class='line'><span class="c1">--  opb ::= and | or</span>
+</span><span class='line'><span class="c1">--  opr ::= &gt; | &lt;</span>
+</span><span class='line'><span class="c1">--  S   ::= x | x &lt;- a | S1; S2 | ( S ) | if b then S1 else S2 </span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">AExpr</span> <span class="ow">=</span> <span class="kt">Var</span> <span class="kt">String</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">IntConst</span> <span class="kt">Integer</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Neg</span> <span class="kt">AExpr</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">ABinary</span> <span class="kt">ABinOp</span> <span class="kt">AExpr</span> <span class="kt">AExpr</span>
+</span><span class='line'>              <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">BExpr</span> <span class="ow">=</span> <span class="kt">BoolConst</span> <span class="kt">Bool</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Not</span> <span class="kt">BExpr</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">BBinary</span> <span class="kt">BBinOp</span> <span class="kt">BExpr</span> <span class="kt">BExpr</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">RBinary</span> <span class="kt">RBinOp</span> <span class="kt">AExpr</span> <span class="kt">AExpr</span>
+</span><span class='line'>             <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">ABinOp</span> <span class="ow">=</span> <span class="kt">Add</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Subtract</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Multiply</span>
+</span><span class='line'>            <span class="o">|</span> <span class="kt">Divide</span>
+</span><span class='line'>              <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">BBinOp</span> <span class="ow">=</span> <span class="kt">And</span> <span class="o">|</span> <span class="kt">Or</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'><span class="kr">data</span> <span class="kt">RBinOp</span> <span class="ow">=</span> <span class="kt">Greater</span> <span class="o">|</span> <span class="kt">Less</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="kr">data</span> <span class="kt">Stmt</span> <span class="ow">=</span> <span class="kt">Seq</span> <span class="p">[</span><span class="kt">Stmt</span><span class="p">]</span>
+</span><span class='line'>           <span class="o">|</span> <span class="kt">Assign</span> <span class="kt">String</span> <span class="kt">AExpr</span>
+</span><span class='line'>           <span class="o">|</span> <span class="kt">If</span> <span class="kt">BExpr</span> <span class="kt">Stmt</span> <span class="kt">Stmt</span>
+</span><span class='line'>           <span class="o">|</span> <span class="kt">Ident</span> <span class="kt">String</span>
+</span><span class='line'>             <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">languageDef</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="n">emptyDef</span> <span class="p">{</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentStart</span>    <span class="ow">=</span> <span class="s">&quot;/*&quot;</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentEnd</span>      <span class="ow">=</span> <span class="s">&quot;*/&quot;</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentLine</span>     <span class="ow">=</span> <span class="s">&quot;#&quot;</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identStart</span>      <span class="ow">=</span> <span class="n">letter</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identLetter</span>     <span class="ow">=</span> <span class="n">alphaNum</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedNames</span>   <span class="ow">=</span> <span class="p">[</span> <span class="s">&quot;if&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;then&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;else&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;true&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;false&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;not&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;and&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;or&quot;</span>
+</span><span class='line'>                                      <span class="p">]</span>
+</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedOpNames</span> <span class="ow">=</span> <span class="p">[</span><span class="s">&quot;+&quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> <span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;-&quot;</span>
+</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;and&quot;</span><span class="p">,</span> <span class="s">&quot;or&quot;</span><span class="p">,</span> <span class="s">&quot;not&quot;</span>
+</span><span class='line'>                                      <span class="p">]</span>
+</span><span class='line'>            <span class="p">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">lexer</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">makeTokenParser</span> <span class="n">languageDef</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">identifier</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identifier</span> <span class="n">lexer</span> <span class="c1">-- parses an identifier</span>
+</span><span class='line'><span class="nf">reserved</span>   <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reserved</span>   <span class="n">lexer</span> <span class="c1">-- parses a reserved name</span>
+</span><span class='line'><span class="nf">reservedOp</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedOp</span> <span class="n">lexer</span> <span class="c1">-- parses an operator</span>
+</span><span class='line'><span class="nf">parens</span>     <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">parens</span>     <span class="n">lexer</span> <span class="c1">-- parses surrounding parenthesis:</span>
+</span><span class='line'><span class="nf">integer</span>    <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">integer</span>    <span class="n">lexer</span> <span class="c1">-- parses an integer</span>
+</span><span class='line'><span class="nf">semi</span>       <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">semi</span>       <span class="n">lexer</span> <span class="c1">-- parses a semicolon</span>
+</span><span class='line'><span class="nf">whiteSpace</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">whiteSpace</span> <span class="n">lexer</span> <span class="c1">-- parses whitespace</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">whileParser</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">whileParser</span> <span class="ow">=</span> <span class="n">whiteSpace</span> <span class="o">&gt;&gt;</span> <span class="n">statement</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">statement</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">statement</span> <span class="ow">=</span>   <span class="n">parens</span> <span class="n">statement</span>
+</span><span class='line'>           <span class="o">&lt;|&gt;</span> <span class="n">sequenceOfStmt</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">sequenceOfStmt</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">list</span> <span class="ow">&lt;-</span> <span class="p">(</span><span class="n">sepBy1</span> <span class="n">statement&#39;</span> <span class="n">semi</span><span class="p">)</span>
+</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kr">if</span> <span class="n">length</span> <span class="n">list</span> <span class="o">==</span> <span class="mi">1</span> <span class="kr">then</span> <span class="n">head</span> <span class="n">list</span> <span class="kr">else</span> <span class="kt">Seq</span> <span class="n">list</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">statement&#39;</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">statement&#39;</span> <span class="ow">=</span>   <span class="n">ifStmt</span>
+</span><span class='line'>            <span class="o">&lt;|&gt;</span> <span class="n">assignStmt</span>
+</span><span class='line'>            <span class="o">&lt;|&gt;</span> <span class="n">identName</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">ifStmt</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">ifStmt</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">reserved</span> <span class="s">&quot;if&quot;</span>
+</span><span class='line'>      <span class="n">cond</span>  <span class="ow">&lt;-</span> <span class="n">bExpression</span>
+</span><span class='line'>      <span class="n">reserved</span> <span class="s">&quot;then&quot;</span>
+</span><span class='line'>      <span class="n">stmt1</span> <span class="ow">&lt;-</span> <span class="n">statement</span>
+</span><span class='line'>      <span class="n">reserved</span> <span class="s">&quot;else&quot;</span>
+</span><span class='line'>      <span class="n">stmt2</span> <span class="ow">&lt;-</span> <span class="n">statement</span>
+</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">If</span> <span class="n">cond</span> <span class="n">stmt1</span> <span class="n">stmt2</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nf">identName</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">identName</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span>  <span class="n">varName</span> <span class="ow">&lt;-</span> <span class="n">identifier</span>
+</span><span class='line'>       <span class="n">return</span> <span class="o">$</span> <span class="kt">Ident</span> <span class="n">varName</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">assignStmt</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">assignStmt</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">var</span>  <span class="ow">&lt;-</span> <span class="n">identifier</span>
+</span><span class='line'>      <span class="n">reservedOp</span> <span class="s">&quot;&lt;-&quot;</span>
+</span><span class='line'>      <span class="n">expr</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
+</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">Assign</span> <span class="n">var</span> <span class="n">expr</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">aExpression</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">AExpr</span>
+</span><span class='line'><span class="nf">aExpression</span> <span class="ow">=</span> <span class="n">buildExpressionParser</span> <span class="n">aOperators</span> <span class="n">aTerm</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">bExpression</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">BExpr</span>
+</span><span class='line'><span class="nf">bExpression</span> <span class="ow">=</span> <span class="n">buildExpressionParser</span> <span class="n">bOperators</span> <span class="n">bTerm</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">aOperators</span> <span class="ow">=</span> <span class="p">[</span> <span class="p">[</span><span class="kt">Prefix</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;-&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">Neg</span>             <span class="p">))</span>          <span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;*&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Multiply</span><span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;/&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Divide</span>  <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;+&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Add</span>     <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;-&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Subtract</span><span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>               <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">bOperators</span> <span class="ow">=</span> <span class="p">[</span> <span class="p">[</span><span class="kt">Prefix</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;not&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">Not</span>             <span class="p">))</span>          <span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;and&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BBinary</span> <span class="kt">And</span>     <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;or&quot;</span>  <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BBinary</span> <span class="kt">Or</span>      <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
+</span><span class='line'>              <span class="p">]</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">aTerm</span> <span class="ow">=</span>  <span class="n">parens</span> <span class="n">aExpression</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">liftM</span> <span class="kt">Var</span> <span class="n">identifier</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">liftM</span> <span class="kt">IntConst</span> <span class="n">integer</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">bTerm</span> <span class="ow">=</span>  <span class="n">parens</span> <span class="n">bExpression</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reserved</span> <span class="s">&quot;true&quot;</span>  <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BoolConst</span> <span class="kt">True</span> <span class="p">))</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reserved</span> <span class="s">&quot;false&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BoolConst</span> <span class="kt">False</span><span class="p">))</span>
+</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">rExpression</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">rExpression</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">a1</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
+</span><span class='line'>      <span class="n">op</span> <span class="ow">&lt;-</span> <span class="n">relation</span>
+</span><span class='line'>      <span class="n">a2</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
+</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">RBinary</span> <span class="n">op</span> <span class="n">a1</span> <span class="n">a2</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">relation</span> <span class="ow">=</span>   <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;&gt;&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="kt">Greater</span><span class="p">)</span>
+</span><span class='line'>          <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;&lt;&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="kt">Less</span><span class="p">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'><span class="nf">parseString</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">parseString</span> <span class="n">str</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">case</span> <span class="n">parse</span> <span class="n">whileParser</span> <span class="s">&quot;&quot;</span> <span class="n">str</span> <span class="kr">of</span>
+</span><span class='line'>     <span class="kt">Left</span> <span class="n">e</span>  <span class="ow">-&gt;</span> <span class="ne">error</span> <span class="o">$</span> <span class="n">show</span> <span class="n">e</span>
+</span><span class='line'>     <span class="kt">Right</span> <span class="n">r</span> <span class="ow">-&gt;</span> <span class="n">r</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">parseFile</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="kt">Stmt</span>
+</span><span class='line'><span class="nf">parseFile</span> <span class="n">file</span> <span class="ow">=</span>
+</span><span class='line'>   <span class="kr">do</span> <span class="n">program</span>  <span class="ow">&lt;-</span> <span class="n">readFile</span> <span class="n">file</span>
+</span><span class='line'>      <span class="kr">case</span> <span class="n">parse</span> <span class="n">whileParser</span> <span class="s">&quot;&quot;</span> <span class="n">program</span> <span class="kr">of</span>
+</span><span class='line'>        <span class="kt">Left</span> <span class="n">e</span>  <span class="ow">-&gt;</span> <span class="n">print</span> <span class="n">e</span> <span class="o">&gt;&gt;</span> <span class="n">fail</span> <span class="s">&quot;parse error&quot;</span>
+</span><span class='line'>        <span class="kt">Right</span> <span class="n">r</span> <span class="ow">-&gt;</span> <span class="n">return</span> <span class="n">r</span>
+</span><span class='line'>
+</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
+</span><span class='line'>  <span class="n">args</span> <span class="ow">&lt;-</span> <span class="n">getArgs</span>
+</span><span class='line'>  <span class="n">ast</span> <span class="ow">&lt;-</span> <span class="n">parseFile</span><span class="p">(</span><span class="n">head</span> <span class="n">args</span><span class="p">)</span>
+</span><span class='line'>  <span class="n">putStrLn</span> <span class="o">$</span> <span class="n">show</span> <span class="n">ast</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>But it works&hellip; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1948,252 +2418,6 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2012/09/26/failover-redis-setup-with-sentinel/">Failover Redis Setup With Sentinel</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2012-09-26T20:54:00+01:00" pubdate data-updated="true">Sep 26<span>th</span>, 2012</time>
-        
-           | <a href="/blog/2012/09/26/failover-redis-setup-with-sentinel/#disqus_thread"
-             data-disqus-identifier="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#111;&#x3a;&#107;&#117;&#98;&#x61;&#x40;&#108;&#97;&#x6d;&#98;&#x64;&#x61;&#99;&#117;&#x2e;&#x62;&#x65;">&#x6b;&#x75;&#98;&#97;&#64;&#x6c;&#97;&#x6d;&#x62;&#x64;&#x61;&#99;&#x75;&#x2e;&#x62;&#x65;</a> =)</p>
-
-<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
-
-<h1>Auto failover</h1>
-
-<p>Every database wants to have auto failover mechanism. This is a great marketing pitch! haha :) Main thing about is that one of your server can go down and you still are operating as normal and when he will go up again everything is fine.. unless your routing server will go down :D ofc.</p>
-
-<h1>2.4.16 / 2.6</h1>
-
-<p>Since Redis 2.4 and 2.6 there was this idea of adding it. Antirez wrote a draft spec for it and implemented it as experimental feature. It is really well described here <a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a> so i will just write a short note how did i setup it and how does it feel.</p>
-
-<h1>Setup</h1>
-
-<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &ldquo;master&rdquo; and &ldquo;replica servers&rdquo; with this configs
-(ofc turn daemonize to yes in production lol)</p>
-
-<p>Standard Master setup with default script on port 6379 and replica with</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>daemonize no
-</span><span class='line'>timeout 0
-</span><span class='line'>loglevel notice
-</span><span class='line'>logfile stdout
-</span><span class='line'>databases 16
-</span><span class='line'>save 900 1
-</span><span class='line'>save 300 10
-</span><span class='line'>save 60 10000
-</span><span class='line'>stop-writes-on-bgsave-error yes
-</span><span class='line'>rdbcompression yes
-</span><span class='line'>rdbchecksum yes
-</span><span class='line'>dbfilename dump.rdb
-</span><span class='line'>dir ./replica_dir
-</span><span class='line'>slave-serve-stale-data yes
-</span><span class='line'>slave-read-only yes
-</span><span class='line'>appendonly no
-</span><span class='line'>appendfsync everysec
-</span><span class='line'>no-appendfsync-on-rewrite no
-</span><span class='line'>auto-aof-rewrite-percentage 100
-</span><span class='line'>auto-aof-rewrite-min-size 64mb
-</span><span class='line'>lua-time-limit 5000
-</span><span class='line'>
-</span><span class='line'>pidfile /var/run/redis-replica-7789.pid
-</span><span class='line'>port 7789
-</span><span class='line'><span class="c"># replication config</span>
-</span><span class='line'>slaveof 127.0.0.1 6379
-</span><span class='line'>
-</span><span class='line'>slowlog-log-slower-than 10000
-</span><span class='line'>slowlog-max-len 1024
-</span><span class='line'><span class="nb">hash</span>-max-ziplist-entries 512
-</span><span class='line'><span class="nb">hash</span>-max-ziplist-value 64
-</span><span class='line'>list-max-ziplist-entries 512
-</span><span class='line'>list-max-ziplist-value 64
-</span><span class='line'><span class="nb">set</span>-max-intset-entries 512
-</span><span class='line'>zset-max-ziplist-entries 128
-</span><span class='line'>zset-max-ziplist-value 64
-</span><span class='line'>activerehashing yes
-</span><span class='line'>client-output-buffer-limit normal 0 0 0
-</span><span class='line'>client-output-buffer-limit slave 256mb 64mb 60
-</span><span class='line'>client-output-buffer-limit pubsub 32mb 8mb 60
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So i had master and slave running :) that was cool next thing i did was! configure and turn on the sentinel!</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sentinel monitor mymaster 127.0.0.1 6379 1
-</span><span class='line'>sentinel down-after-milliseconds mymaster 60000
-</span><span class='line'>sentinel failover-timeout mymaster 900000
-</span><span class='line'>sentinel can-failover mymaster yes
-</span><span class='line'>sentinel parallel-syncs mymaster 1
-</span><span class='line'>
-</span><span class='line'>sentinel monitor resque 127.0.0.1 7789 1
-</span><span class='line'>sentinel down-after-milliseconds resque 10000
-</span><span class='line'>sentinel failover-timeout resque 900000
-</span><span class='line'>sentinel can-failover resque yes
-</span><span class='line'>sentinel parallel-syncs resque 5
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And i turned him on!
-with</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis-server sentinel-my.conf --sentinel
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And stuff started to work :D</p>
-
-<h1>Carnage!!!</h1>
-
-<p>So i started easy</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; get <span class="s2">&quot;hello&quot;</span>
-</span><span class='line'><span class="s2">&quot;hello&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; <span class="nb">set</span> <span class="s2">&quot;hello&quot;</span> <span class="s2">&quot;lulz&quot;</span>
-</span><span class='line'>OK
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Works! I killed master and connected on 26379 to sentinel master did query</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> sentinel masters
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and got</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>1<span class="o">)</span>  1<span class="o">)</span> <span class="s2">&quot;name&quot;</span>
-</span><span class='line'>    2<span class="o">)</span> <span class="s2">&quot;resque&quot;</span>
-</span><span class='line'>    3<span class="o">)</span> <span class="s2">&quot;ip&quot;</span>
-</span><span class='line'>    4<span class="o">)</span> <span class="s2">&quot;127.0.0.1&quot;</span>
-</span><span class='line'>    5<span class="o">)</span> <span class="s2">&quot;port&quot;</span>
-</span><span class='line'>    6<span class="o">)</span> <span class="s2">&quot;7789&quot;</span>
-</span><span class='line'>    ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
-
-<h1>when you do this&hellip;</h1>
-
-<p>You will see beefy</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:03.441 <span class="c"># Error condition on socket for SYNC: Connection refused</span>
-</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 * Connecting to MASTER...
-</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 * MASTER &lt;-&gt; SLAVE sync started
-</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 <span class="c"># Error condition on socket for SYNC: Connection refused</span>
-</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:05.128 * MASTER MODE enabled <span class="o">(</span>user request<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>On the initial slave :) things just went from bad to good :D</p>
-
-<h1>Summary</h1>
-
-<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&hellip;</p>
-
-<p>I like it!</p>
-
-<p>THIS IS EXPERIMENTAL FEATURE and much more info about it you can finde here <a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a>. Especially about pub/sub way of watching stuff / events while they occur.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/3/">&larr; Older</a>
@@ -2213,6 +2437,10 @@ with</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/">java.util.concurrent Goodies</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/03/23/shortest-way-to-work-with-json-in-haskell/">Shortest Way to Work With Json in Haskell</a>
       </li>
     
@@ -2226,10 +2454,6 @@ with</p>
     
       <li class="post">
         <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
       </li>
     
   </ul>

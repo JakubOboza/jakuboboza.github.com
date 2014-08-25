@@ -9,7 +9,7 @@
   <meta name="author" content="Jakub Oboza">
 
   
-  <meta name="description" content="Data.Aeson is a great package for working with json data in Haskell but you can make it work even in fewer lines of code. if you will use &hellip;">
+  <meta name="description" content="JVM as a virtual machine is great. I&rsquo;m not in love with java as i think too many {} can kill anyone regardless of faith. It was really really &hellip;">
   
 
   <!-- http://t.co/dKP3o1e -->
@@ -78,6 +78,360 @@
     <div id="content">
       <div class="blog-index">
   
+  
+  
+    <article>
+      
+  <header>
+    
+      <h1 class="entry-title"><a href="/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/">java.util.concurrent Goodies</a></h1>
+    
+    
+      <p class="meta">
+        
+
+
+
+
+
+
+
+
+  
+
+
+<time datetime="2014-08-25T16:42:41+01:00" pubdate data-updated="true">Aug 25<span>th</span>, 2014</time>
+        
+           | <a href="/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/#disqus_thread"
+             data-disqus-identifier="http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/">Comments</a>
+        
+      </p>
+    
+  </header>
+
+
+  <div class="entry-content"><p>JVM as a virtual machine is great. I&rsquo;m not in love with java as i think too many <code>{}</code> can kill anyone regardless of faith. It was really really long time since i wrote anything for the blog and today as it is &ldquo;summer bank holiday&rdquo; i decided to finally sit down and write few things that are interesting.</p>
+
+<h1>java.util.concurrent</h1>
+
+<p>Even if i will be talking about java.util.concurrent i will give few examples using Scala. I like Scala and i think it is much easier to understand and read than java. Simply less tokens. And less tokens mean more fun.</p>
+
+<p>I don&rsquo;t know if explore how much nice things there is in JVM, one of thme is truffle (added in java 8 but i will not be talking about it.). One of the great things is called java.util.concurrent this set of tools/lib gives us  tools to work with concurrency.</p>
+
+<p>In times of agents such a set of tools could feel a bit outdated but still they can gives us valuable lessons about concurrency and maybe be useful in present/future.</p>
+
+<h1>Abstracts</h1>
+
+<p>So as we all know java is full of design patterns and one of the first things you will not while looking into docs are abstract classes. This kinda gives us overview of what we can expect in the package. Just like a movie teaser but&hellip; boring :).
+First thing we notice while looking at <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html">http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html</a> is probably <code>BlockingDeque</code> and <code>BlockingQueue</code>. And this is out first example.</p>
+
+<h1>ArrayBlockingQueue</h1>
+
+<p>If you ever worked with threads or any concurrent constructs you know how useful are channels/queues. First concrete class in the package is <code>ArrayBlockingQueue[T]</code> which lets us construct queues. For those who don&rsquo;t know what queue is, it is a FIFO construct, FIFO means First In, First Out. So elements that get in first will be picked up at the receiving end of queue before rest. It is like a queue for tickets before a big summer blockbuster release.</p>
+
+<p>Let us try this ArrayBlockingQueue out:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.control.Breaks._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">queue</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ArrayBlockingQueue</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">100</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">producer1</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="mi">0</span> <span class="n">to</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">n</span><span class="o">)){}</span>
+</span><span class='line'>      <span class="o">})</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">})</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">consumer1</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">breakable</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">){</span>
+</span><span class='line'>          <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">take</span><span class="o">()</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="n">toString</span><span class="o">()</span> <span class="o">++</span> <span class="s">&quot;,&quot;</span><span class="o">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">&gt;</span> <span class="mi">999</span><span class="o">){</span>
+</span><span class='line'>            <span class="n">break</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">})</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">consumer1</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">producer1</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What are we doing here ? We simply demonstrate a producer and consumer type of situation.</p>
+
+<p>There are few things to look at, first initialization</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">queue</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ArrayBlockingQueue</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">100</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>where we create our queue with a total capacity of 100, this can be skipped for no capacity but this could be risky in terms of memory. So we wanna omit unpredictable parts of code.</p>
+
+<p>How to add stuff to the queue</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">while</span><span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">n</span><span class="o">)){}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Why like this ? lets not forget it is a blocking queue so once it will fill the capacity it will block. If the queue is full <code>offer</code> method will return false and the element will not be added tot he queue thats why we have to retry this. Of course in this case it might not be the perfect example as it will grind CPU until it can add it to the queue. So maybe adding <code>Thread.sleep(50)</code> sleep for 50 miliseconds could be good here.</p>
+
+<p>Now lets look at consumer, here the job is simple we use take, this will simply block if we can get anything from queue and wait. In most cases this is the behavior we want. Thread simply sitting there and waiting for something to appear in the queue.</p>
+
+<p>There is also option to use <code>add</code> function to add stuff to the queue but this will trigger an exception in case queue is full and i&rsquo;m not a big fan of handling exceptions in this type of scenarios.</p>
+
+<p>More info about ArrayblockingQueue api can be found here <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html">http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html</a></p>
+
+<h1>ConcurrentHashMap[K,V]</h1>
+
+<p>Concurrent Hash Map lets you use a single dictionary / hash by many threads. This is great as it makes all the synchronization work for us. Of course often writes/updates by many threads will make it perform very very slow, but if we can eg. use it as a form of reduction result that would be great simplification.</p>
+
+<p>If we will use it like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Mapper</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">times</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">hash</span><span class="k">:</span> <span class="kt">ConcurrentHashMap</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">])</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">(){</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">times</span><span class="o">).</span><span class="n">sum</span>
+</span><span class='line'>    <span class="n">hash</span><span class="o">.</span><span class="n">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">hash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">resultHash</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">threads</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">)),</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">)),</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">))</span>
+</span><span class='line'>    <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">threads</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">start</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">threads</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">join</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="s">&quot;Key &#39;one&#39; =&gt; &quot;</span> <span class="o">+</span> <span class="n">resultHash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">).</span><span class="n">toString</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="s">&quot;Key &#39;two&#39; =&gt; &quot;</span> <span class="o">+</span> <span class="n">resultHash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">).</span><span class="n">toString</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course it will work but it will  often cause troubles, this code is racy :D and often it will end up with same results  for both one and two even if it is synced.  Well we now know we can use this structure from any number of threads but to make it work it would be more useful to create another thread that would be reducing values or simply have a queue where we put in partial results and a single thread that is updating the hash.  Still this can have some use, if you have a one reducer that is updating this hash or simply many different reducers updating dedicated key spaces while many other threads are simply using this hash in readonly mode. The big issue is when you want to update it as it doesn&rsquo;t support transactions and what you really want to do here is a transaction.</p>
+
+<h1>Atomic variables</h1>
+
+<p>Well we all love simplicity of a single variable, and in concurrent env it is simply easy to forget about goodies of sequential world and use a raw variable to store results of some execution.</p>
+
+<p>Let us write some dodgy code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Counter</span><span class="o">()</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="mi">1</span> <span class="n">until</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span> <span class="k">=</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span> <span class="o">+</span> <span class="n">n</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">var</span> <span class="n">counter</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="n">counter</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Result should be 999000 but&hellip; you will get stuff like 907369&hellip; This happens because of both threads randomly reading and updating with garbage same val. Thats why we need atomic values :) lets convert it into less dodgy thing.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent.atomic._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Counter</span><span class="o">()</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="mi">1</span> <span class="n">until</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">addAndGet</span><span class="o">(</span><span class="n">n</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">var</span> <span class="n">counter</span><span class="k">:</span> <span class="kt">AtomicInteger</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="n">counter</span><span class="o">.</span><span class="n">get</span><span class="o">())</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After adding AtomicInteger and changing how we update to atomic updates we always get same results and it is the correct answer. It doesn&rsquo;t look good yet because of this Example.counter but that is just an example.</p>
+
+<h1>A lot more&hellip;</h1>
+
+<p>There is a lot more in this awesome package to cover, i will cover one more thing next time and that are Cyclic Barriers for better synchronization of threads but for now this is it :). I hope this was a useful read. I don&rsquo;t have much time to play with Scala so if something looks &ldquo;too simple&rdquo; :D yeah i&rsquo;m not a scala expert.</p>
+
+<p>Cheers!</p>
+</div>
+  
+  
+
+
+    </article>
   
   
     <article>
@@ -1434,476 +1788,6 @@ Each of them run forever like crazy music fans :). In this place we can make it 
 
     </article>
   
-  
-    <article>
-      
-  <header>
-    
-      <h1 class="entry-title"><a href="/blog/2013/02/21/if-the-real-game-changer/">&#8216;If&#8217; the Real Game Changer</a></h1>
-    
-    
-      <p class="meta">
-        
-
-
-
-
-
-
-
-
-  
-
-
-<time datetime="2013-02-21T21:35:00+00:00" pubdate data-updated="true">Feb 21<span>st</span>, 2013</time>
-        
-           | <a href="/blog/2013/02/21/if-the-real-game-changer/#disqus_thread"
-             data-disqus-identifier="http://no-fucking-idea.com/blog/2013/02/21/if-the-real-game-changer/">Comments</a>
-        
-      </p>
-    
-  </header>
-
-
-  <div class="entry-content"><p>Recently i was working on a project that is processing campaigns. I asked my self if I can improve it a bit, but not by refactoring existing code but by trying to approach it from a different angle.</p>
-
-<h1>Observations</h1>
-
-<p>I started making mind notes of things that i understand about system i&rsquo;m working with. I never had time to think about grammar of this and really get into it. The system has many parts but i thought it can be reproduced in for of language that is easy to parse and nice to work with. I think i might change my current solution into more LISP looking thing just to make it easier to parse.</p>
-
-<h2>Observation 1</h2>
-
-<p>Each campaign is a sequence of actions that happens one after another. So my initial thought was &ldquo;this is simple&rdquo;. We can represent it by list of actions like this</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span>step<span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But this is true only for simple campaigns and most of them are NOT like this :(</p>
-
-<h2>Observation 2</h2>
-
-<p>Most of the campaigns are built around key thing. This thing is making decisions! So if i can incorporate &ldquo;if&rdquo; i WIN !
-Lets have a look</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>                     /&gt; <span class="o">[</span>step<span class="o">]</span>
-</span><span class='line'>                   <span class="o">(</span>No<span class="o">)</span>
-</span><span class='line'>                    |
-</span><span class='line'>  <span class="o">[</span>step<span class="o">]</span> -&gt; <span class="o">[</span><span class="k">if </span>a &lt; 5<span class="o">]</span> - <span class="o">(</span> yes <span class="o">)</span> -&gt; <span class="o">[</span>step<span class="o">]</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Yes! This was it, i think this is solution to all problems, ability to represent campaign as a sequence of steps mixed with if statements essentially abstract syntax tree of campaign.</p>
-
-<h2>Observation 3</h2>
-
-<p>It is not a tree&hellip;its more a graph. But AST will make it :] it is a programming language! So this was in my head and i did not had time to work on it&hellip; but today i decided to give a try and I made first impression of AST that we would need to have to make it work.</p>
-
-<h1>AST</h1>
-
-<p>I wrote simple grammar and made a parser of a very simple &ldquo;ify&rdquo; language. My language starts like this&hellip;</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>-- Grammar
-</span><span class='line'>-- x is variable
-</span><span class='line'>-- a is artmetic thing aka number
-</span><span class='line'>-- n is actual number eg. 1
-</span><span class='line'>-- b is boolean
-</span><span class='line'>-- opa is arthmetic operator
-</span><span class='line'>-- opb is boolean operator
-</span><span class='line'>-- opr is comparison operator
-</span><span class='line'>-- S is statement
-</span><span class='line'>--  a   ::<span class="o">=</span> x | n | - a | a opa a
-</span><span class='line'>--  b   ::<span class="o">=</span> <span class="nb">true</span> | <span class="nb">false</span> | not b | b opb b | a opr a
-</span><span class='line'>--  opa ::<span class="o">=</span> + | - | * | /
-</span><span class='line'>--  opb ::<span class="o">=</span> and | or
-</span><span class='line'>--  opr ::<span class="o">=</span> &gt; | &lt;
-</span><span class='line'>--  S   ::<span class="o">=</span> x | x &lt;- a | S1; S2 | <span class="o">(</span> S <span class="o">)</span> | <span class="k">if </span>b <span class="k">then </span>S1 <span class="k">else </span>S2
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>This shows that the grammar is very simple, we can have assigments, operators to test and compare and ofc IF statement ;) this is our key to divnity!</p>
-
-<p>Parser looks kinda ugly because i used parts of the code i wrote before and had i in different projects.</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-<span class='line-number'>41</span>
-<span class='line-number'>42</span>
-<span class='line-number'>43</span>
-<span class='line-number'>44</span>
-<span class='line-number'>45</span>
-<span class='line-number'>46</span>
-<span class='line-number'>47</span>
-<span class='line-number'>48</span>
-<span class='line-number'>49</span>
-<span class='line-number'>50</span>
-<span class='line-number'>51</span>
-<span class='line-number'>52</span>
-<span class='line-number'>53</span>
-<span class='line-number'>54</span>
-<span class='line-number'>55</span>
-<span class='line-number'>56</span>
-<span class='line-number'>57</span>
-<span class='line-number'>58</span>
-<span class='line-number'>59</span>
-<span class='line-number'>60</span>
-<span class='line-number'>61</span>
-<span class='line-number'>62</span>
-<span class='line-number'>63</span>
-<span class='line-number'>64</span>
-<span class='line-number'>65</span>
-<span class='line-number'>66</span>
-<span class='line-number'>67</span>
-<span class='line-number'>68</span>
-<span class='line-number'>69</span>
-<span class='line-number'>70</span>
-<span class='line-number'>71</span>
-<span class='line-number'>72</span>
-<span class='line-number'>73</span>
-<span class='line-number'>74</span>
-<span class='line-number'>75</span>
-<span class='line-number'>76</span>
-<span class='line-number'>77</span>
-<span class='line-number'>78</span>
-<span class='line-number'>79</span>
-<span class='line-number'>80</span>
-<span class='line-number'>81</span>
-<span class='line-number'>82</span>
-<span class='line-number'>83</span>
-<span class='line-number'>84</span>
-<span class='line-number'>85</span>
-<span class='line-number'>86</span>
-<span class='line-number'>87</span>
-<span class='line-number'>88</span>
-<span class='line-number'>89</span>
-<span class='line-number'>90</span>
-<span class='line-number'>91</span>
-<span class='line-number'>92</span>
-<span class='line-number'>93</span>
-<span class='line-number'>94</span>
-<span class='line-number'>95</span>
-<span class='line-number'>96</span>
-<span class='line-number'>97</span>
-<span class='line-number'>98</span>
-<span class='line-number'>99</span>
-<span class='line-number'>100</span>
-<span class='line-number'>101</span>
-<span class='line-number'>102</span>
-<span class='line-number'>103</span>
-<span class='line-number'>104</span>
-<span class='line-number'>105</span>
-<span class='line-number'>106</span>
-<span class='line-number'>107</span>
-<span class='line-number'>108</span>
-<span class='line-number'>109</span>
-<span class='line-number'>110</span>
-<span class='line-number'>111</span>
-<span class='line-number'>112</span>
-<span class='line-number'>113</span>
-<span class='line-number'>114</span>
-<span class='line-number'>115</span>
-<span class='line-number'>116</span>
-<span class='line-number'>117</span>
-<span class='line-number'>118</span>
-<span class='line-number'>119</span>
-<span class='line-number'>120</span>
-<span class='line-number'>121</span>
-<span class='line-number'>122</span>
-<span class='line-number'>123</span>
-<span class='line-number'>124</span>
-<span class='line-number'>125</span>
-<span class='line-number'>126</span>
-<span class='line-number'>127</span>
-<span class='line-number'>128</span>
-<span class='line-number'>129</span>
-<span class='line-number'>130</span>
-<span class='line-number'>131</span>
-<span class='line-number'>132</span>
-<span class='line-number'>133</span>
-<span class='line-number'>134</span>
-<span class='line-number'>135</span>
-<span class='line-number'>136</span>
-<span class='line-number'>137</span>
-<span class='line-number'>138</span>
-<span class='line-number'>139</span>
-<span class='line-number'>140</span>
-<span class='line-number'>141</span>
-<span class='line-number'>142</span>
-<span class='line-number'>143</span>
-<span class='line-number'>144</span>
-<span class='line-number'>145</span>
-<span class='line-number'>146</span>
-<span class='line-number'>147</span>
-<span class='line-number'>148</span>
-<span class='line-number'>149</span>
-<span class='line-number'>150</span>
-<span class='line-number'>151</span>
-<span class='line-number'>152</span>
-<span class='line-number'>153</span>
-<span class='line-number'>154</span>
-<span class='line-number'>155</span>
-<span class='line-number'>156</span>
-<span class='line-number'>157</span>
-<span class='line-number'>158</span>
-<span class='line-number'>159</span>
-<span class='line-number'>160</span>
-<span class='line-number'>161</span>
-<span class='line-number'>162</span>
-<span class='line-number'>163</span>
-<span class='line-number'>164</span>
-<span class='line-number'>165</span>
-<span class='line-number'>166</span>
-<span class='line-number'>167</span>
-<span class='line-number'>168</span>
-<span class='line-number'>169</span>
-<span class='line-number'>170</span>
-<span class='line-number'>171</span>
-<span class='line-number'>172</span>
-<span class='line-number'>173</span>
-<span class='line-number'>174</span>
-</pre></td><td class='code'><pre><code class='haskell'><span class='line'><span class="kr">import</span> <span class="nn">System.Environment</span><span class="p">(</span><span class="n">getArgs</span><span class="p">)</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">System.IO</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Control.Monad</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec.Expr</span>
-</span><span class='line'><span class="kr">import</span> <span class="nn">Text.ParserCombinators.Parsec.Language</span>
-</span><span class='line'><span class="kr">import</span> <span class="k">qualified</span> <span class="nn">Text.ParserCombinators.Parsec.Token</span> <span class="k">as</span> <span class="n">Token</span>
-</span><span class='line'>
-</span><span class='line'><span class="c1">--  Grammar</span>
-</span><span class='line'><span class="c1">-- x is variable</span>
-</span><span class='line'><span class="c1">-- a is artmetic thing aka number</span>
-</span><span class='line'><span class="c1">-- n is actual number eg. 1</span>
-</span><span class='line'><span class="c1">-- b is boolean</span>
-</span><span class='line'><span class="c1">-- opa is arthmetic operator</span>
-</span><span class='line'><span class="c1">-- opb is boolean operator</span>
-</span><span class='line'><span class="c1">-- opr is comparison operator</span>
-</span><span class='line'><span class="c1">-- S is statement</span>
-</span><span class='line'><span class="c1">--  a   ::= x | n | - a | a opa a</span>
-</span><span class='line'><span class="c1">--  b   ::= true | false | not b | b opb b | a opr a</span>
-</span><span class='line'><span class="c1">--  opa ::= + | - | * | /</span>
-</span><span class='line'><span class="c1">--  opb ::= and | or</span>
-</span><span class='line'><span class="c1">--  opr ::= &gt; | &lt;</span>
-</span><span class='line'><span class="c1">--  S   ::= x | x &lt;- a | S1; S2 | ( S ) | if b then S1 else S2 </span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">data</span> <span class="kt">AExpr</span> <span class="ow">=</span> <span class="kt">Var</span> <span class="kt">String</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">IntConst</span> <span class="kt">Integer</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">Neg</span> <span class="kt">AExpr</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">ABinary</span> <span class="kt">ABinOp</span> <span class="kt">AExpr</span> <span class="kt">AExpr</span>
-</span><span class='line'>              <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">data</span> <span class="kt">BExpr</span> <span class="ow">=</span> <span class="kt">BoolConst</span> <span class="kt">Bool</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">Not</span> <span class="kt">BExpr</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">BBinary</span> <span class="kt">BBinOp</span> <span class="kt">BExpr</span> <span class="kt">BExpr</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">RBinary</span> <span class="kt">RBinOp</span> <span class="kt">AExpr</span> <span class="kt">AExpr</span>
-</span><span class='line'>             <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">data</span> <span class="kt">ABinOp</span> <span class="ow">=</span> <span class="kt">Add</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">Subtract</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">Multiply</span>
-</span><span class='line'>            <span class="o">|</span> <span class="kt">Divide</span>
-</span><span class='line'>              <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">data</span> <span class="kt">BBinOp</span> <span class="ow">=</span> <span class="kt">And</span> <span class="o">|</span> <span class="kt">Or</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
-</span><span class='line'><span class="kr">data</span> <span class="kt">RBinOp</span> <span class="ow">=</span> <span class="kt">Greater</span> <span class="o">|</span> <span class="kt">Less</span> <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="kr">data</span> <span class="kt">Stmt</span> <span class="ow">=</span> <span class="kt">Seq</span> <span class="p">[</span><span class="kt">Stmt</span><span class="p">]</span>
-</span><span class='line'>           <span class="o">|</span> <span class="kt">Assign</span> <span class="kt">String</span> <span class="kt">AExpr</span>
-</span><span class='line'>           <span class="o">|</span> <span class="kt">If</span> <span class="kt">BExpr</span> <span class="kt">Stmt</span> <span class="kt">Stmt</span>
-</span><span class='line'>           <span class="o">|</span> <span class="kt">Ident</span> <span class="kt">String</span>
-</span><span class='line'>             <span class="kr">deriving</span> <span class="p">(</span><span class="kt">Show</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">languageDef</span> <span class="ow">=</span>
-</span><span class='line'>   <span class="n">emptyDef</span> <span class="p">{</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentStart</span>    <span class="ow">=</span> <span class="s">&quot;/*&quot;</span>
-</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentEnd</span>      <span class="ow">=</span> <span class="s">&quot;*/&quot;</span>
-</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">commentLine</span>     <span class="ow">=</span> <span class="s">&quot;#&quot;</span>
-</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identStart</span>      <span class="ow">=</span> <span class="n">letter</span>
-</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identLetter</span>     <span class="ow">=</span> <span class="n">alphaNum</span>
-</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedNames</span>   <span class="ow">=</span> <span class="p">[</span> <span class="s">&quot;if&quot;</span>
-</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;then&quot;</span>
-</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;else&quot;</span>
-</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;true&quot;</span>
-</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;false&quot;</span>
-</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;not&quot;</span>
-</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;and&quot;</span>
-</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;or&quot;</span>
-</span><span class='line'>                                      <span class="p">]</span>
-</span><span class='line'>            <span class="p">,</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedOpNames</span> <span class="ow">=</span> <span class="p">[</span><span class="s">&quot;+&quot;</span><span class="p">,</span> <span class="s">&quot;-&quot;</span><span class="p">,</span> <span class="s">&quot;*&quot;</span><span class="p">,</span> <span class="s">&quot;/&quot;</span><span class="p">,</span> <span class="s">&quot;&lt;-&quot;</span>
-</span><span class='line'>                                      <span class="p">,</span> <span class="s">&quot;&lt;&quot;</span><span class="p">,</span> <span class="s">&quot;&gt;&quot;</span><span class="p">,</span> <span class="s">&quot;and&quot;</span><span class="p">,</span> <span class="s">&quot;or&quot;</span><span class="p">,</span> <span class="s">&quot;not&quot;</span>
-</span><span class='line'>                                      <span class="p">]</span>
-</span><span class='line'>            <span class="p">}</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">lexer</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">makeTokenParser</span> <span class="n">languageDef</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">identifier</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">identifier</span> <span class="n">lexer</span> <span class="c1">-- parses an identifier</span>
-</span><span class='line'><span class="nf">reserved</span>   <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reserved</span>   <span class="n">lexer</span> <span class="c1">-- parses a reserved name</span>
-</span><span class='line'><span class="nf">reservedOp</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">reservedOp</span> <span class="n">lexer</span> <span class="c1">-- parses an operator</span>
-</span><span class='line'><span class="nf">parens</span>     <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">parens</span>     <span class="n">lexer</span> <span class="c1">-- parses surrounding parenthesis:</span>
-</span><span class='line'><span class="nf">integer</span>    <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">integer</span>    <span class="n">lexer</span> <span class="c1">-- parses an integer</span>
-</span><span class='line'><span class="nf">semi</span>       <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">semi</span>       <span class="n">lexer</span> <span class="c1">-- parses a semicolon</span>
-</span><span class='line'><span class="nf">whiteSpace</span> <span class="ow">=</span> <span class="kt">Token</span><span class="o">.</span><span class="n">whiteSpace</span> <span class="n">lexer</span> <span class="c1">-- parses whitespace</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">whileParser</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
-</span><span class='line'><span class="nf">whileParser</span> <span class="ow">=</span> <span class="n">whiteSpace</span> <span class="o">&gt;&gt;</span> <span class="n">statement</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">statement</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
-</span><span class='line'><span class="nf">statement</span> <span class="ow">=</span>   <span class="n">parens</span> <span class="n">statement</span>
-</span><span class='line'>           <span class="o">&lt;|&gt;</span> <span class="n">sequenceOfStmt</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">sequenceOfStmt</span> <span class="ow">=</span>
-</span><span class='line'>   <span class="kr">do</span> <span class="n">list</span> <span class="ow">&lt;-</span> <span class="p">(</span><span class="n">sepBy1</span> <span class="n">statement&#39;</span> <span class="n">semi</span><span class="p">)</span>
-</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kr">if</span> <span class="n">length</span> <span class="n">list</span> <span class="o">==</span> <span class="mi">1</span> <span class="kr">then</span> <span class="n">head</span> <span class="n">list</span> <span class="kr">else</span> <span class="kt">Seq</span> <span class="n">list</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">statement&#39;</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
-</span><span class='line'><span class="nf">statement&#39;</span> <span class="ow">=</span>   <span class="n">ifStmt</span>
-</span><span class='line'>            <span class="o">&lt;|&gt;</span> <span class="n">assignStmt</span>
-</span><span class='line'>            <span class="o">&lt;|&gt;</span> <span class="n">identName</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">ifStmt</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
-</span><span class='line'><span class="nf">ifStmt</span> <span class="ow">=</span>
-</span><span class='line'>   <span class="kr">do</span> <span class="n">reserved</span> <span class="s">&quot;if&quot;</span>
-</span><span class='line'>      <span class="n">cond</span>  <span class="ow">&lt;-</span> <span class="n">bExpression</span>
-</span><span class='line'>      <span class="n">reserved</span> <span class="s">&quot;then&quot;</span>
-</span><span class='line'>      <span class="n">stmt1</span> <span class="ow">&lt;-</span> <span class="n">statement</span>
-</span><span class='line'>      <span class="n">reserved</span> <span class="s">&quot;else&quot;</span>
-</span><span class='line'>      <span class="n">stmt2</span> <span class="ow">&lt;-</span> <span class="n">statement</span>
-</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">If</span> <span class="n">cond</span> <span class="n">stmt1</span> <span class="n">stmt2</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nf">identName</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
-</span><span class='line'><span class="nf">identName</span> <span class="ow">=</span>
-</span><span class='line'>   <span class="kr">do</span>  <span class="n">varName</span> <span class="ow">&lt;-</span> <span class="n">identifier</span>
-</span><span class='line'>       <span class="n">return</span> <span class="o">$</span> <span class="kt">Ident</span> <span class="n">varName</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">assignStmt</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">Stmt</span>
-</span><span class='line'><span class="nf">assignStmt</span> <span class="ow">=</span>
-</span><span class='line'>   <span class="kr">do</span> <span class="n">var</span>  <span class="ow">&lt;-</span> <span class="n">identifier</span>
-</span><span class='line'>      <span class="n">reservedOp</span> <span class="s">&quot;&lt;-&quot;</span>
-</span><span class='line'>      <span class="n">expr</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
-</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">Assign</span> <span class="n">var</span> <span class="n">expr</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">aExpression</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">AExpr</span>
-</span><span class='line'><span class="nf">aExpression</span> <span class="ow">=</span> <span class="n">buildExpressionParser</span> <span class="n">aOperators</span> <span class="n">aTerm</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">bExpression</span> <span class="ow">::</span> <span class="kt">Parser</span> <span class="kt">BExpr</span>
-</span><span class='line'><span class="nf">bExpression</span> <span class="ow">=</span> <span class="n">buildExpressionParser</span> <span class="n">bOperators</span> <span class="n">bTerm</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">aOperators</span> <span class="ow">=</span> <span class="p">[</span> <span class="p">[</span><span class="kt">Prefix</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;-&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">Neg</span>             <span class="p">))</span>          <span class="p">]</span>
-</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;*&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Multiply</span><span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
-</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;/&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Divide</span>  <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
-</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;+&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Add</span>     <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
-</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;-&quot;</span>   <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">ABinary</span> <span class="kt">Subtract</span><span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
-</span><span class='line'>               <span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">bOperators</span> <span class="ow">=</span> <span class="p">[</span> <span class="p">[</span><span class="kt">Prefix</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;not&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">Not</span>             <span class="p">))</span>          <span class="p">]</span>
-</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;and&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BBinary</span> <span class="kt">And</span>     <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
-</span><span class='line'>              <span class="p">,</span> <span class="p">[</span><span class="kt">Infix</span>  <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;or&quot;</span>  <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BBinary</span> <span class="kt">Or</span>      <span class="p">))</span> <span class="kt">AssocLeft</span><span class="p">]</span>
-</span><span class='line'>              <span class="p">]</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">aTerm</span> <span class="ow">=</span>  <span class="n">parens</span> <span class="n">aExpression</span>
-</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">liftM</span> <span class="kt">Var</span> <span class="n">identifier</span>
-</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">liftM</span> <span class="kt">IntConst</span> <span class="n">integer</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">bTerm</span> <span class="ow">=</span>  <span class="n">parens</span> <span class="n">bExpression</span>
-</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reserved</span> <span class="s">&quot;true&quot;</span>  <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BoolConst</span> <span class="kt">True</span> <span class="p">))</span>
-</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reserved</span> <span class="s">&quot;false&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="p">(</span><span class="kt">BoolConst</span> <span class="kt">False</span><span class="p">))</span>
-</span><span class='line'>      <span class="o">&lt;|&gt;</span> <span class="n">rExpression</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">rExpression</span> <span class="ow">=</span>
-</span><span class='line'>   <span class="kr">do</span> <span class="n">a1</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
-</span><span class='line'>      <span class="n">op</span> <span class="ow">&lt;-</span> <span class="n">relation</span>
-</span><span class='line'>      <span class="n">a2</span> <span class="ow">&lt;-</span> <span class="n">aExpression</span>
-</span><span class='line'>      <span class="n">return</span> <span class="o">$</span> <span class="kt">RBinary</span> <span class="n">op</span> <span class="n">a1</span> <span class="n">a2</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">relation</span> <span class="ow">=</span>   <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;&gt;&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="kt">Greater</span><span class="p">)</span>
-</span><span class='line'>          <span class="o">&lt;|&gt;</span> <span class="p">(</span><span class="n">reservedOp</span> <span class="s">&quot;&lt;&quot;</span> <span class="o">&gt;&gt;</span> <span class="n">return</span> <span class="kt">Less</span><span class="p">)</span>
-</span><span class='line'>
-</span><span class='line'>
-</span><span class='line'><span class="nf">parseString</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">Stmt</span>
-</span><span class='line'><span class="nf">parseString</span> <span class="n">str</span> <span class="ow">=</span>
-</span><span class='line'>   <span class="kr">case</span> <span class="n">parse</span> <span class="n">whileParser</span> <span class="s">&quot;&quot;</span> <span class="n">str</span> <span class="kr">of</span>
-</span><span class='line'>     <span class="kt">Left</span> <span class="n">e</span>  <span class="ow">-&gt;</span> <span class="ne">error</span> <span class="o">$</span> <span class="n">show</span> <span class="n">e</span>
-</span><span class='line'>     <span class="kt">Right</span> <span class="n">r</span> <span class="ow">-&gt;</span> <span class="n">r</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">parseFile</span> <span class="ow">::</span> <span class="kt">String</span> <span class="ow">-&gt;</span> <span class="kt">IO</span> <span class="kt">Stmt</span>
-</span><span class='line'><span class="nf">parseFile</span> <span class="n">file</span> <span class="ow">=</span>
-</span><span class='line'>   <span class="kr">do</span> <span class="n">program</span>  <span class="ow">&lt;-</span> <span class="n">readFile</span> <span class="n">file</span>
-</span><span class='line'>      <span class="kr">case</span> <span class="n">parse</span> <span class="n">whileParser</span> <span class="s">&quot;&quot;</span> <span class="n">program</span> <span class="kr">of</span>
-</span><span class='line'>        <span class="kt">Left</span> <span class="n">e</span>  <span class="ow">-&gt;</span> <span class="n">print</span> <span class="n">e</span> <span class="o">&gt;&gt;</span> <span class="n">fail</span> <span class="s">&quot;parse error&quot;</span>
-</span><span class='line'>        <span class="kt">Right</span> <span class="n">r</span> <span class="ow">-&gt;</span> <span class="n">return</span> <span class="n">r</span>
-</span><span class='line'>
-</span><span class='line'><span class="nf">main</span> <span class="ow">=</span> <span class="kr">do</span>
-</span><span class='line'>  <span class="n">args</span> <span class="ow">&lt;-</span> <span class="n">getArgs</span>
-</span><span class='line'>  <span class="n">ast</span> <span class="ow">&lt;-</span> <span class="n">parseFile</span><span class="p">(</span><span class="n">head</span> <span class="n">args</span><span class="p">)</span>
-</span><span class='line'>  <span class="n">putStrLn</span> <span class="o">$</span> <span class="n">show</span> <span class="n">ast</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>But it works&hellip; we can parse. Now i have to make it more production ready and less unstable ;]. This is first attempt at this idea.  I need to expand grammar and think about it more then just few minutes. but i think it is a good start. Next step for me is to make better grammar and parser and move to building interpreter of this mini language.</p>
-</div>
-  
-  
-
-
-    </article>
-  
   <div class="pagination">
     
       <a class="prev" href="/blog/page/2/">&larr; Older</a>
@@ -1921,6 +1805,10 @@ Lets have a look</p>
   <ul id="recent_posts">
     
       <li class="post">
+        <a href="/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/">java.util.concurrent Goodies</a>
+      </li>
+    
+      <li class="post">
         <a href="/blog/2014/03/23/shortest-way-to-work-with-json-in-haskell/">Shortest Way to Work With Json in Haskell</a>
       </li>
     
@@ -1934,10 +1822,6 @@ Lets have a look</p>
     
       <li class="post">
         <a href="/blog/2014/01/14/dogecoin-mining-on-raspberry-pi-lolmode/">Dogecoin Mining on Raspberry Pi LOLMODE</a>
-      </li>
-    
-      <li class="post">
-        <a href="/blog/2013/12/16/working-with-urls-quick-tip-network-dot-url/">Working With URL Quick Tip Network.Url</a>
       </li>
     
   </ul>

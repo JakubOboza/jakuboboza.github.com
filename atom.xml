@@ -4,7 +4,7 @@
   <title><![CDATA[No F*cking Idea]]></title>
   <link href="http://no-fucking-idea.com/atom.xml" rel="self"/>
   <link href="http://no-fucking-idea.com/"/>
-  <updated>2014-03-23T11:20:13+00:00</updated>
+  <updated>2014-08-25T19:37:27+01:00</updated>
   <id>http://no-fucking-idea.com/</id>
   <author>
     <name><![CDATA[Jakub Oboza]]></name>
@@ -12,6 +12,330 @@
   </author>
   <generator uri="http://octopress.org/">Octopress</generator>
 
+  
+  <entry>
+    <title type="html"><![CDATA[java.util.concurrent Goodies]]></title>
+    <link href="http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies/"/>
+    <updated>2014-08-25T16:42:41+01:00</updated>
+    <id>http://no-fucking-idea.com/blog/2014/08/25/java-dot-util-dot-concurrent-goodies</id>
+    <content type="html"><![CDATA[<p>JVM as a virtual machine is great. I&rsquo;m not in love with java as i think too many <code>{}</code> can kill anyone regardless of faith. It was really really long time since i wrote anything for the blog and today as it is &ldquo;summer bank holiday&rdquo; i decided to finally sit down and write few things that are interesting.</p>
+
+<h1>java.util.concurrent</h1>
+
+<p>Even if i will be talking about java.util.concurrent i will give few examples using Scala. I like Scala and i think it is much easier to understand and read than java. Simply less tokens. And less tokens mean more fun.</p>
+
+<p>I don&rsquo;t know if explore how much nice things there is in JVM, one of thme is truffle (added in java 8 but i will not be talking about it.). One of the great things is called java.util.concurrent this set of tools/lib gives us  tools to work with concurrency.</p>
+
+<p>In times of agents such a set of tools could feel a bit outdated but still they can gives us valuable lessons about concurrency and maybe be useful in present/future.</p>
+
+<h1>Abstracts</h1>
+
+<p>So as we all know java is full of design patterns and one of the first things you will not while looking into docs are abstract classes. This kinda gives us overview of what we can expect in the package. Just like a movie teaser but&hellip; boring :).
+First thing we notice while looking at <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html">http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/package-summary.html</a> is probably <code>BlockingDeque</code> and <code>BlockingQueue</code>. And this is out first example.</p>
+
+<h1>ArrayBlockingQueue</h1>
+
+<p>If you ever worked with threads or any concurrent constructs you know how useful are channels/queues. First concrete class in the package is <code>ArrayBlockingQueue[T]</code> which lets us construct queues. For those who don&rsquo;t know what queue is, it is a FIFO construct, FIFO means First In, First Out. So elements that get in first will be picked up at the receiving end of queue before rest. It is like a queue for tickets before a big summer blockbuster release.</p>
+
+<p>Let us try this ArrayBlockingQueue out:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+<span class='line-number'>31</span>
+<span class='line-number'>32</span>
+<span class='line-number'>33</span>
+<span class='line-number'>34</span>
+<span class='line-number'>35</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'><span class="k">import</span> <span class="nn">scala.util.control.Breaks._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">val</span> <span class="n">queue</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ArrayBlockingQueue</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">100</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">producer1</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="o">(</span><span class="mi">0</span> <span class="n">to</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">n</span><span class="o">)){}</span>
+</span><span class='line'>      <span class="o">})</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">})</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">consumer1</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="k">new</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>    <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>      <span class="n">breakable</span> <span class="o">{</span>
+</span><span class='line'>        <span class="k">while</span><span class="o">(</span><span class="kc">true</span><span class="o">){</span>
+</span><span class='line'>          <span class="k">val</span> <span class="n">result</span> <span class="k">=</span> <span class="n">queue</span><span class="o">.</span><span class="n">take</span><span class="o">()</span>
+</span><span class='line'>          <span class="n">print</span><span class="o">(</span><span class="n">result</span><span class="o">.</span><span class="n">toString</span><span class="o">()</span> <span class="o">++</span> <span class="s">&quot;,&quot;</span><span class="o">)</span>
+</span><span class='line'>          <span class="k">if</span> <span class="o">(</span><span class="n">result</span> <span class="o">&gt;</span> <span class="mi">999</span><span class="o">){</span>
+</span><span class='line'>            <span class="n">break</span>
+</span><span class='line'>          <span class="o">}</span>
+</span><span class='line'>        <span class="o">}</span>
+</span><span class='line'>      <span class="o">}</span>
+</span><span class='line'>    <span class="o">}</span>
+</span><span class='line'>  <span class="o">})</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span><span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>    <span class="n">consumer1</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">producer1</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>What are we doing here ? We simply demonstrate a producer and consumer type of situation.</p>
+
+<p>There are few things to look at, first initialization</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">val</span> <span class="n">queue</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ArrayBlockingQueue</span><span class="o">[</span><span class="kt">Int</span><span class="o">](</span><span class="mi">100</span><span class="o">)</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>where we create our queue with a total capacity of 100, this can be skipped for no capacity but this could be risky in terms of memory. So we wanna omit unpredictable parts of code.</p>
+
+<p>How to add stuff to the queue</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'>  <span class="k">while</span><span class="o">(!</span><span class="n">queue</span><span class="o">.</span><span class="n">offer</span><span class="o">(</span><span class="n">n</span><span class="o">)){}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Why like this ? lets not forget it is a blocking queue so once it will fill the capacity it will block. If the queue is full <code>offer</code> method will return false and the element will not be added tot he queue thats why we have to retry this. Of course in this case it might not be the perfect example as it will grind CPU until it can add it to the queue. So maybe adding <code>Thread.sleep(50)</code> sleep for 50 miliseconds could be good here.</p>
+
+<p>Now lets look at consumer, here the job is simple we use take, this will simply block if we can get anything from queue and wait. In most cases this is the behavior we want. Thread simply sitting there and waiting for something to appear in the queue.</p>
+
+<p>There is also option to use <code>add</code> function to add stuff to the queue but this will trigger an exception in case queue is full and i&rsquo;m not a big fan of handling exceptions in this type of scenarios.</p>
+
+<p>More info about ArrayblockingQueue api can be found here <a href="http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html">http://docs.oracle.com/javase/7/docs/api/java/util/concurrent/ArrayBlockingQueue.html</a></p>
+
+<h1>ConcurrentHashMap[K,V]</h1>
+
+<p>Concurrent Hash Map lets you use a single dictionary / hash by many threads. This is great as it makes all the synchronization work for us. Of course often writes/updates by many threads will make it perform very very slow, but if we can eg. use it as a form of reduction result that would be great simplification.</p>
+
+<p>If we will use it like this</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+<span class='line-number'>27</span>
+<span class='line-number'>28</span>
+<span class='line-number'>29</span>
+<span class='line-number'>30</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Mapper</span><span class="o">(</span><span class="n">key</span><span class="k">:</span> <span class="kt">String</span><span class="o">,</span> <span class="n">times</span><span class="k">:</span> <span class="kt">Int</span><span class="o">,</span> <span class="n">hash</span><span class="k">:</span> <span class="kt">ConcurrentHashMap</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">])</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">(){</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">sum</span> <span class="k">=</span> <span class="o">(</span><span class="mi">1</span> <span class="n">to</span> <span class="n">times</span><span class="o">).</span><span class="n">sum</span>
+</span><span class='line'>    <span class="n">hash</span><span class="o">.</span><span class="n">put</span><span class="o">(</span><span class="n">key</span><span class="o">,</span> <span class="n">sum</span> <span class="o">+</span> <span class="n">hash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="n">key</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">val</span> <span class="n">resultHash</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">ConcurrentHashMap</span><span class="o">[</span><span class="kt">String</span>, <span class="kt">Int</span><span class="o">]()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">threads</span> <span class="k">=</span> <span class="nc">Array</span><span class="o">(</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">)),</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">)),</span>
+</span><span class='line'>      <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Mapper</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">,</span> <span class="mi">1000</span><span class="o">,</span> <span class="n">resultHash</span><span class="o">))</span>
+</span><span class='line'>    <span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">threads</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">start</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">threads</span><span class="o">.</span><span class="n">map</span><span class="o">(</span><span class="k">_</span><span class="o">.</span><span class="n">join</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="s">&quot;Key &#39;one&#39; =&gt; &quot;</span> <span class="o">+</span> <span class="n">resultHash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;one&quot;</span><span class="o">).</span><span class="n">toString</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="s">&quot;Key &#39;two&#39; =&gt; &quot;</span> <span class="o">+</span> <span class="n">resultHash</span><span class="o">.</span><span class="n">get</span><span class="o">(</span><span class="s">&quot;two&quot;</span><span class="o">).</span><span class="n">toString</span> <span class="o">+</span> <span class="s">&quot;\n&quot;</span><span class="o">)</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Of course it will work but it will  often cause troubles, this code is racy :D and often it will end up with same results  for both one and two even if it is synced.  Well we now know we can use this structure from any number of threads but to make it work it would be more useful to create another thread that would be reducing values or simply have a queue where we put in partial results and a single thread that is updating the hash.  Still this can have some use, if you have a one reducer that is updating this hash or simply many different reducers updating dedicated key spaces while many other threads are simply using this hash in readonly mode. The big issue is when you want to update it as it doesn&rsquo;t support transactions and what you really want to do here is a transaction.</p>
+
+<h1>Atomic variables</h1>
+
+<p>Well we all love simplicity of a single variable, and in concurrent env it is simply easy to forget about goodies of sequential world and use a raw variable to store results of some execution.</p>
+
+<p>Let us write some dodgy code:</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Counter</span><span class="o">()</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="mi">1</span> <span class="n">until</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span> <span class="k">=</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span> <span class="o">+</span> <span class="n">n</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">var</span> <span class="n">counter</span><span class="k">:</span> <span class="kt">Int</span> <span class="o">=</span> <span class="mi">0</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="n">counter</span><span class="o">)</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>Result should be 999000 but&hellip; you will get stuff like 907369&hellip; This happens because of both threads randomly reading and updating with garbage same val. Thats why we need atomic values :) lets convert it into less dodgy thing.</p>
+
+<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
+<span class='line-number'>2</span>
+<span class='line-number'>3</span>
+<span class='line-number'>4</span>
+<span class='line-number'>5</span>
+<span class='line-number'>6</span>
+<span class='line-number'>7</span>
+<span class='line-number'>8</span>
+<span class='line-number'>9</span>
+<span class='line-number'>10</span>
+<span class='line-number'>11</span>
+<span class='line-number'>12</span>
+<span class='line-number'>13</span>
+<span class='line-number'>14</span>
+<span class='line-number'>15</span>
+<span class='line-number'>16</span>
+<span class='line-number'>17</span>
+<span class='line-number'>18</span>
+<span class='line-number'>19</span>
+<span class='line-number'>20</span>
+<span class='line-number'>21</span>
+<span class='line-number'>22</span>
+<span class='line-number'>23</span>
+<span class='line-number'>24</span>
+<span class='line-number'>25</span>
+<span class='line-number'>26</span>
+</pre></td><td class='code'><pre><code class='scala'><span class='line'><span class="k">import</span> <span class="nn">java.util.concurrent.atomic._</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">case</span> <span class="k">class</span> <span class="nc">Counter</span><span class="o">()</span> <span class="k">extends</span> <span class="nc">Runnable</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">run</span><span class="o">()</span> <span class="o">{</span>
+</span><span class='line'>    <span class="o">(</span><span class="mi">1</span> <span class="n">until</span> <span class="mi">1000</span><span class="o">).</span><span class="n">map</span><span class="o">(</span> <span class="n">n</span> <span class="k">=&gt;</span> <span class="nc">Example</span><span class="o">.</span><span class="n">counter</span><span class="o">.</span><span class="n">addAndGet</span><span class="o">(</span><span class="n">n</span><span class="o">))</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="o">}</span>
+</span><span class='line'>
+</span><span class='line'><span class="k">object</span> <span class="nc">Example</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">var</span> <span class="n">counter</span><span class="k">:</span> <span class="kt">AtomicInteger</span> <span class="o">=</span> <span class="k">new</span> <span class="nc">AtomicInteger</span><span class="o">()</span>
+</span><span class='line'>
+</span><span class='line'>  <span class="k">def</span> <span class="n">main</span><span class="o">(</span><span class="n">args</span><span class="k">:</span> <span class="kt">Array</span><span class="o">[</span><span class="kt">String</span><span class="o">])</span> <span class="k">:</span> <span class="kt">Unit</span> <span class="o">=</span> <span class="o">{</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="k">val</span> <span class="n">t2</span> <span class="k">=</span> <span class="k">new</span> <span class="nc">Thread</span><span class="o">(</span><span class="nc">Counter</span><span class="o">())</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">start</span>
+</span><span class='line'>    <span class="n">t</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>    <span class="n">t2</span><span class="o">.</span><span class="n">join</span>
+</span><span class='line'>
+</span><span class='line'>    <span class="n">print</span><span class="o">(</span><span class="n">counter</span><span class="o">.</span><span class="n">get</span><span class="o">())</span>
+</span><span class='line'>  <span class="o">}</span>
+</span><span class='line'><span class="o">}</span>
+</span></code></pre></td></tr></table></div></figure>
+
+
+<p>After adding AtomicInteger and changing how we update to atomic updates we always get same results and it is the correct answer. It doesn&rsquo;t look good yet because of this Example.counter but that is just an example.</p>
+
+<h1>A lot more&hellip;</h1>
+
+<p>There is a lot more in this awesome package to cover, i will cover one more thing next time and that are Cyclic Barriers for better synchronization of threads but for now this is it :). I hope this was a useful read. I don&rsquo;t have much time to play with Scala so if something looks &ldquo;too simple&rdquo; :D yeah i&rsquo;m not a scala expert.</p>
+
+<p>Cheers!</p>
+]]></content>
+  </entry>
   
   <entry>
     <title type="html"><![CDATA[Shortest Way to Work With Json in Haskell]]></title>
@@ -3134,222 +3458,6 @@ If you will have this idea check my gist <a href="https://gist.github.com/207180
 <p>antirez: &ldquo;@jakuboboza it&rsquo;s definitely a very simple implementation! Probably our most &#8220;on steroids&rdquo; implementation of data structures is dict.c&#8221;</p>
 
 <p>^_____^</p>
-]]></content>
-  </entry>
-  
-  <entry>
-    <title type="html"><![CDATA[Failover Redis Setup With Sentinel]]></title>
-    <link href="http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel/"/>
-    <updated>2012-09-26T20:54:00+01:00</updated>
-    <id>http://no-fucking-idea.com/blog/2012/09/26/failover-redis-setup-with-sentinel</id>
-    <content type="html"><![CDATA[<p>Long time nothing new, recently i started my own company LambdaCu.be and I was massively busy. If you want to hire me ping me at <a href="&#x6d;&#x61;&#105;&#x6c;&#116;&#111;&#x3a;&#107;&#117;&#98;&#x61;&#x40;&#108;&#97;&#x6d;&#98;&#x64;&#x61;&#99;&#117;&#x2e;&#x62;&#x65;">&#x6b;&#x75;&#98;&#97;&#64;&#x6c;&#97;&#x6d;&#x62;&#x64;&#x61;&#99;&#x75;&#x2e;&#x62;&#x65;</a> =)</p>
-
-<p>I have in pipeline a lot texts about lua scripting in redis and using it to build some tools but can&rsquo;t find time to finish this stuff ;/.</p>
-
-<h1>Auto failover</h1>
-
-<p>Every database wants to have auto failover mechanism. This is a great marketing pitch! haha :) Main thing about is that one of your server can go down and you still are operating as normal and when he will go up again everything is fine.. unless your routing server will go down :D ofc.</p>
-
-<h1>2.4.16 / 2.6</h1>
-
-<p>Since Redis 2.4 and 2.6 there was this idea of adding it. Antirez wrote a draft spec for it and implemented it as experimental feature. It is really well described here <a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a> so i will just write a short note how did i setup it and how does it feel.</p>
-
-<h1>Setup</h1>
-
-<p>While preparing to this demo i did everything on master 0ee3f05518e081640c1c6f9ae52c3a414f0feaceso what i did was simply start &ldquo;master&rdquo; and &ldquo;replica servers&rdquo; with this configs
-(ofc turn daemonize to yes in production lol)</p>
-
-<p>Standard Master setup with default script on port 6379 and replica with</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-<span class='line-number'>12</span>
-<span class='line-number'>13</span>
-<span class='line-number'>14</span>
-<span class='line-number'>15</span>
-<span class='line-number'>16</span>
-<span class='line-number'>17</span>
-<span class='line-number'>18</span>
-<span class='line-number'>19</span>
-<span class='line-number'>20</span>
-<span class='line-number'>21</span>
-<span class='line-number'>22</span>
-<span class='line-number'>23</span>
-<span class='line-number'>24</span>
-<span class='line-number'>25</span>
-<span class='line-number'>26</span>
-<span class='line-number'>27</span>
-<span class='line-number'>28</span>
-<span class='line-number'>29</span>
-<span class='line-number'>30</span>
-<span class='line-number'>31</span>
-<span class='line-number'>32</span>
-<span class='line-number'>33</span>
-<span class='line-number'>34</span>
-<span class='line-number'>35</span>
-<span class='line-number'>36</span>
-<span class='line-number'>37</span>
-<span class='line-number'>38</span>
-<span class='line-number'>39</span>
-<span class='line-number'>40</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>daemonize no
-</span><span class='line'>timeout 0
-</span><span class='line'>loglevel notice
-</span><span class='line'>logfile stdout
-</span><span class='line'>databases 16
-</span><span class='line'>save 900 1
-</span><span class='line'>save 300 10
-</span><span class='line'>save 60 10000
-</span><span class='line'>stop-writes-on-bgsave-error yes
-</span><span class='line'>rdbcompression yes
-</span><span class='line'>rdbchecksum yes
-</span><span class='line'>dbfilename dump.rdb
-</span><span class='line'>dir ./replica_dir
-</span><span class='line'>slave-serve-stale-data yes
-</span><span class='line'>slave-read-only yes
-</span><span class='line'>appendonly no
-</span><span class='line'>appendfsync everysec
-</span><span class='line'>no-appendfsync-on-rewrite no
-</span><span class='line'>auto-aof-rewrite-percentage 100
-</span><span class='line'>auto-aof-rewrite-min-size 64mb
-</span><span class='line'>lua-time-limit 5000
-</span><span class='line'>
-</span><span class='line'>pidfile /var/run/redis-replica-7789.pid
-</span><span class='line'>port 7789
-</span><span class='line'><span class="c"># replication config</span>
-</span><span class='line'>slaveof 127.0.0.1 6379
-</span><span class='line'>
-</span><span class='line'>slowlog-log-slower-than 10000
-</span><span class='line'>slowlog-max-len 1024
-</span><span class='line'><span class="nb">hash</span>-max-ziplist-entries 512
-</span><span class='line'><span class="nb">hash</span>-max-ziplist-value 64
-</span><span class='line'>list-max-ziplist-entries 512
-</span><span class='line'>list-max-ziplist-value 64
-</span><span class='line'><span class="nb">set</span>-max-intset-entries 512
-</span><span class='line'>zset-max-ziplist-entries 128
-</span><span class='line'>zset-max-ziplist-value 64
-</span><span class='line'>activerehashing yes
-</span><span class='line'>client-output-buffer-limit normal 0 0 0
-</span><span class='line'>client-output-buffer-limit slave 256mb 64mb 60
-</span><span class='line'>client-output-buffer-limit pubsub 32mb 8mb 60
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>So i had master and slave running :) that was cool next thing i did was! configure and turn on the sentinel!</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-<span class='line-number'>8</span>
-<span class='line-number'>9</span>
-<span class='line-number'>10</span>
-<span class='line-number'>11</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>sentinel monitor mymaster 127.0.0.1 6379 1
-</span><span class='line'>sentinel down-after-milliseconds mymaster 60000
-</span><span class='line'>sentinel failover-timeout mymaster 900000
-</span><span class='line'>sentinel can-failover mymaster yes
-</span><span class='line'>sentinel parallel-syncs mymaster 1
-</span><span class='line'>
-</span><span class='line'>sentinel monitor resque 127.0.0.1 7789 1
-</span><span class='line'>sentinel down-after-milliseconds resque 10000
-</span><span class='line'>sentinel failover-timeout resque 900000
-</span><span class='line'>sentinel can-failover resque yes
-</span><span class='line'>sentinel parallel-syncs resque 5
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And i turned him on!
-with</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis-server sentinel-my.conf --sentinel
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>And stuff started to work :D</p>
-
-<h1>Carnage!!!</h1>
-
-<p>So i started easy</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>redis 127.0.0.1:6379&gt; get <span class="s2">&quot;hello&quot;</span>
-</span><span class='line'><span class="s2">&quot;hello&quot;</span>
-</span><span class='line'>redis 127.0.0.1:6379&gt; <span class="nb">set</span> <span class="s2">&quot;hello&quot;</span> <span class="s2">&quot;lulz&quot;</span>
-</span><span class='line'>OK
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Works! I killed master and connected on 26379 to sentinel master did query</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'> sentinel masters
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>and got</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-<span class='line-number'>6</span>
-<span class='line-number'>7</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'>1<span class="o">)</span>  1<span class="o">)</span> <span class="s2">&quot;name&quot;</span>
-</span><span class='line'>    2<span class="o">)</span> <span class="s2">&quot;resque&quot;</span>
-</span><span class='line'>    3<span class="o">)</span> <span class="s2">&quot;ip&quot;</span>
-</span><span class='line'>    4<span class="o">)</span> <span class="s2">&quot;127.0.0.1&quot;</span>
-</span><span class='line'>    5<span class="o">)</span> <span class="s2">&quot;port&quot;</span>
-</span><span class='line'>    6<span class="o">)</span> <span class="s2">&quot;7789&quot;</span>
-</span><span class='line'>    ...
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>Cool works great :D The only thing that worried me was that when i turned on master after failover (it took 8 sec) he did not pickup he is slave and he did not start replicating data.</p>
-
-<h1>when you do this&hellip;</h1>
-
-<p>You will see beefy</p>
-
-<figure class='code'><figcaption><span></span></figcaption><div class="highlight"><table><tr><td class="gutter"><pre class="line-numbers"><span class='line-number'>1</span>
-<span class='line-number'>2</span>
-<span class='line-number'>3</span>
-<span class='line-number'>4</span>
-<span class='line-number'>5</span>
-</pre></td><td class='code'><pre><code class='bash'><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:03.441 <span class="c"># Error condition on socket for SYNC: Connection refused</span>
-</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 * Connecting to MASTER...
-</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 * MASTER &lt;-&gt; SLAVE sync started
-</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:04.521 <span class="c"># Error condition on socket for SYNC: Connection refused</span>
-</span><span class='line'><span class="o">[</span>36373<span class="o">]</span> 26 Sep 21:15:05.128 * MASTER MODE enabled <span class="o">(</span>user request<span class="o">)</span>
-</span></code></pre></td></tr></table></div></figure>
-
-
-<p>On the initial slave :) things just went from bad to good :D</p>
-
-<h1>Summary</h1>
-
-<p>This is cool new feature that you can have master-slave and auto failover server the only thing that driver have to do is if you get error while connecting / querying is to ask sentinel for new master connect and retry :) It is very basic but&hellip;</p>
-
-<p>I like it!</p>
-
-<p>THIS IS EXPERIMENTAL FEATURE and much more info about it you can finde here <a href="http://redis.io/topics/sentinel">http://redis.io/topics/sentinel</a>. Especially about pub/sub way of watching stuff / events while they occur.</p>
 ]]></content>
   </entry>
   
